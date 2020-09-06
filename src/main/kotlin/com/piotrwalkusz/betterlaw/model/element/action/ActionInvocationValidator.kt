@@ -1,0 +1,3 @@
+package com.piotrwalkusz.betterlaw.model.element.action
+
+interface ActionInvocationValidator
