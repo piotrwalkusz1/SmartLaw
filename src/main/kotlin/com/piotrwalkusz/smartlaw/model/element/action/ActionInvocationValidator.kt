@@ -1,3 +1,0 @@
-package com.piotrwalkusz.smartlaw.model.element.action
-
-interface ActionInvocationValidator

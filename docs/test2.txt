@@ -1,0 +1,156 @@
+definition Asset
+
+interface AssetDelegator<T: Asset, R: Collection<AssetDelegator<T, R>>> {
+    count: uint;
+    delegatedTo: Id<R>;
+}
+
+function DelegateAsset<T: Asset, R: Collection<AssetDelegator<T, R>>>(delegateFrom: Id<R>, delegateTo: Id<R>) {
+    require(delegateTo != null);
+    require(delegateTo != delegateFrom);
+
+    while (R[delegateTo].delegatedTo != null) {
+        delegateTo = R[delegateTo].delegatedTo;
+        require(delegateTo != delegateFrom);
+    }
+
+    R[delegateTo].count += R[delegateFrom].count;
+    R[delegateFrom].count = 0;
+    R[delegateFrom].delegateTo = delegateTo;
+}
+
+------------------------------------------------
+
+rule Vote {
+    definition Vote extends Asset;
+}
+
+rule Candidate {
+    definition Candidate {
+        name: bytes32;
+        voteCount: uint;
+    }
+
+    state Candidates {
+        type: Array<Candidate>;
+    }
+
+    implementation AssetDelegator<Vote, Union<Candidates, Voters>>() for Candidate {
+        count = voteCount;
+        delegatedTo = {
+            get: {null}
+            set(value): {}
+        }
+    }
+}
+
+rule Voter {
+    definition Voter {
+        voteCount: uint;
+        voteDelegatedTo: Id<CandidatesAndVoters>;
+    }
+
+    state Voters {
+        type: Map<address, Voter>;
+    }
+
+    implementation AssetDelegator<Vote, Union<Candidates, Voters>>() for Voter {
+        count = voteCount;
+        delegatedTo = voteDelegatedTo;
+    }
+}
+
+rule Chairperson {
+    state Chairperson {
+        type: address;
+    }
+}
+
+rule Constructor {
+    function Constructor(chairperson: address, candidatesNames: Array<bytes32>) {
+        Chairperson = chairperson;
+        Voters[chairperson].voteCount = 1;
+
+        for (uint i = 0; i < candidatesNames.length; i++) {
+            Candidates.push(Candidate({
+                name: candidatesNames[i];
+                voteCount: 0;
+            }));
+        }
+    }
+
+    @Constructor
+    action Constructor(candidatesNames: Array<bytes32>) {
+        body = Constructor(msg.sender, candidatesNames);
+    }
+}
+
+rule GiveRightToVote {
+    function GiveRightToVote(voter: address) {
+        Voters[voter].voteCount = 1;
+    }
+
+    action GiveRightToVote(voter: address) {
+        body = GiveRightToVote(voter);
+    }
+}
+
+rule OnlyChairpersonCanGiveRightToVote {
+    @Permission
+    action validation OnlyChairpersonCanGiveRightToVote {
+        action = GiveRightToVote
+        condition = msg.sender == Chairperson
+    }
+}
+
+rule OnlyChairpersonCanGiveRightToVote {
+    @Permission
+    action validation OnlyChairpersonCanGiveRightToVote {
+        action = GiveRightToVote
+        condition = msg.sender == Chairperson
+    }
+}
+
+rule RightToVoteCanBeGivenToVoterOnlyOnce {
+    action validation RightToVoteCanBeGivenToVoterOnlyOnce {
+        action = GiveRightToVote
+        condition = Voters[this.voter].voteDelegatedTo == null && Voters[this.voter].voteCount == 0
+    }
+}
+
+rule DelegateVoteToVoter {
+    function DelegateVoteToVoter(delegateFrom: address, delegateTo: address) {
+        DelegateAsset<Vote, Union<Candidate, Voter>>(Id<Voter>(delegateFrom), Id<Voter>(address));
+    }
+
+    action DelegateVoteToVoter(delegateTo: address) {
+        body = DelegateVoteToVoter(msg.sender, delegateTo);
+    }
+}
+
+rule VoteForCandidate {
+    function VoteForCandidate(voter: address, candidate: uint) {
+        DelegateAsset<Vote, Union<Candidate, Voter>>(Id<Voter>(voter), Id<Candidate>(candidate));
+    }
+
+    action VoteForCandidate(candidate: uint) {
+        body = VoteForCandidate(msg.sender, candidate)
+    }
+}
+
+rule VoterCanVoteOrDelegateVoteOnlyOnce {
+    @Permission
+    action validation VoterCanDelegateVoteOnlyOnce {
+        action = DelegateVoteToVoter
+        condition = Voters[msg.sender].voteCount != 0 && Voters[msg.sender].voteDelegatedTo == null
+    }
+
+    @Permission
+    action validation VoterCanVoteOnlyOnce {
+        action = VoteForCandidate
+        condition = Voters[msg.sender].voteCount != 0 && Voters[msg.sender].voteDelegatedTo == null
+    }
+}
+
+
+
