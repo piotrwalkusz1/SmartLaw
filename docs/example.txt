@@ -47,7 +47,7 @@ rule Candidate {
 rule Voter {
     definition Voter {
         voteCount: uint;
-        voteDelegatedTo: Id<CandidatesAndVoters>;
+        voteDelegatedTo: Id<Union<Candidates, Voters>>;
     }
 
     state Voters {
