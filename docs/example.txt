@@ -19,7 +19,7 @@ function DelegateAsset<T: Asset, R: Collection<AssetDelegator<T, R>>>(delegateFr
     R[delegateFrom].delegateTo = delegateTo;
 }
 
-------------------------------------------------
+----------------------------------------------
 
 rule Vote {
     definition Vote extends Asset;
