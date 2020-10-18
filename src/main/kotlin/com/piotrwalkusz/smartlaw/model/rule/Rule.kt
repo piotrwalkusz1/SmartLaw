@@ -9,7 +9,7 @@ data class Rule(
         val id: Id,
         val description: String? = null,
         val content: Template<String>,
-        val arguments: List<MetaArgument>,
-        val elements: List<Element>,
-        val ruleInvocations: List<RuleInvocation>
+        val arguments: List<MetaArgument> = listOf(),
+        val elements: List<Element> = listOf(),
+        val ruleInvocations: List<RuleInvocation> = listOf()
 )

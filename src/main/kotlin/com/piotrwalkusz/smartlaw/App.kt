@@ -1,77 +1,76 @@
 package com.piotrwalkusz.smartlaw
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.piotrwalkusz.smartlaw.model.common.Id
-import com.piotrwalkusz.smartlaw.model.document.Library
-import com.piotrwalkusz.smartlaw.model.element.`interface`.Interface
-import com.piotrwalkusz.smartlaw.model.element.`interface`.InterfaceProperty
-import com.piotrwalkusz.smartlaw.model.element.`interface`.InterfacePropertyType
-import com.piotrwalkusz.smartlaw.model.element.common.GenericParameter
-import com.piotrwalkusz.smartlaw.model.element.common.type.DefinitionRef
-import com.piotrwalkusz.smartlaw.model.element.common.type.GenericType
-import com.piotrwalkusz.smartlaw.model.element.definition.Definition
-import com.piotrwalkusz.smartlaw.model.template.StaticTemplate
+import com.piotrwalkusz.smartlaw.converter.FromDocumentToNaturalLanguageConverter
+import com.piotrwalkusz.smartlaw.converter.FromDocumentToXmlConverter
+import com.piotrwalkusz.smartlaw.converter.FromXmlToDocumentConverter
+import com.piotrwalkusz.smartlaw.example.CarSalesContractExample
+import com.piotrwalkusz.smartlaw.model.document.Contract
+import com.piotrwalkusz.smartlaw.provider.*
+import com.piotrwalkusz.smartlaw.template.*
+import com.piotrwalkusz.smartlaw.xml.XmlMapperProvider
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.startKoin
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
+import java.io.File
 
+@KoinApiExtension
 fun main() {
 
-    val coreLibrary = Library(
-            id = Id("Core"),
-            name = "Core",
-            elements = listOf(
-                    Definition(
-                            id = StaticTemplate(Id("Asset")),
-                            name = StaticTemplate("Asset")),
-                    Interface(
-                            id = StaticTemplate(Id("AssetDelegator")),
-                            name = StaticTemplate("AssetDelegator"),
-                            properties = StaticTemplate(listOf(
-                                    InterfaceProperty(
-                                            name = StaticTemplate("count"),
-                                            propertyType = StaticTemplate(InterfacePropertyType.Getter),
-                                            type = StaticTemplate(DefinitionRef(StaticTemplate(Id("uint"))))),
-                                    InterfaceProperty(
-                                            name = StaticTemplate("count"),
-                                            propertyType = StaticTemplate(InterfacePropertyType.Setter),
-                                            type = StaticTemplate(DefinitionRef(StaticTemplate(Id("uint"))))),
-                                    InterfaceProperty(
-                                            name = StaticTemplate("delegatedTo"),
-                                            propertyType = StaticTemplate(InterfacePropertyType.Getter),
-                                            type = StaticTemplate(DefinitionRef(
-                                                    definition = StaticTemplate(Id("Id")),
-                                                    parameters = StaticTemplate(listOf(GenericType(StaticTemplate("R"))))))),
-                                    InterfaceProperty(
-                                            name = StaticTemplate("delegatedTo"),
-                                            propertyType = StaticTemplate(InterfacePropertyType.Setter),
-                                            type = StaticTemplate(DefinitionRef(
-                                                    definition = StaticTemplate(Id("Id")),
-                                                    parameters = StaticTemplate(listOf(GenericType(StaticTemplate("R"))))))))),
-                            parameters = StaticTemplate(listOf(
-                                    GenericParameter(
-                                            name = StaticTemplate("T"),
-                                            baseType = StaticTemplate(DefinitionRef(StaticTemplate(Id("Asset"))))),
-                                    GenericParameter(
-                                            name = StaticTemplate("R"),
-                                            baseType = StaticTemplate(DefinitionRef(
-                                                    definition = StaticTemplate(Id("Collection")),
-                                                    parameters = StaticTemplate(listOf(
-                                                            DefinitionRef(
-                                                                    definition = StaticTemplate(Id("AssetDelegator")),
-                                                                    parameters = StaticTemplate(listOf(
-                                                                            GenericType(StaticTemplate("T")),
-                                                                            GenericType(StaticTemplate("R")))))))))))))))
+    val documents = listOf(CarSalesContractExample.contract, CarSalesContractExample.library)
 
-    val xmlMapper = XmlMapper(JacksonXmlModule().apply {
-        setDefaultUseWrapper(false)
-    }).registerKotlinModule().apply {
-        propertyNamingStrategy = PropertyNamingStrategy.UPPER_CAMEL_CASE
+    val module = module {
+        single { XmlMapperProvider.getXmlMapper() }
+        single { FromDocumentToXmlConverter(get()) }
+        single { FromXmlToDocumentConverter(get()) }
+        single { FromDocumentToNaturalLanguageConverter(get(), getAll()) }
+        single { RuleProvider(get(), get()) }
+        single { LocalRuleBrowser(documents) as RuleBrowser }
+        single { LocalDocumentProvider(documents) as DocumentProvider }
+        single(named<StaticTemplateProcessor>()) { StaticTemplateProcessor() as TemplateProcessor<*, *> }
+        single(named<TextEngineTemplateProcessor>()) { TextEngineTemplateProcessor(getAll()) as TemplateProcessor<*, *> }
+        single { FreeMarkerTextEngine() as TextEngine }
     }
 
-    val strObject = xmlMapper.writeValueAsString(coreLibrary);
+    startKoin {
+        printLogger()
+        modules(module)
+    }
 
-    println(strObject)
+    val app = App()
+    app.test()
+}
 
-    xmlMapper.readValue(strObject, Library::class.java)
+@KoinApiExtension
+class App : KoinComponent {
+
+    private val fromDocumentToXmlConverter: FromDocumentToXmlConverter by inject()
+    private val fromXmlToDocumentConverter: FromXmlToDocumentConverter by inject()
+    private val fromDocumentToNaturalLanguageConverter: FromDocumentToNaturalLanguageConverter by inject()
+
+    fun test() {
+        val originalDocument = CarSalesContractExample.contract
+        val xmlDocument = fromDocumentToXmlConverter.convert(originalDocument)
+        println(xmlDocument)
+        val document = fromXmlToDocumentConverter.convert(xmlDocument) as Contract
+        assert(document == originalDocument)
+
+        val nl = fromDocumentToNaturalLanguageConverter.convert(document)
+        val inputFile = File.createTempFile("tmp", ".md")
+        inputFile.writeText(nl)
+        val outputFile = File("output.docx")
+        println(outputFile.absoluteFile)
+        val processBuilder = ProcessBuilder("pandoc",
+                "--from", "markdown",
+                "--to", "docx",
+                "--output", outputFile.absolutePath,
+                "--css", "/home/piotr/Projects/SmartLaw/test.css",
+                inputFile.absolutePath)
+        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        processBuilder.start().waitFor()
+        inputFile.deleteOnExit()
+    }
 }
