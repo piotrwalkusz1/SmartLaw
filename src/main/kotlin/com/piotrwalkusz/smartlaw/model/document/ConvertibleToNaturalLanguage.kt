@@ -4,5 +4,6 @@ import com.piotrwalkusz.smartlaw.model.rule.textformatter.RuleInvocationTextForm
 
 interface ConvertibleToNaturalLanguage : Document {
 
+    val name: String
     val ruleInvocationTextFormatters: List<RuleInvocationTextFormatter>
 }

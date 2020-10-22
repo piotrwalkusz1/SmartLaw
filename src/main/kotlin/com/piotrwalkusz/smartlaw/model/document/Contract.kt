@@ -6,7 +6,7 @@ import com.piotrwalkusz.smartlaw.model.rule.textformatter.RuleInvocationTextForm
 
 data class Contract(
         override val id: Id,
-        val name: String,
+        override val name: String,
         val description: String? = null,
         override val ruleInvocationTextFormatters: List<RuleInvocationTextFormatter> = listOf()
 ) : ConvertibleToNaturalLanguage

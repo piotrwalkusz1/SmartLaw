@@ -24,7 +24,9 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.2")
     implementation("org.freemarker:freemarker:2.3.14")
     implementation("org.koin:koin-core:2.2.0-rc-2")
-    implementation("org.bitbucket.leito:universal-document-converter:1.1.0")
+    implementation("org.docx4j:docx4j:6.1.2")
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.3")
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")

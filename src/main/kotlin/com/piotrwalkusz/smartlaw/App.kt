@@ -3,6 +3,7 @@ package com.piotrwalkusz.smartlaw
 import com.piotrwalkusz.smartlaw.converter.FromDocumentToNaturalLanguageConverter
 import com.piotrwalkusz.smartlaw.converter.FromDocumentToXmlConverter
 import com.piotrwalkusz.smartlaw.converter.FromXmlToDocumentConverter
+import com.piotrwalkusz.smartlaw.converter.naturallanguage.DocxExporter
 import com.piotrwalkusz.smartlaw.example.CarSalesContractExample
 import com.piotrwalkusz.smartlaw.model.document.Contract
 import com.piotrwalkusz.smartlaw.provider.*
@@ -14,7 +15,6 @@ import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import java.io.File
 
 @KoinApiExtension
 fun main() {
@@ -32,6 +32,7 @@ fun main() {
         single(named<StaticTemplateProcessor>()) { StaticTemplateProcessor() as TemplateProcessor<*, *> }
         single(named<TextEngineTemplateProcessor>()) { TextEngineTemplateProcessor(getAll()) as TemplateProcessor<*, *> }
         single { FreeMarkerTextEngine() as TextEngine }
+        single { DocxExporter() }
     }
 
     startKoin {
@@ -49,6 +50,7 @@ class App : KoinComponent {
     private val fromDocumentToXmlConverter: FromDocumentToXmlConverter by inject()
     private val fromXmlToDocumentConverter: FromXmlToDocumentConverter by inject()
     private val fromDocumentToNaturalLanguageConverter: FromDocumentToNaturalLanguageConverter by inject()
+    private val docxExporter: DocxExporter by inject()
 
     fun test() {
         val originalDocument = CarSalesContractExample.contract
@@ -57,20 +59,6 @@ class App : KoinComponent {
         val document = fromXmlToDocumentConverter.convert(xmlDocument) as Contract
         assert(document == originalDocument)
 
-        val nl = fromDocumentToNaturalLanguageConverter.convert(document)
-        val inputFile = File.createTempFile("tmp", ".md")
-        inputFile.writeText(nl)
-        val outputFile = File("output.docx")
-        println(outputFile.absoluteFile)
-        val processBuilder = ProcessBuilder("pandoc",
-                "--from", "markdown",
-                "--to", "docx",
-                "--output", outputFile.absolutePath,
-                "--css", "/home/piotr/Projects/SmartLaw/test.css",
-                inputFile.absolutePath)
-        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-        processBuilder.start().waitFor()
-        inputFile.deleteOnExit()
+        docxExporter.export(fromDocumentToNaturalLanguageConverter.convert(document))
     }
 }

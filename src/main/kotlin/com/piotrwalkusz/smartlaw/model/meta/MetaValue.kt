@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonSubTypes(
         JsonSubTypes.Type(name = "Primitive", value = MetaPrimitiveValue::class),
-        JsonSubTypes.Type(name = "Complex", value = MetaComplexValue::class)
+        JsonSubTypes.Type(name = "List", value = MetaListValue::class),
+        JsonSubTypes.Type(name = "Map", value = MetaMapValue::class)
 )
 interface MetaValue
