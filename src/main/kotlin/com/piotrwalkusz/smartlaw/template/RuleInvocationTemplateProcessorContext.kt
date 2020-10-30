@@ -1,6 +1,7 @@
 package com.piotrwalkusz.smartlaw.template
 
 import com.piotrwalkusz.smartlaw.model.common.Id
+import com.piotrwalkusz.smartlaw.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.model.meta.MetaListValue
 import com.piotrwalkusz.smartlaw.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.model.meta.MetaValue
@@ -24,26 +25,45 @@ data class RuleInvocationTemplateProcessorContext(
     }
 
     private fun getTemplateParametersFromRuleInvocationArguments(): Map<String, Any> {
-        val parametersKeys = rule.arguments.map { it.name }
-        val parametersValues = getTemplateParametersValuesFromRuleInvocationArguments(ruleInvocation)
-        if (parametersKeys.size != parametersValues.size) {
+        if (rule.arguments.size != ruleInvocation.arguments.size) {
             throw IllegalArgumentException("Count of arguments in rule and rule's invocation must be equal")
         }
 
-        return parametersKeys.zip(parametersValues).toMap()
+        return getTemplateParametersValuesFromRuleInvocationArguments(rule.arguments.zip(ruleInvocation.arguments))
     }
 
-    private fun getTemplateParametersValuesFromRuleInvocationArguments(ruleInvocation: RuleInvocation): List<Any> {
-        return ruleInvocation.arguments.map { getTemplateParameterValueFromRuleInvocationArgument(it) }
+    private fun getTemplateParametersValuesFromRuleInvocationArguments(arguments: List<Pair<MetaArgument, MetaValue>>): Map<String, Any> {
+        return arguments.map { it.first.name to getTemplateParameterValueFromRuleInvocationArgument(it.first, it.second) }.toMap()
     }
 
-    private fun getTemplateParameterValueFromRuleInvocationArgument(argument: MetaValue): Any {
-        if (argument is MetaPrimitiveValue) {
-            return argument.value
-        } else if (argument is MetaListValue) {
-            return argument.values
-        } else {
-            throw IllegalArgumentException("Cannot convert class ${argument::class.java} to template parameter value")
+    private fun getTemplateParameterValueFromRuleInvocationArgument(argumentDefinition: MetaArgument, argumentValue: MetaValue): Any {
+        return when (argumentValue) {
+            is MetaPrimitiveValue -> {
+                convertPrimitiveArgumentValue(argumentDefinition, argumentValue)
+            }
+            is MetaListValue -> {
+                argumentValue.values
+            }
+            else -> {
+                throw IllegalArgumentException("Cannot convert class ${argumentValue::class.java} to template parameter value")
+            }
+        }
+    }
+
+    private fun convertPrimitiveArgumentValue(argumentDefinition: MetaArgument, argumentValue: MetaPrimitiveValue): Any {
+        return when (argumentDefinition.type.id) {
+            "String" -> {
+                argumentValue.value
+            }
+            "Integer" -> {
+                argumentValue.value.toInt()
+            }
+            "LocalDate" -> {
+                argumentValue.value
+            }
+            else -> {
+                throw IllegalArgumentException("Type of argument ${argumentDefinition.type.id} is not recognized")
+            }
         }
     }
 }

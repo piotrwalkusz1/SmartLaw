@@ -60,7 +60,7 @@ object CarSalesContractExample {
                                 pojazdu ${'$'}{args.markaModel} (marka/model),
                                 rok produkcji ${'$'}{args.rokProdukcji} nr silnika ${'$'}{args.nrSilnika}
                                 nr nadwozia ${'$'}{args.nrNadwozia} nr rejestracyjny ${'$'}{args.nrRejestracyjny}
-                                kolor ${'$'}{args.kolor} Przebieg ${'$'}{args.przebieg}
+                                kolor ${'$'}{args.kolor} Przebieg ${'$'}{args.przebieg} km
                                 """.trimIndent()),
                             arguments = listOf(
                                     MetaArgument(name = "markaModel", type = Id("String")),
@@ -87,7 +87,7 @@ object CarSalesContractExample {
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Strony zgodnie ustalają cenę sprzedaży samochodu określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")}
-                                niniejszej umowy na kwotę: ${'$'}{args.kwota} zł., słownie ${'$'}{args.kwotaSlownie} złotych"
+                                niniejszej umowy na kwotę: ${'$'}{args.kwota?string["000.00"]} zł., słownie ${'$'}{args.kwotaSlownie} złotych
                                 """.trimIndent()),
                             arguments = listOf(
                                     MetaArgument(name = "kwota", type = Id("Integer")),
@@ -185,7 +185,7 @@ object CarSalesContractExample {
                                     MetaPrimitiveValue("YYYYYYYY"),
                                     MetaPrimitiveValue("ZZZZZZZZ"),
                                     MetaPrimitiveValue("czarny"),
-                                    MetaPrimitiveValue("320000 km"))
+                                    MetaPrimitiveValue("320000"))
                     )))),
                     IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz")

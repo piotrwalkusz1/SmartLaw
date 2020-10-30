@@ -19,7 +19,7 @@ import org.koin.dsl.module
 @KoinApiExtension
 fun main() {
 
-    val documents = listOf(CarSalesContractExample.contract, CarSalesContractExample.library)
+    val documents = listOf(CarSalesContractExample.library)
 
     val module = module {
         single { XmlMapperProvider.getXmlMapper() }
