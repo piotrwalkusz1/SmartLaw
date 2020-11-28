@@ -1,0 +1,3 @@
+package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model
+
+interface NaturalLanguageDocumentObject
