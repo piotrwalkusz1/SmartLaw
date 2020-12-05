@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class FromDocumentToNaturalLanguageConverterFactory(private val templateProcessorService: TemplateProcessorService) {
 
-    fun create(ruleProvider: RuleProvider): FromDocumentToNaturalLanguageConverter {
-        return FromDocumentToNaturalLanguageConverter(ruleProvider, templateProcessorService)
+    fun create(ruleProvider: RuleProvider, config: FromDocumentToNaturalLanguageConverter.Config): FromDocumentToNaturalLanguageConverter {
+        return FromDocumentToNaturalLanguageConverter(ruleProvider, templateProcessorService, config)
     }
 }

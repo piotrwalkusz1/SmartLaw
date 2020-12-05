@@ -25,7 +25,6 @@ class DocxExporter : NaturalLanguageExporter {
 
         mainDocumentPart.addStyledParagraphOfText("Title", document.title)
 
-        var sectionIndex = 1
         var listIndex = 1L
         document.objects.forEach { documentObject ->
             when (documentObject) {
@@ -33,8 +32,7 @@ class DocxExporter : NaturalLanguageExporter {
                     mainDocumentPart.addParagraphOfText(documentObject.content)
                 }
                 is NaturalLanguageSection -> {
-                    mainDocumentPart.addObject(prepareSectionHeader(sectionIndex))
-                    sectionIndex++
+                    mainDocumentPart.addObject(prepareSectionHeader(documentObject.title))
                     if (documentObject.provisions.size > 1) {
                         mainDocumentPart.addTargetPart(prepareListDefinition(listIndex))
                         documentObject.provisions.forEach { provision ->
@@ -93,12 +91,12 @@ class DocxExporter : NaturalLanguageExporter {
         return paragraph
     }
 
-    private fun prepareSectionHeader(sectionIndex: Int): P {
+    private fun prepareSectionHeader(title: String): P {
         val factory = Context.getWmlObjectFactory()
         val paragraph = factory.createP()
         val run = factory.createR()
         val text = factory.createText()
-        text.value = "§ $sectionIndex"
+        text.value = title
         run.content.add(text)
         paragraph.content.add(run)
 

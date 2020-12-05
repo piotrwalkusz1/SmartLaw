@@ -7,10 +7,14 @@ import java.io.StringWriter
 
 class FreeMarkerTextEngine : TextEngine {
 
+    companion object {
+        const val TEMPLATE_TYPE = "FreeMarker"
+    }
+
     private val configuration: Configuration = Configuration()
 
     override val templateType: String
-        get() = "FreeMarker"
+        get() = TEMPLATE_TYPE
 
     override fun processTemplate(template: String, parameters: Map<String, Any>): String {
         val output = StringWriter()

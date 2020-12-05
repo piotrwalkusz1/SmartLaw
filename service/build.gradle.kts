@@ -23,6 +23,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.litote.kmongo:kmongo:4.2.1")
+    implementation(platform("com.github.cloudyrock.mongock:mongock-bom:4.1.19"))
+    implementation("com.github.cloudyrock.mongock:mongock-standalone")
+    implementation("com.github.cloudyrock.mongock:mongodb-sync-v4-driver")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

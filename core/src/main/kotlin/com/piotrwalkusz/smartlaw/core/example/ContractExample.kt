@@ -7,7 +7,7 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.SimpleRuleInvocationTextFormatter
+import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 
 object ContractExample {
@@ -53,8 +53,8 @@ object ContractExample {
     val contract = Contract(
             id = Id("UMOWA_SPRZEDAZY_SAMOCHODU", "pl.piotrwalkusz"),
             name = "Umowa sprzedaży samochodu",
-            ruleInvocationTextFormatters = listOf(
-                    SimpleRuleInvocationTextFormatter(RuleInvocation(
+            presentationElements = listOf(
+                    RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SPRZEDAJACEGO_I_KUPUJACEGO", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("Gdańsk"),

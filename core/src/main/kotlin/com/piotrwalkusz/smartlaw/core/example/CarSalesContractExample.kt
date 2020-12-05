@@ -9,8 +9,8 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.IndentationRuleInvocationTextFormatter
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.SimpleRuleInvocationTextFormatter
+import com.piotrwalkusz.smartlaw.core.model.presentation.IndentationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 
@@ -36,20 +36,20 @@ object CarSalesContractExample {
                                 PESEL ${'$'}{args.kupującyPESEL} dalej Kupujący
                                 """.trimIndent()),
                             arguments = listOf(
-                                    MetaArgument(name = "miejscowość", type = Id("String")),
-                                    MetaArgument(name = "dzień", type = Id("LocalDate")),
-                                    MetaArgument(name = "sprzedającyImięNazwisko", type = Id("String")),
-                                    MetaArgument(name = "sprzedającyNumerDowoduOsobistego", type = Id("String")),
-                                    MetaArgument(name = "sprzedającyDowódOsobistWydanyPrzez", type = Id("String")),
-                                    MetaArgument(name = "sprzedającyMiejsceZamieszkania", type = Id("String")),
-                                    MetaArgument(name = "sprzedającyUlica", type = Id("String")),
-                                    MetaArgument(name = "sprzedającyPESEL", type = Id("String")),
-                                    MetaArgument(name = "kupującyImięNazwisko", type = Id("String")),
-                                    MetaArgument(name = "kupującyNumerDowoduOsobistego", type = Id("String")),
-                                    MetaArgument(name = "kupującyDowódOsobistWydanyPrzez", type = Id("String")),
-                                    MetaArgument(name = "kupującyMiejsceZamieszkania", type = Id("String")),
-                                    MetaArgument(name = "kupującyUlica", type = Id("String")),
-                                    MetaArgument(name = "kupującyPESEL", type = Id("String"))
+                                    MetaArgument(name = "miejscowość", type = Id("String"), displayName = "Miejscowość"),
+                                    MetaArgument(name = "dzień", type = Id("LocalDate"), displayName = "Dzień"),
+                                    MetaArgument(name = "sprzedającyImięNazwisko", type = Id("String"), displayName = "Imię i nazwisko sprzedającego"),
+                                    MetaArgument(name = "sprzedającyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego sprzedającego"),
+                                    MetaArgument(name = "sprzedającyDowódOsobistWydanyPrzez", type = Id("String"), displayName = "Wystawca dowodu osobistego sprzedającego"),
+                                    MetaArgument(name = "sprzedającyMiejsceZamieszkania", type = Id("String"), displayName = "Adres sprzedającego: miesjcowość"),
+                                    MetaArgument(name = "sprzedającyUlica", type = Id("String"), displayName = "Adres sprzedającego: ulica"),
+                                    MetaArgument(name = "sprzedającyPESEL", type = Id("String"), displayName = "PESEL sprzedającego"),
+                                    MetaArgument(name = "kupującyImięNazwisko", type = Id("String"), displayName = "Imię i nazwisko kupującego"),
+                                    MetaArgument(name = "kupującyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego kupującego"),
+                                    MetaArgument(name = "kupującyDowódOsobistWydanyPrzez", type = Id("String"), displayName = "Wystawca dowodu osobistego kupującego"),
+                                    MetaArgument(name = "kupującyMiejsceZamieszkania", type = Id("String"), displayName = "Adres kupującego: miesjcowość"),
+                                    MetaArgument(name = "kupującyUlica", type = Id("String"), displayName = "Adres kupującego: ulica"),
+                                    MetaArgument(name = "kupującyPESEL", type = Id("String"), displayName = "PESEL kupującego")
                             ),
                             elements = listOf()),
                     Rule(
@@ -63,13 +63,13 @@ object CarSalesContractExample {
                                 kolor ${'$'}{args.kolor} Przebieg ${'$'}{args.przebieg} km
                                 """.trimIndent()),
                             arguments = listOf(
-                                    MetaArgument(name = "markaModel", type = Id("String")),
-                                    MetaArgument(name = "rokProdukcji", type = Id("Integer")),
-                                    MetaArgument(name = "nrSilnika", type = Id("String")),
-                                    MetaArgument(name = "nrNadwozia", type = Id("String")),
-                                    MetaArgument(name = "nrRejestracyjny", type = Id("String")),
-                                    MetaArgument(name = "kolor", type = Id("String")),
-                                    MetaArgument(name = "przebieg", type = Id("Integer"))
+                                    MetaArgument(name = "markaModel", type = Id("String"), displayName = "Marka i model"),
+                                    MetaArgument(name = "rokProdukcji", type = Id("Integer"), displayName = "Rok produkcji"),
+                                    MetaArgument(name = "nrSilnika", type = Id("String"), displayName = "Numer silnika"),
+                                    MetaArgument(name = "nrNadwozia", type = Id("String"), displayName = "Numer nadwozia"),
+                                    MetaArgument(name = "nrRejestracyjny", type = Id("String"), displayName = "Numer rejestracyjny"),
+                                    MetaArgument(name = "kolor", type = Id("String"), displayName = "Kolor"),
+                                    MetaArgument(name = "przebieg", type = Id("Integer"), displayName = "Przebieg")
                             ),
                             elements = listOf(State(
                                     id = StaticTemplate(Id("SAMOCHOD", "pl.piotrwalkusz")),
@@ -90,8 +90,8 @@ object CarSalesContractExample {
                                 niniejszej umowy na kwotę: ${'$'}{args.kwota?string["000.00"]} zł., słownie ${'$'}{args.kwotaSlownie} złotych
                                 """.trimIndent()),
                             arguments = listOf(
-                                    MetaArgument(name = "kwota", type = Id("Integer")),
-                                    MetaArgument(name = "kwotaSlownie", type = Id("String"))),
+                                    MetaArgument(name = "kwota", type = Id("Integer"), displayName = "Kwota"),
+                                    MetaArgument(name = "kwotaSlownie", type = Id("String"), displayName = "Kwota - słownie")),
                             elements = listOf(State(
                                     id = StaticTemplate(Id("CENA_SAMOCHODU", "pl.piotrwalkusz")),
                                     type = StaticTemplate(DefinitionRef(StaticTemplate(Id("Int", "pl.piotrwalkusz")))),
@@ -113,7 +113,7 @@ object CarSalesContractExample {
                                 Sprzedający oświadcza, że zapłata przez Kupującego ceny określonej w
                                 ${'$'}{context.getLinkToElement("pl.piotrwalkusz.CENA_SAMOCHODU")} zostanie dokonana w następujący sposób: ${'$'}{args.sposobZaplaty}
                                 """.trimIndent()),
-                            arguments = listOf(MetaArgument(name = "sposobZaplaty", type = Id("String"))),
+                            arguments = listOf(MetaArgument(name = "sposobZaplaty", type = Id("String"), displayName = "Sposób zapłaty")),
                             elements = listOf()),
                     Rule(
                             id = Id("POTWIERDZENIE_ODBIORU", "pl.piotrwalkusz"),
@@ -157,8 +157,8 @@ object CarSalesContractExample {
     val contract = Contract(
             id = Id("UMOWA_SPRZEDAZY_SAMOCHODU", "pl.piotrwalkusz"),
             name = "Umowa sprzedaży samochodu",
-            ruleInvocationTextFormatters = listOf(
-                    SimpleRuleInvocationTextFormatter(RuleInvocation(
+            presentationElements = listOf(
+                    RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SPRZEDAJACEGO_I_KUPUJACEGO", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("Gdańsk"),
@@ -176,7 +176,7 @@ object CarSalesContractExample {
                                     MetaPrimitiveValue("Krótka"),
                                     MetaPrimitiveValue("23456789012"))
                     )),
-                    IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SAMOCHODU", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("Audi A4"),
@@ -187,44 +187,44 @@ object CarSalesContractExample {
                                     MetaPrimitiveValue("czarny"),
                                     MetaPrimitiveValue("320000"))
                     )))),
-                    IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz")
                     )))),
-                    IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("10000"),
                                     MetaPrimitiveValue("dziesięć tysięcy"))
                     )))),
-                    IndentationRuleInvocationTextFormatter(listOf(
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("PRZENIESIENIE_WLASNOSCI", "pl.piotrwalkusz")
                             )),
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("SPOSOB_ZAPLATY", "pl.piotrwalkusz"),
                                     arguments = listOf(MetaPrimitiveValue("gotówka"))
                             )),
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("POTWIERDZENIE_ODBIORU", "pl.piotrwalkusz")
                             )),
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("PRZEKAZANIE_RZECZY_SLUZACYCH_DO_KORZYSTANIA_Z_SAMOCHODU", "pl.piotrwalkusz"),
                                     arguments = listOf(MetaPrimitiveValue("dwie sztuki kluczyków"))
                             )))),
-                    IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz")
                     )))),
-                    IndentationRuleInvocationTextFormatter(listOf(SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OBCIAZENIE_KOSZTAMI_TRANZAKCYJNYMI", "pl.piotrwalkusz")
                     )))),
-                    IndentationRuleInvocationTextFormatter(listOf(
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                    IndentationPresentationElement(listOf(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("ROZTRZYGANIE_SPRAW_NIEUREGOLOWANYCH", "pl.piotrwalkusz")
                             )),
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("ZMIANA_UMOWY", "pl.piotrwalkusz")
                             )),
-                            SimpleRuleInvocationTextFormatter(RuleInvocation(
+                            RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("KOPIE_UMOWY", "pl.piotrwalkusz")
                             ))))
             )

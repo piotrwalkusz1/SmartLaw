@@ -1,9 +1,9 @@
 package com.piotrwalkusz.smartlaw.core.model.document
 
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.RuleInvocationTextFormatter
+import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 
 interface ConvertibleToNaturalLanguage : Document {
 
     val name: String
-    val ruleInvocationTextFormatters: List<RuleInvocationTextFormatter>
+    val presentationElements: List<PresentationElement>
 }

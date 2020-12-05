@@ -15,7 +15,7 @@ import com.piotrwalkusz.smartlaw.core.model.element.reference.Reference
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 import com.piotrwalkusz.smartlaw.core.model.template.Template
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "elementType")
 @JsonSubTypes(
         JsonSubTypes.Type(name = "ActionDefinition", value = ActionDefinition::class),
         JsonSubTypes.Type(name = "ActionValidation", value = ActionValidation::class),

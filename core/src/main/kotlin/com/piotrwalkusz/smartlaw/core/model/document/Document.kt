@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "documentType")
 @JsonSubTypes(
         JsonSubTypes.Type(name = "Contract", value = Contract::class),
         JsonSubTypes.Type(name = "LegalAct", value = LegalAct::class),

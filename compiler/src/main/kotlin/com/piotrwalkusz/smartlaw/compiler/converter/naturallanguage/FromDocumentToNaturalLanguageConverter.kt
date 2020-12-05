@@ -5,70 +5,67 @@ import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.Natura
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageProvision
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageSection
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
+import com.piotrwalkusz.smartlaw.compiler.template.processor.ProcessRuleContentTemplateConfig
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
-import com.piotrwalkusz.smartlaw.compiler.template.processor.context.RuleInvocationTemplateProcessorContext
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.IndentationRuleInvocationTextFormatter
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.RuleInvocationTextFormatter
-import com.piotrwalkusz.smartlaw.core.model.rule.textformatter.SimpleRuleInvocationTextFormatter
-import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
+import com.piotrwalkusz.smartlaw.core.model.presentation.IndentationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
+import java.util.concurrent.atomic.AtomicInteger
 
 class FromDocumentToNaturalLanguageConverter(
         private val ruleProvider: RuleProvider,
-        private val templateProcessorService: TemplateProcessorService
+        private val templateProcessorService: TemplateProcessorService,
+        private val config: Config
 ) {
 
+    data class Config(
+            val addStyleToRuleContent: Boolean
+    )
+
     fun convert(document: ConvertibleToNaturalLanguage): NaturalLanguageDocument {
-        val linksByElementsIds = document.ruleInvocationTextFormatters
-                .filterIsInstance(IndentationRuleInvocationTextFormatter::class.java)
-                .mapIndexed { index, section ->
-                    section.ruleInvocations
-                            .map { it as SimpleRuleInvocationTextFormatter }
-                            .map { ruleProvider.getRule(it.ruleInvocation.ruleId)!! }
-                            .flatMap { rule -> rule.elements }
-                            .map { element -> (element.id as StaticTemplate<Id>).value }
-                            .map { id -> id to "§ ${index + 1}" }
-                }
-                .flatten()
-                .toMap()
+        val linksByElementsIds = templateProcessorService.getLinksByElementsIds(document, ruleProvider)
+
 
         return NaturalLanguageDocument(
                 title = document.name,
-                objects = convertRuleInvocationsToNaturalLanguageDocumentObjects(document.ruleInvocationTextFormatters, linksByElementsIds)
+                objects = convertPresentationElementsToNaturalLanguageDocumentObjects(document.presentationElements, linksByElementsIds)
         )
     }
 
-    private fun convertRuleInvocationsToNaturalLanguageDocumentObjects(ruleInvocationTextFormatter: List<RuleInvocationTextFormatter>, linksByElementsIds: Map<Id, String>): List<NaturalLanguageDocumentObject> {
-        return ruleInvocationTextFormatter.map { convertRuleInvocationToNaturalLanguageDocumentObject(it, linksByElementsIds) }
+    private fun convertPresentationElementsToNaturalLanguageDocumentObjects(presentationElement: List<PresentationElement>, linksByElementsIds: Map<Id, String>): List<NaturalLanguageDocumentObject> {
+        val nextIndentationIndex = AtomicInteger(1)
+
+        return presentationElement.map { convertRuleInvocationToNaturalLanguageDocumentObject(it, linksByElementsIds, nextIndentationIndex) }
     }
 
-    private fun convertRuleInvocationToNaturalLanguageDocumentObject(ruleInvocationTextFormatter: RuleInvocationTextFormatter, linksByElementsIds: Map<Id, String>): NaturalLanguageDocumentObject {
-        return when (ruleInvocationTextFormatter) {
-            is SimpleRuleInvocationTextFormatter -> {
-                convertSimpleRuleInvocationTextFormatterToNaturalLanguage(ruleInvocationTextFormatter, linksByElementsIds)
+    private fun convertRuleInvocationToNaturalLanguageDocumentObject(presentationElement: PresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): NaturalLanguageDocumentObject {
+        return when (presentationElement) {
+            is RuleInvocationPresentationElement -> {
+                convertRuleInvocationPresentationElementToNaturalLanguage(presentationElement, linksByElementsIds)
             }
-            is IndentationRuleInvocationTextFormatter -> {
-                convertIndentationRuleInvocationTextFormatterToNaturalLanguage(ruleInvocationTextFormatter, linksByElementsIds)
+            is IndentationPresentationElement -> {
+                convertIndentationPresentationElementToNaturalLanguage(presentationElement, linksByElementsIds, nextIndentationIndex)
             }
             else -> {
-                throw IllegalArgumentException("Text formatter ${ruleInvocationTextFormatter.javaClass} is not supported")
+                throw IllegalArgumentException("Text formatter ${presentationElement.javaClass} is not supported")
             }
         }
     }
 
-    private fun convertIndentationRuleInvocationTextFormatterToNaturalLanguage(ruleInvocationTextFormatter: IndentationRuleInvocationTextFormatter, linksByElementsIds: Map<Id, String>): NaturalLanguageSection {
-        val provisions = ruleInvocationTextFormatter.ruleInvocations
-                .map { it as SimpleRuleInvocationTextFormatter }
-                .map { convertSimpleRuleInvocationTextFormatterToNaturalLanguage(it, linksByElementsIds) }
+    private fun convertIndentationPresentationElementToNaturalLanguage(presentationElement: IndentationPresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): NaturalLanguageSection {
+        val provisions = presentationElement.presentationElements
+                .map { it as RuleInvocationPresentationElement }
+                .map { convertRuleInvocationPresentationElementToNaturalLanguage(it, linksByElementsIds) }
 
-        return NaturalLanguageSection(provisions)
+        return NaturalLanguageSection(provisions = provisions, title = "§ " + nextIndentationIndex.getAndIncrement())
     }
 
-    private fun convertSimpleRuleInvocationTextFormatterToNaturalLanguage(ruleInvocationTextFormatter: SimpleRuleInvocationTextFormatter, linksByElementsIds: Map<Id, String>): NaturalLanguageProvision {
-        val rule = ruleProvider.getRule(ruleInvocationTextFormatter.ruleInvocation.ruleId)!!
-        val templateProcessorContext = RuleInvocationTemplateProcessorContext(rule, ruleInvocationTextFormatter.ruleInvocation.arguments, linksByElementsIds)
-        val content = templateProcessorService.processTemplate(rule.content, templateProcessorContext)
+    private fun convertRuleInvocationPresentationElementToNaturalLanguage(ruleInvocationPresentationElement: RuleInvocationPresentationElement, linksByElementsIds: Map<Id, String>): NaturalLanguageProvision {
+        val rule = ruleProvider.getRule(ruleInvocationPresentationElement.ruleInvocation.ruleId)!!
+        val processRuleContentTemplateConfig = ProcessRuleContentTemplateConfig(addStyleToContent = config.addStyleToRuleContent)
+        val content = templateProcessorService.processRuleContentTemplate(rule, ruleInvocationPresentationElement.ruleInvocation.arguments, linksByElementsIds, processRuleContentTemplateConfig)
 
         return NaturalLanguageProvision(content)
     }
