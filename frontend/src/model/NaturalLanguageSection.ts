@@ -8,10 +8,10 @@ export const decodeNaturalLanguageSection = (json: any): NaturalLanguageSection 
 
 export default class NaturalLanguageSection implements NaturalLanguageDocumentObject {
   title: string;
-  provisions: List<NaturalLanguageDocumentObject>;
+  nestedNaturalLanguageDocumentObjects: List<NaturalLanguageDocumentObject>;
 
-  constructor(title: string, provisions: List<NaturalLanguageDocumentObject>) {
+  constructor(title: string, nestedNaturalLanguageDocumentObjects: List<NaturalLanguageDocumentObject>) {
     this.title = title;
-    this.provisions = provisions;
+    this.nestedNaturalLanguageDocumentObjects = nestedNaturalLanguageDocumentObjects;
   }
 }

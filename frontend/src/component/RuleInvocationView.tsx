@@ -1,31 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
-import RuleInvocation from "../model/RuleInvocation";
+import React from "react";
 import MetaValue, { MetaValueType } from "../model/MetaValue";
 import { List } from "immutable";
-import Rule from "../model/Rule";
-import { getRule } from "../service/RuleService";
-import { DocumentEditorContext, DocumentEditorContextProps } from "../context/DocumentEditorContext";
 import MetaArgument from "../model/MetaArgument";
-import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import { Accordion, Card } from "react-bootstrap";
 import DOMPurify from "dompurify";
+import { DocumentEditorRuleInvocationElement } from "../page/ContractPage";
 
 interface RuleInvocationViewProps {
-  ruleInvocation: RuleInvocation;
+  element: DocumentEditorRuleInvocationElement;
   onArgumentsChange: (newArguments: List<MetaValue>) => void;
-  naturalLanguageProvision: NaturalLanguageProvision;
 }
 
-const RuleInvocationView = ({ ruleInvocation, onArgumentsChange, naturalLanguageProvision }: RuleInvocationViewProps) => {
-  const [rule, setRule] = useState<Rule | null>(null);
-  const { projectId, documentId } = useContext(DocumentEditorContext) as DocumentEditorContextProps;
-  useEffect(() => {
-    getRule(ruleInvocation.ruleId, projectId).then((rule) => setRule((_) => rule));
-  }, [ruleInvocation.ruleId, projectId]);
-
+const RuleInvocationView = ({ element, onArgumentsChange }: RuleInvocationViewProps) => {
   const renderContent = () => (
-    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(naturalLanguageProvision.content, { ALLOWED_TAGS: ["b"] }) }} />
+    <div
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(element.extendedPresentationElement.naturalLanguageDocumentObject.content, { ALLOWED_TAGS: ["b"] }),
+      }}
+    />
   );
   const renderArgument = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
     if (ruleInvocationArgument === undefined) {
@@ -49,7 +42,7 @@ const RuleInvocationView = ({ ruleInvocation, onArgumentsChange, naturalLanguage
               value={(ruleInvocationArgument as MetaPrimitiveValue).value}
               onChange={(event) =>
                 onArgumentsChange(
-                  ruleInvocation.arguments.set(index, {
+                  element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
                     ...ruleInvocationArgument,
                     value: event.target.value,
                   } as MetaPrimitiveValue)
@@ -63,11 +56,15 @@ const RuleInvocationView = ({ ruleInvocation, onArgumentsChange, naturalLanguage
     }
   };
   const renderArgumentsEditor = () =>
-    rule === null ? (
+    element.extendedPresentationElement.rule === null ? (
       <div />
     ) : (
-      rule.arguments.map((ruleArgument, index) => {
-        return renderArgument(index, ruleArgument, ruleInvocation.arguments.get(index));
+      element.extendedPresentationElement.rule.arguments.map((ruleArgument, index) => {
+        return renderArgument(
+          index,
+          ruleArgument,
+          element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.get(index)
+        );
       })
     );
 

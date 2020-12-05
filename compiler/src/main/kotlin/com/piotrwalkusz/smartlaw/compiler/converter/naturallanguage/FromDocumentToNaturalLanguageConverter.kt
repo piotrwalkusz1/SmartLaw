@@ -1,15 +1,12 @@
 package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage
 
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocument
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocumentObject
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageProvision
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageSection
+import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.*
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.template.processor.ProcessRuleContentTemplateConfig
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
-import com.piotrwalkusz.smartlaw.core.model.presentation.IndentationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import java.util.concurrent.atomic.AtomicInteger
@@ -27,26 +24,32 @@ class FromDocumentToNaturalLanguageConverter(
     fun convert(document: ConvertibleToNaturalLanguage): NaturalLanguageDocument {
         val linksByElementsIds = templateProcessorService.getLinksByElementsIds(document, ruleProvider)
 
-
         return NaturalLanguageDocument(
                 title = document.name,
-                objects = convertPresentationElementsToNaturalLanguageDocumentObjects(document.presentationElements, linksByElementsIds)
+                objects = extendPresentationElements(document.presentationElements, linksByElementsIds).map { it.naturalLanguageDocumentObject }
         )
     }
 
-    private fun convertPresentationElementsToNaturalLanguageDocumentObjects(presentationElement: List<PresentationElement>, linksByElementsIds: Map<Id, String>): List<NaturalLanguageDocumentObject> {
+    fun extendPresentationElements(presentationElements: List<PresentationElement>): List<ExtendedPresentationElement<*, *>> {
         val nextIndentationIndex = AtomicInteger(1)
+        val linksByElementsIds = templateProcessorService.getLinksByElementsIds(presentationElements, ruleProvider)
 
-        return presentationElement.map { convertRuleInvocationToNaturalLanguageDocumentObject(it, linksByElementsIds, nextIndentationIndex) }
+        return presentationElements.map { extendPresentationElement(it, linksByElementsIds, nextIndentationIndex) }
     }
 
-    private fun convertRuleInvocationToNaturalLanguageDocumentObject(presentationElement: PresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): NaturalLanguageDocumentObject {
+    private fun extendPresentationElements(presentationElements: List<PresentationElement>, linksByElementsIds: Map<Id, String>): List<ExtendedPresentationElement<*, *>> {
+        val nextIndentationIndex = AtomicInteger(1)
+
+        return presentationElements.map { extendPresentationElement(it, linksByElementsIds, nextIndentationIndex) }
+    }
+
+    private fun extendPresentationElement(presentationElement: PresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): ExtendedPresentationElement<*, *> {
         return when (presentationElement) {
             is RuleInvocationPresentationElement -> {
-                convertRuleInvocationPresentationElementToNaturalLanguage(presentationElement, linksByElementsIds)
+                extendRuleInvocationPresentationElement(presentationElement, linksByElementsIds)
             }
-            is IndentationPresentationElement -> {
-                convertIndentationPresentationElementToNaturalLanguage(presentationElement, linksByElementsIds, nextIndentationIndex)
+            is SectionPresentationElement -> {
+                extendSectionPresentationElement(presentationElement, linksByElementsIds, nextIndentationIndex)
             }
             else -> {
                 throw IllegalArgumentException("Text formatter ${presentationElement.javaClass} is not supported")
@@ -54,19 +57,20 @@ class FromDocumentToNaturalLanguageConverter(
         }
     }
 
-    private fun convertIndentationPresentationElementToNaturalLanguage(presentationElement: IndentationPresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): NaturalLanguageSection {
-        val provisions = presentationElement.presentationElements
+    private fun extendSectionPresentationElement(presentationElement: SectionPresentationElement, linksByElementsIds: Map<Id, String>, nextIndentationIndex: AtomicInteger): ExtendedSectionPresentationElement {
+        val extendedPresentationElements = presentationElement.presentationElements
                 .map { it as RuleInvocationPresentationElement }
-                .map { convertRuleInvocationPresentationElementToNaturalLanguage(it, linksByElementsIds) }
+                .map { extendRuleInvocationPresentationElement(it, linksByElementsIds) }
 
-        return NaturalLanguageSection(provisions = provisions, title = "§ " + nextIndentationIndex.getAndIncrement())
+        return ExtendedSectionPresentationElement(presentationElement, title = "§ " + nextIndentationIndex.getAndIncrement(), extendedPresentationElements)
     }
 
-    private fun convertRuleInvocationPresentationElementToNaturalLanguage(ruleInvocationPresentationElement: RuleInvocationPresentationElement, linksByElementsIds: Map<Id, String>): NaturalLanguageProvision {
-        val rule = ruleProvider.getRule(ruleInvocationPresentationElement.ruleInvocation.ruleId)!!
+    private fun extendRuleInvocationPresentationElement(presentationElement: RuleInvocationPresentationElement, linksByElementsIds: Map<Id, String>): ExtendedRuleInvocationPresentationElement {
+        val rule = ruleProvider.getRule(presentationElement.ruleInvocation.ruleId)!!
         val processRuleContentTemplateConfig = ProcessRuleContentTemplateConfig(addStyleToContent = config.addStyleToRuleContent)
-        val content = templateProcessorService.processRuleContentTemplate(rule, ruleInvocationPresentationElement.ruleInvocation.arguments, linksByElementsIds, processRuleContentTemplateConfig)
+        val content = templateProcessorService.processRuleContentTemplate(rule, presentationElement.ruleInvocation.arguments, linksByElementsIds, processRuleContentTemplateConfig)
+        val naturalLanguageProvision = NaturalLanguageProvision(content)
 
-        return NaturalLanguageProvision(content)
+        return ExtendedRuleInvocationPresentationElement(presentationElement, naturalLanguageProvision, rule)
     }
 }

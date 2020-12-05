@@ -9,7 +9,7 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
-import com.piotrwalkusz.smartlaw.core.model.presentation.IndentationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
@@ -176,7 +176,7 @@ object CarSalesContractExample {
                                     MetaPrimitiveValue("Krótka"),
                                     MetaPrimitiveValue("23456789012"))
                     )),
-                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
+                    SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SAMOCHODU", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("Audi A4"),
@@ -187,16 +187,16 @@ object CarSalesContractExample {
                                     MetaPrimitiveValue("czarny"),
                                     MetaPrimitiveValue("320000"))
                     )))),
-                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
+                    SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz")
                     )))),
-                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
+                    SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
                             arguments = listOf(
                                     MetaPrimitiveValue("10000"),
                                     MetaPrimitiveValue("dziesięć tysięcy"))
                     )))),
-                    IndentationPresentationElement(listOf(
+                    SectionPresentationElement(listOf(
                             RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("PRZENIESIENIE_WLASNOSCI", "pl.piotrwalkusz")
                             )),
@@ -211,13 +211,13 @@ object CarSalesContractExample {
                                     ruleId = Id("PRZEKAZANIE_RZECZY_SLUZACYCH_DO_KORZYSTANIA_Z_SAMOCHODU", "pl.piotrwalkusz"),
                                     arguments = listOf(MetaPrimitiveValue("dwie sztuki kluczyków"))
                             )))),
-                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
+                    SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz")
                     )))),
-                    IndentationPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
+                    SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OBCIAZENIE_KOSZTAMI_TRANZAKCYJNYMI", "pl.piotrwalkusz")
                     )))),
-                    IndentationPresentationElement(listOf(
+                    SectionPresentationElement(listOf(
                             RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("ROZTRZYGANIE_SPRAW_NIEUREGOLOWANYCH", "pl.piotrwalkusz")
                             )),

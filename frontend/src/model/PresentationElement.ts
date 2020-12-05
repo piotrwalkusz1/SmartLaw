@@ -1,15 +1,15 @@
-import { decodeIndentationPresentationElement } from "./IndentationPresentationElement";
+import { decodeSectionPresentationElement } from "./SectionPresentationElement";
 import { decodeRuleInvocationPresentationElement } from "./RuleInvocationPresentationElement";
 
 export enum PresentationElementType {
-  Indentation = "Indentation",
+  Section = "Section",
   RuleInvocation = "RuleInvocation",
 }
 
 export const decodePresentationElement = (json: any): PresentationElement => {
   switch (json.type) {
-    case PresentationElementType.Indentation:
-      return decodeIndentationPresentationElement(json);
+    case PresentationElementType.Section:
+      return decodeSectionPresentationElement(json);
     case PresentationElementType.RuleInvocation:
       return decodeRuleInvocationPresentationElement(json);
     default:
@@ -18,5 +18,5 @@ export const decodePresentationElement = (json: any): PresentationElement => {
 };
 
 export default interface PresentationElement {
-  type: string;
+  readonly type: PresentationElementType;
 }

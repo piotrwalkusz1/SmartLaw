@@ -8,7 +8,7 @@ import com.piotrwalkusz.smartlaw.compiler.template.processor.textengine.FreeMark
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
-import com.piotrwalkusz.smartlaw.core.model.presentation.IndentationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
@@ -38,16 +38,17 @@ class TemplateProcessorService(
         return getLinksByElementsIds(document.presentationElements, ruleProvider).toMap()
     }
 
-    private fun getLinksByElementsIds(presentationElements: List<PresentationElement>, ruleProvider: RuleProvider): List<Pair<Id, String>> {
+    fun getLinksByElementsIds(presentationElements: List<PresentationElement>, ruleProvider: RuleProvider): Map<Id, String> {
         val nextIndentationIndex = AtomicInteger(0);
 
         return presentationElements
                 .flatMap { presentationElement -> getLinksByElementsIds(presentationElement, ruleProvider, nextIndentationIndex) }
+                .toMap()
     }
 
     private fun getLinksByElementsIds(presentationElement: PresentationElement, ruleProvider: RuleProvider, nextIndentationIndex: AtomicInteger): List<Pair<Id, String>> {
         return when (presentationElement) {
-            is IndentationPresentationElement ->
+            is SectionPresentationElement ->
                 presentationElement.presentationElements.flatMap { nestedPresentationElement -> getLinksByElementsIds(nestedPresentationElement, ruleProvider, nextIndentationIndex.also { it.incrementAndGet() }) }
             is RuleInvocationPresentationElement -> {
                 val ruleId = presentationElement.ruleInvocation.ruleId

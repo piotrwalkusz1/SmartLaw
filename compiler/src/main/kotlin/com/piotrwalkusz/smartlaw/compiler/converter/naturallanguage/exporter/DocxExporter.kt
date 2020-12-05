@@ -33,15 +33,15 @@ class DocxExporter : NaturalLanguageExporter {
                 }
                 is NaturalLanguageSection -> {
                     mainDocumentPart.addObject(prepareSectionHeader(documentObject.title))
-                    if (documentObject.provisions.size > 1) {
+                    if (documentObject.nestedNaturalLanguageDocumentObjects.size > 1) {
                         mainDocumentPart.addTargetPart(prepareListDefinition(listIndex))
-                        documentObject.provisions.forEach { provision ->
-                            mainDocumentPart.addObject(prepareListParagraph(listIndex, provision.content))
+                        documentObject.nestedNaturalLanguageDocumentObjects.forEach { provision ->
+                            mainDocumentPart.addObject(prepareListParagraph(listIndex, (provision as NaturalLanguageProvision).content))
                         }
                         listIndex++
                     } else {
-                        documentObject.provisions.forEach { provision ->
-                            mainDocumentPart.addParagraphOfText(provision.content)
+                        documentObject.nestedNaturalLanguageDocumentObjects.forEach { provision ->
+                            mainDocumentPart.addParagraphOfText((provision as NaturalLanguageProvision).content)
                         }
                     }
                 }
