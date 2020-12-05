@@ -4,7 +4,7 @@ import IndentationPresentationElementView from "./IndentationPresentationElement
 import IndentationPresentationElement from "../model/IndentationPresentationElement";
 import RuleInvocationView from "./RuleInvocationView";
 import RuleInvocationPresentationElement from "../model/RuleInvocationPresentationElement";
-import NaturalLanguageDocumentObject from "../model/NaturalLanguageDocumentObject";
+import NaturalLanguageDocumentObject, { NaturalLanguageDocumentObjectType } from "../model/NaturalLanguageDocumentObject";
 import NaturalLanguageSection from "../model/NaturalLanguageSection";
 import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 
@@ -21,6 +21,13 @@ const PresentationElementView = ({
 }: PresentationElementViewProps) => {
   switch (presentationElement.type) {
     case "Indentation":
+      if (naturalLanguageDocumentObject.type !== NaturalLanguageDocumentObjectType.Section) {
+        return (
+          <div>
+            Expected type {NaturalLanguageDocumentObjectType.Section} but was {naturalLanguageDocumentObject.type}
+          </div>
+        );
+      }
       const indentationPresentationElement = presentationElement as IndentationPresentationElement;
       return (
         <IndentationPresentationElementView
@@ -35,6 +42,13 @@ const PresentationElementView = ({
         />
       );
     case "RuleInvocation":
+      if (naturalLanguageDocumentObject.type !== NaturalLanguageDocumentObjectType.Provision) {
+        return (
+          <div>
+            Expected type {NaturalLanguageDocumentObjectType.Provision} but was {naturalLanguageDocumentObject.type}
+          </div>
+        );
+      }
       const ruleInvocationPresentationElement = presentationElement as RuleInvocationPresentationElement;
       return (
         <RuleInvocationView

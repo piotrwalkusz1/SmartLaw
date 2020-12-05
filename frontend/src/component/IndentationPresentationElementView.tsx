@@ -3,10 +3,10 @@ import React from "react";
 import PresentationElementView from "./PresentationElementView";
 import { List } from "immutable";
 import PresentationElement from "../model/PresentationElement";
-import NaturalLanguageDocumentObject from "../model/NaturalLanguageDocumentObject";
 import { css } from "@emotion/react";
 import IndentationPresentationElement from "../model/IndentationPresentationElement";
 import NaturalLanguageSection from "../model/NaturalLanguageSection";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 
 const Styles = {
   title: css`
@@ -33,16 +33,47 @@ const IndentationPresentationElementView = ({
     <div>
       <div css={Styles.title}>{naturalLanguageSection.title}</div>
       <div>
-        {presentationElement.presentationElements.map((nestedPresentationElement, index) => (
-          <PresentationElementView
-            key={index}
-            presentationElement={nestedPresentationElement}
-            onPresentationElementChange={(newNestedPresentationElement) => {
-              onNestedPresentationElementsChange(presentationElement.presentationElements.set(index, newNestedPresentationElement));
-            }}
-            naturalLanguageDocumentObject={naturalLanguageSection.provisions.get(index) as NaturalLanguageDocumentObject}
-          />
-        ))}
+        <Droppable droppableId="1">
+          {(provided, snapshot) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {presentationElement.presentationElements.map((nestedPresentationElement, index) => {
+                const naturalLanguageDocumentObject = naturalLanguageSection.provisions.get(index);
+                if (naturalLanguageDocumentObject === undefined) {
+                  return <div>No natural language document object</div>;
+                }
+                return (
+                  <Draggable key={index} draggableId={index + ""} index={index}>
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                        <span
+                          {...provided.dragHandleProps}
+                          style={{
+                            display: "inline-block",
+                            margin: "0 10px",
+                            border: "1px solid #000",
+                          }}
+                        >
+                          Drag
+                        </span>
+                        <PresentationElementView
+                          key={index}
+                          presentationElement={nestedPresentationElement}
+                          onPresentationElementChange={(newNestedPresentationElement) => {
+                            onNestedPresentationElementsChange(
+                              presentationElement.presentationElements.set(index, newNestedPresentationElement)
+                            );
+                          }}
+                          naturalLanguageDocumentObject={naturalLanguageDocumentObject}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </div>
     </div>
   );

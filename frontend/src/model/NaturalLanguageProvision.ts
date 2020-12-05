@@ -1,13 +1,14 @@
-import NaturalLanguageDocumentObject, { NaturalLanguageDocumentObjectType } from "./NaturalLanguageDocumentObject";
-import { decodeEnum, decodeString } from "../utils/Decoders";
+import NaturalLanguageDocumentObject from "./NaturalLanguageDocumentObject";
+import { decodeString } from "../utils/Decoders";
 
 export const decodeNaturalLanguageProvision = (json: any): NaturalLanguageProvision => {
-  return {
-    type: decodeEnum(json.type, NaturalLanguageDocumentObjectType),
-    content: decodeString(json.content),
-  };
+  return new NaturalLanguageProvision(decodeString(json.content));
 };
 
-export default interface NaturalLanguageProvision extends NaturalLanguageDocumentObject {
+export default class NaturalLanguageProvision implements NaturalLanguageDocumentObject {
   content: string;
+
+  constructor(content: string) {
+    this.content = content;
+  }
 }

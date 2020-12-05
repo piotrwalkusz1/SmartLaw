@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import RuleInvocation from "../model/RuleInvocation";
-import MetaValue from "../model/MetaValue";
+import MetaValue, { MetaValueType } from "../model/MetaValue";
 import { List } from "immutable";
 import Rule from "../model/Rule";
 import { getRule } from "../service/RuleService";
@@ -27,9 +27,20 @@ const RuleInvocationView = ({ ruleInvocation, onArgumentsChange, naturalLanguage
   const renderContent = () => (
     <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(naturalLanguageProvision.content, { ALLOWED_TAGS: ["b"] }) }} />
   );
-  const renderArgument = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument: MetaValue) => {
+  const renderArgument = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
+    if (ruleInvocationArgument === undefined) {
+      return <div key={index}>Null value</div>;
+    }
+
     switch (ruleArgument.type.id) {
       case "String":
+        if (ruleInvocationArgument.type !== MetaValueType.Primitive) {
+          return (
+            <div key={index}>
+              Bad type of type. Expected {MetaValueType.Primitive} but was {ruleInvocationArgument.type}
+            </div>
+          );
+        }
         return (
           <div key={index}>
             <span>{ruleArgument.displayName || ruleArgument.name}</span>
@@ -56,7 +67,7 @@ const RuleInvocationView = ({ ruleInvocation, onArgumentsChange, naturalLanguage
       <div />
     ) : (
       rule.arguments.map((ruleArgument, index) => {
-        return renderArgument(index, ruleArgument, ruleInvocation.arguments.get(index) as MetaValue);
+        return renderArgument(index, ruleArgument, ruleInvocation.arguments.get(index));
       })
     );
 
