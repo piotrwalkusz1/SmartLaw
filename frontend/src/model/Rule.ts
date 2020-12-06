@@ -9,6 +9,7 @@ import Element, { decodeElement } from "./Element";
 export const decodeRule = (json: any): Rule => {
   return {
     id: decodeId(json.id),
+    name: decodeString(json.name),
     description: decodeNullable(json.description, decodeString),
     content: decodeTemplate(json.content),
     arguments: decodeList(json.arguments, decodeMetaArgument),
@@ -19,6 +20,7 @@ export const decodeRule = (json: any): Rule => {
 
 export default interface Rule {
   id: Id;
+  name: string;
   description: string | null;
   content: Template;
   arguments: List<MetaArgument>;

@@ -2,11 +2,13 @@ package com.piotrwalkusz.smartlaw.service.dao
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.RulesContainer
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.service.model.DocumentWrapper
+import org.bson.conversions.Bson
 import org.litote.kmongo.`in`
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -21,12 +23,19 @@ class DocumentDao(private val mongoDatabase: MongoDatabase) {
     }
 
     fun getRuleById(ruleId: Id, documentsIds: List<String>): Rule? {
-        val document = getCollection().findOne(and(
-                DocumentWrapper::id `in` documentsIds,
-                Filters.eq("document.rules.id", ruleId)
-        ))
+        return getRulesByFilter(Rule::id eq ruleId, documentsIds).getOrNull(0);
+    }
 
-        return (document?.document as? RulesContainer)?.rules?.find { it.id == ruleId }
+    fun getRulesByFilter(filter: Bson?, documentsIds: List<String>): List<Rule> {
+        return getCollection().aggregate(
+                listOfNotNull(
+                        Aggregates.match(DocumentWrapper::id `in` documentsIds),
+                        Aggregates.unwind("\$document.rules"),
+                        Aggregates.replaceRoot("\$document.rules"),
+                        filter?.let { Aggregates.match(it) }
+                ),
+                Rule::class.java
+        ).toList();
     }
 
     fun insertDocument(document: DocumentWrapper) {

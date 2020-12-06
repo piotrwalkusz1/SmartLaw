@@ -48,8 +48,10 @@ class TemplateProcessorService(
 
     private fun getLinksByElementsIds(presentationElement: PresentationElement, ruleProvider: RuleProvider, nextIndentationIndex: AtomicInteger): List<Pair<Id, String>> {
         return when (presentationElement) {
-            is SectionPresentationElement ->
-                presentationElement.presentationElements.flatMap { nestedPresentationElement -> getLinksByElementsIds(nestedPresentationElement, ruleProvider, nextIndentationIndex.also { it.incrementAndGet() }) }
+            is SectionPresentationElement -> {
+                nextIndentationIndex.incrementAndGet()
+                presentationElement.presentationElements.flatMap { nestedPresentationElement -> getLinksByElementsIds(nestedPresentationElement, ruleProvider, nextIndentationIndex) }
+            }
             is RuleInvocationPresentationElement -> {
                 val ruleId = presentationElement.ruleInvocation.ruleId
                 val rule = ruleProvider.getRule(ruleId)

@@ -17,7 +17,8 @@ object ContractExample {
             name = "Przykładowa biblioteka",
             rules = listOf(
                     Rule(
-                            id = Id("", "pl.piotrwalkusz.example"),
+                            id = Id("TEST", "pl.piotrwalkusz.example"),
+                            name = "Test",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 zawarta w ${'$'}{args.miejscowość} dnia ${'$'}{args.dzień} pomiędzy:

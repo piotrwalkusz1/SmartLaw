@@ -7,6 +7,7 @@ import com.piotrwalkusz.smartlaw.core.model.template.Template
 
 data class Rule(
         val id: Id,
+        val name: String,
         val description: String? = null,
         val content: Template<String>,
         val arguments: List<MetaArgument> = listOf(),

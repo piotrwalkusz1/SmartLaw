@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import React from "react";
 import MetaValue, { MetaValueType } from "../model/MetaValue";
 import { List } from "immutable";
@@ -6,13 +7,25 @@ import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import { Accordion, Card } from "react-bootstrap";
 import DOMPurify from "dompurify";
 import { DocumentEditorRuleInvocationElement } from "../page/ContractPage";
+import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
+import { css } from "@emotion/react";
+
+const Styles = {
+  holder: css`
+    width: 20px;
+    min-width: 20px;
+    border: 1px solid;
+    background-color: gray;
+  `,
+};
 
 interface RuleInvocationViewProps {
   element: DocumentEditorRuleInvocationElement;
   onArgumentsChange: (newArguments: List<MetaValue>) => void;
+  dragHandleProps?: DraggableProvidedDragHandleProps;
 }
 
-const RuleInvocationView = ({ element, onArgumentsChange }: RuleInvocationViewProps) => {
+const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: RuleInvocationViewProps) => {
   const renderContent = () => (
     <div
       dangerouslySetInnerHTML={{
@@ -69,16 +82,21 @@ const RuleInvocationView = ({ element, onArgumentsChange }: RuleInvocationViewPr
     );
 
   return (
-    <Accordion>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="0">
-          {renderContent()}
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="0">
-          <Card.Body>{renderArgumentsEditor()}</Card.Body>
-        </Accordion.Collapse>
-      </Card>
-    </Accordion>
+    <div style={{ display: "flex" }}>
+      <div css={Styles.holder} {...dragHandleProps} />
+      <div style={{ flexGrow: 1 }}>
+        <Accordion>
+          <Card>
+            <Accordion.Toggle as={Card.Header} eventKey="0">
+              {renderContent()}
+            </Accordion.Toggle>
+            <Accordion.Collapse eventKey="0">
+              <Card.Body>{renderArgumentsEditor()}</Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        </Accordion>
+      </div>
+    </div>
   );
 };
 

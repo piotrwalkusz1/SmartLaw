@@ -22,6 +22,7 @@ object CarSalesContractExample {
             rules = listOf(
                     Rule(
                             id = Id("DEFINICJA_SPRZEDAJACEGO_I_KUPUJACEGO", "pl.piotrwalkusz"),
+                            name = "Definicja sprzedającego i kupującego",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 zawarta w ${'$'}{args.miejscowość} dnia ${'$'}{args.dzień} pomiędzy:
@@ -54,6 +55,7 @@ object CarSalesContractExample {
                             elements = listOf()),
                     Rule(
                             id = Id("DEFINICJA_SAMOCHODU", "pl.piotrwalkusz"),
+                            name = "Opis samochodu",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Przedmiotem niniejszym umowy jest przeniesienie przez Sprzedającego na Kupującego prawa własności
@@ -79,11 +81,13 @@ object CarSalesContractExample {
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz"),
+                            name = "Oświadczenie o posiadaniu parawa własności do samochodu",
                             content = StaticTemplate("Sprzedający oświadcza, że pojazd będący przedmiotem umowy stanowi jego własność i jest wolny od wad prawnych."),
                             elements = listOf()
                     ),
                     Rule(
                             id = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
+                            name = "Cena samochodu",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Strony zgodnie ustalają cenę sprzedaży samochodu określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")}
@@ -100,6 +104,7 @@ object CarSalesContractExample {
                     ),
                     Rule(
                             id = Id("PRZENIESIENIE_WLASNOSCI", "pl.piotrwalkusz"),
+                            name = "Przeniesienie własności samochodu",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Sprzedający przenosi na rzecz Kupującego własność pojazdu określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")}
@@ -108,6 +113,7 @@ object CarSalesContractExample {
                             elements = listOf()),
                     Rule(
                             id = Id("SPOSOB_ZAPLATY", "pl.piotrwalkusz"),
+                            name = "Wybór sposobu dokonania zakupu",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Sprzedający oświadcza, że zapłata przez Kupującego ceny określonej w
@@ -117,6 +123,7 @@ object CarSalesContractExample {
                             elements = listOf()),
                     Rule(
                             id = Id("POTWIERDZENIE_ODBIORU", "pl.piotrwalkusz"),
+                            name = "Potwierdzenie odbioru",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Kupujący potwierdza odbiór pojazdu, określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")},
@@ -124,6 +131,7 @@ object CarSalesContractExample {
                                 """.trimIndent())),
                     Rule(
                             id = Id("PRZEKAZANIE_RZECZY_SLUZACYCH_DO_KORZYSTANIA_Z_SAMOCHODU", "pl.piotrwalkusz"),
+                            name = "Zobowiązanie do przekazania rzeczy służących do korzystania z samochodu",
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Sprzedawca zobowiązuje się, że wraz z wydaniem przedmiotu umowy przekaże Kupującemu wszelkie posiadane przez niego rzeczy,
@@ -134,22 +142,27 @@ object CarSalesContractExample {
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz"),
+                            name = "Oświadczenie o zaznajomieniu ze stanem technicznym pojazdu",
                             content = StaticTemplate("Kupujący oświadcza, że stan techniczny pojazdu jest mu znany i nie wnosi do niego zastrzeżeń")
                     ),
                     Rule(
                             id = Id("OBCIAZENIE_KOSZTAMI_TRANZAKCYJNYMI", "pl.piotrwalkusz"),
+                            name = "Obciążenie kosztami tranzakcyjnymi",
                             content = StaticTemplate("Strony ustaliły, że wszelkiego rodzaju koszty transakcji wynikające z realizacji ustaleń niniejszej umowy, w szczególności podatek od czynności cywilnoprawnych obciążają Kupującego.")
                     ),
                     Rule(
                             id = Id("ROZTRZYGANIE_SPRAW_NIEUREGOLOWANYCH", "pl.piotrwalkusz"),
+                            name = "Rozstrzyganie spraw nieurególowanych",
                             content = StaticTemplate("W sprawach nieuregulowanych w niniejszej umowie zastosowanie mają obowiązujące w tym zakresie przepisy kodeksu cywilnego.")
                     ),
                     Rule(
                             id = Id("ZMIANA_UMOWY", "pl.piotrwalkusz"),
+                            name = "Zmiana umowy",
                             content = StaticTemplate("Wszelkie zmiany niniejszej umowy wymagają dla swej ważności formy pisemnej pod rygorem nieważności.")
                     ),
                     Rule(
                             id = Id("KOPIE_UMOWY", "pl.piotrwalkusz"),
+                            name = "Kopie umowy",
                             content = StaticTemplate("Niniejszą umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.")
                     )
             ))

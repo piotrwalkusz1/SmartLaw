@@ -1,5 +1,6 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor.textengine
 
+import com.piotrwalkusz.smartlaw.compiler.common.Output
 import freemarker.template.Configuration
 import freemarker.template.Template
 import java.io.StringReader
@@ -19,6 +20,8 @@ class FreeMarkerTextEngine : TextEngine {
     override fun processTemplate(template: String, parameters: Map<String, Any>): String {
         val output = StringWriter()
         val freeMarkerTemplate = Template(null, StringReader(template), configuration)
+        // TODO
+        freeMarkerTemplate.setTemplateExceptionHandler { te, env, out -> Output.get().addError("Error in template") }
         freeMarkerTemplate.process(parameters, output)
 
         return output.toString()

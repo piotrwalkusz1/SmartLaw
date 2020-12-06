@@ -15,6 +15,12 @@ import { ExtendedRuleInvocationPresentationElement } from "../model/ExtendedRule
 import { ExtendedPresentationElement } from "../model/ExtendedPresentationElement";
 import { moveItemInList } from "../utils/ListUtils";
 import MetaValue from "../model/MetaValue";
+import PresentationElement from "../model/PresentationElement";
+import SectionPresentationElement from "../model/SectionPresentationElement";
+import RuleInvocationPresentationElement from "../model/RuleInvocationPresentationElement";
+import RuleBrowser from "../component/RuleBrowser";
+import Rule from "../model/Rule";
+import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 
 const Style = {
   title: css`
@@ -22,14 +28,6 @@ const Style = {
     font-size: 20px;
     font-weight: bold;
     padding: 10px 0;
-  `,
-  holder: css`
-    width: 40px;
-    min-width: 40px;
-    border: 1px solid;
-  `,
-  nestedElement: css`
-    flex-grow: 1;
   `,
 };
 
@@ -75,28 +73,43 @@ export class DocumentEditorRuleInvocationElement extends DocumentEditorElement {
   }
 }
 
-var count = 0;
-
 const ContractPage = () => {
-  console.log(count);
-  count = count + 1;
   const contractId = "2";
   const projectId = "1";
-  const [contract, setContract] = useState<Contract | undefined>(undefined);
+  const [contractName, setContractName] = useState<string | undefined>(undefined);
   const [elements, setElements] = useState<List<DocumentEditorElement> | undefined>(undefined);
   const [nextElementId, _] = useState(new AtomicInteger());
+  const [rulesSearchResult, setRulesSearchResult] = useState<List<Rule>>(List());
   useEffect(() => {
-    DocumentService.getDocument<Contract>(contractId).then(setContract);
-  }, []);
-  useEffect(() => {
-    if (contract === undefined) {
-      setElements(undefined);
-    } else {
+    DocumentService.getDocument<Contract>(contractId).then((contract) => {
+      setContractName(contract.name);
       extendPresentationElements(projectId, contract.presentationElements).then((extendedPresentationElements) => {
-        setElements(mergeDocumentEditorElementsAndExtendedPresentationElements(extendedPresentationElements, elements));
+        setElements((oldElements) => mergeDocumentEditorElementsAndExtendedPresentationElements(extendedPresentationElements, oldElements));
       });
+    });
+  }, []);
+
+  const refreshElements = (elements: List<DocumentEditorElement>): void => {
+    setElements(elements);
+    const presentationElements = extractPresentationElementsFromDocumentEditorElements(elements);
+    extendPresentationElements(projectId, presentationElements).then((extendedPresentationElements) => {
+      setElements((oldElements) => mergeDocumentEditorElementsAndExtendedPresentationElements(extendedPresentationElements, oldElements));
+    });
+  };
+
+  const extractPresentationElementsFromDocumentEditorElements = (elements: List<DocumentEditorElement>): List<PresentationElement> => {
+    return elements.map((element) => extractPresentationElementFromDocumentEditorElement(element));
+  };
+
+  const extractPresentationElementFromDocumentEditorElement = (element: DocumentEditorElement): PresentationElement => {
+    if (element instanceof DocumentEditorSectionElement) {
+      return new SectionPresentationElement(extractPresentationElementsFromDocumentEditorElements(element.documentEditorElements));
+    } else if (element instanceof DocumentEditorRuleInvocationElement) {
+      return new RuleInvocationPresentationElement(element.extendedPresentationElement.presentationElement.ruleInvocation);
+    } else {
+      throw new Error("Usupported type");
     }
-  }, [contract]);
+  };
 
   const mergeDocumentEditorElementsAndExtendedPresentationElements = (
     extendedPresentationElements: List<ExtendedPresentationElement>,
@@ -145,19 +158,6 @@ const ContractPage = () => {
 
   const getListStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "lightgrey",
-  });
-
-  const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-    // some basic styles to make the items look a bit nicer
-    userSelect: "none",
-    padding: 16,
-    margin: `0 0 8px 0`,
-
-    // change background colour if dragging
-    background: isDragging ? "lightgreen" : "grey",
-
-    // styles we need to apply on draggables
-    ...draggableStyle,
   });
 
   const getElementFromSection = (
@@ -217,16 +217,30 @@ const ContractPage = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    if (!elements || !contract || !result.destination) {
+    if (!elements || !result.destination) {
       return;
     }
 
     if (result.source.droppableId === "droppable") {
-      setElements(moveItemInList(elements, result.source.index, result.destination.index));
+      refreshElements(moveItemInList(elements, result.source.index, result.destination.index));
+    }
+    if (result.source.droppableId === "search") {
+      const rule = rulesSearchResult.get(result.source.index);
+      if (rule) {
+        const newElement = new DocumentEditorRuleInvocationElement(
+          nextElementId.next().toString(),
+          new ExtendedRuleInvocationPresentationElement(
+            new RuleInvocationPresentationElement({ ruleId: rule.id, arguments: List() }),
+            new NaturalLanguageProvision(""),
+            rule
+          )
+        );
+        refreshElements(addElementToSection(elements, result.destination.droppableId, result.destination.index, newElement));
+      }
     } else {
       const elementToMove = getElementFromSection(elements, result.source.droppableId, result.source.index);
       if (elementToMove) {
-        setElements(
+        refreshElements(
           addElementToSection(
             removeElementFromSection(elements, result.source.droppableId, result.source.index),
             result.destination.droppableId,
@@ -238,40 +252,31 @@ const ContractPage = () => {
     }
   };
 
-  return !contract || !elements ? (
+  return !contractName || !elements ? (
     <div />
   ) : (
     <Container>
       <Row>
         <Col>
-          <div css={Style.title}>{contract.name}</div>
+          <div css={Style.title}>{contractName}</div>
           <DocumentEditorContext.Provider value={{ projectId: projectId, documentId: contractId }}>
             <DragDropContext onDragEnd={onDragEnd}>
+              <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
               <Droppable droppableId="droppable" type="top">
                 {(provided, snapshot) => (
                   <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
                     {elements.map((element, index) => (
                       <Draggable key={element.id} draggableId={element.id} index={index}>
                         {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                          >
-                            <div style={{ display: "flex", padding: "10px" }}>
-                              <div css={Style.holder} {...provided.dragHandleProps}>
-                                {element.id}
-                              </div>
-                              <div css={Style.nestedElement}>
-                                <PresentationElementView
-                                  key={index}
-                                  element={element}
-                                  onElementChange={(element) => {
-                                    setElements(elements.set(index, element));
-                                  }}
-                                />
-                              </div>
-                            </div>
+                          <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
+                            <PresentationElementView
+                              key={index}
+                              element={element}
+                              onElementChange={(element) => {
+                                refreshElements(elements.set(index, element));
+                              }}
+                              dragHandleProps={provided.dragHandleProps}
+                            />
                           </div>
                         )}
                       </Draggable>

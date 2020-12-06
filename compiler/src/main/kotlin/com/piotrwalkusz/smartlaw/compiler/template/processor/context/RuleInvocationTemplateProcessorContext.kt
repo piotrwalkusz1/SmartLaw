@@ -1,5 +1,6 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor.context
 
+import com.piotrwalkusz.smartlaw.compiler.common.Output
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaListValue
@@ -25,7 +26,8 @@ data class RuleInvocationTemplateProcessorContext(
 
     private fun getTemplateParametersFromRuleInvocationArguments(): Map<String, Any> {
         if (rule.arguments.size != arguments.size) {
-            throw IllegalArgumentException("Count of arguments in rule and rule's invocation must be equal")
+            Output.get().addError("Count of arguments in rule and rule's invocation must be equal. Rule has" +
+                    "${rule.arguments.size} arguments rule invocation has ${arguments.size} arguments.")
         }
 
         return getTemplateParametersValuesFromRuleInvocationArguments(rule.arguments.zip(arguments))
