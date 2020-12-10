@@ -4,12 +4,13 @@ import MetaValue, { MetaValueType } from "../model/MetaValue";
 import { List } from "immutable";
 import MetaArgument from "../model/MetaArgument";
 import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
-import { Accordion, Card } from "react-bootstrap";
+import { Accordion, Button, Card, Form } from "react-bootstrap";
 import DOMPurify from "dompurify";
 import { DocumentEditorRuleInvocationElement } from "../page/ContractPage";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import { css } from "@emotion/react";
 import { ValidationResult } from "../model/ValidationResult";
+import Datetime from "react-datetime";
 
 const Styles = {
   holder: css`
@@ -23,10 +24,11 @@ const Styles = {
 interface RuleInvocationViewProps {
   element: DocumentEditorRuleInvocationElement;
   onArgumentsChange: (newArguments: List<MetaValue>) => void;
+  onRemove: () => void;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }
 
-const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: RuleInvocationViewProps) => {
+const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandleProps }: RuleInvocationViewProps) => {
   const renderContent = () => (
     <div
       dangerouslySetInnerHTML={{
@@ -42,43 +44,89 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
     return validationResults
       .map((validationResult) => validationResult.error)
       .filter((error) => error !== null)
-      .map((error, index) => <div key={index}>{error}</div>);
+      .map((error, index) => (
+        <div key={index} style={{ color: "red" }}>
+          {error}
+        </div>
+      ));
   };
+
+  const renderArgumentValue = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument: MetaPrimitiveValue) => {
+    switch (ruleArgument.type.id) {
+      case "String":
+        return (
+          <Form.Control
+            type="text"
+            value={(ruleInvocationArgument as MetaPrimitiveValue).value}
+            onChange={(event) =>
+              onArgumentsChange(
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                  ...ruleInvocationArgument,
+                  value: event.target.value,
+                } as MetaPrimitiveValue)
+              )
+            }
+          />
+        );
+      case "Integer":
+        return (
+          <Form.Control
+            type="number"
+            value={(ruleInvocationArgument as MetaPrimitiveValue).value}
+            onChange={(event) =>
+              onArgumentsChange(
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                  ...ruleInvocationArgument,
+                  value: event.target.value,
+                } as MetaPrimitiveValue)
+              )
+            }
+          />
+        );
+      case "LocalDate":
+        return (
+          <Datetime
+            dateFormat={"YYYY-MM-DD"}
+            timeFormat={false}
+            utc={true}
+            value={(ruleInvocationArgument as MetaPrimitiveValue).value}
+            onChange={(value) =>
+              onArgumentsChange(
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                  ...ruleInvocationArgument,
+                  value: typeof value === "string" ? value : value.format("YYYY-MM-DD"),
+                } as MetaPrimitiveValue)
+              )
+            }
+          />
+        );
+      default:
+        return <div>Unknown argument type {ruleArgument.type.id}</div>;
+    }
+  };
+
   const renderArgumentEditor = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
     if (ruleInvocationArgument === undefined) {
       return <div>Null value</div>;
     }
 
-    switch (ruleArgument.type.id) {
-      case "String":
-        if (ruleInvocationArgument.type !== MetaValueType.Primitive) {
-          return (
-            <div>
-              Bad type of type. Expected {MetaValueType.Primitive} but was {ruleInvocationArgument.type}
-            </div>
-          );
-        }
-        return (
-          <div>
-            <span>{ruleArgument.displayName || ruleArgument.name}</span>
-            <input
-              type="text"
-              value={(ruleInvocationArgument as MetaPrimitiveValue).value}
-              onChange={(event) =>
-                onArgumentsChange(
-                  element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
-                    ...ruleInvocationArgument,
-                    value: event.target.value,
-                  } as MetaPrimitiveValue)
-                )
-              }
-            />
-          </div>
-        );
-      default:
-        return <div key={index}>Unknown argument type {ruleArgument.type.id}</div>;
+    if (ruleInvocationArgument.type !== MetaValueType.Primitive) {
+      return (
+        <div>
+          Bad type of type. Expected {MetaValueType.Primitive} but was {ruleInvocationArgument.type}
+        </div>
+      );
     }
+    const metaPrimitiveValue = ruleInvocationArgument as MetaPrimitiveValue;
+
+    return (
+      <div>
+        <span>{ruleArgument.displayName || ruleArgument.name}</span>
+        {renderArgumentValue(index, ruleArgument, metaPrimitiveValue)}
+      </div>
+    );
   };
+
   const renderArgument = (
     index: number,
     ruleArgument: MetaArgument,
@@ -86,7 +134,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
     validationResults: List<ValidationResult> | undefined
   ) => {
     return (
-      <div key={index}>
+      <div key={index} style={{ marginBottom: "15px" }}>
         {renderArgumentEditor(index, ruleArgument, ruleInvocationArgument)}
         {renderArgumentValidationResults(validationResults)}
       </div>
@@ -107,22 +155,23 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
     );
 
   return (
-    <div style={{ display: "flex" }}>
-      <div css={Styles.holder} {...dragHandleProps} />
-      <div style={{ flexGrow: 1 }}>
-        <Accordion>
-          <Card>
-            <Accordion.Toggle as={Card.Header} eventKey="0">
-              {renderContent()}
-            </Accordion.Toggle>
-            <Accordion.Collapse eventKey="0">
-              <Card.Body>{renderArgumentsEditor()}</Card.Body>
-            </Accordion.Collapse>
-          </Card>
-        </Accordion>
-      </div>
-    </div>
+    <Accordion>
+      <Card>
+        <Accordion.Toggle {...dragHandleProps} as={Card.Header} eventKey="0">
+          {renderContent()}
+        </Accordion.Toggle>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>
+            <div style={{ marginBottom: "15px" }}>
+              <Button variant={"danger"} onClick={onRemove}>
+                Remove
+              </Button>
+            </div>
+            {renderArgumentsEditor()}
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
   );
 };
-
 export default RuleInvocationView;

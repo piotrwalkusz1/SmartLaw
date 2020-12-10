@@ -64,7 +64,7 @@ object CarSalesContractExample {
                             """
                                 Przedmiotem niniejszym umowy jest przeniesienie przez Sprzedającego na Kupującego prawa własności
                                 pojazdu ${'$'}{args.markaModel} (marka/model),
-                                rok produkcji ${'$'}{args.rokProdukcji} nr silnika ${'$'}{args.nrSilnika}
+                                rok produkcji ${'$'}{args.rokProdukcji?c} nr silnika ${'$'}{args.nrSilnika}
                                 nr nadwozia ${'$'}{args.nrNadwozia} nr rejestracyjny ${'$'}{args.nrRejestracyjny}
                                 kolor ${'$'}{args.kolor} Przebieg ${'$'}{args.przebieg} km
                                 """.trimIndent()),
@@ -142,7 +142,7 @@ object CarSalesContractExample {
                                 służące do korzystania z samochodu, w tym: ${'$'}{args.rzeczy} oraz niezbędne dokumenty związane z samochodem,
                                 w tym dowód rejestracyjny oraz kartę pojazdu.
                             """.trimIndent()),
-                            arguments = listOf(MetaArgument(name = "rzeczy", type = Id("String")))
+                            arguments = listOf(MetaArgument(name = "Rzeczy służące do korzystania z samochodu", type = Id("String")))
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz"),

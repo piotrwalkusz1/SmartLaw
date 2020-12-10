@@ -1,5 +1,4 @@
 import Document from "../model/Document";
-import NaturalLanguageDocument, { decodeNaturalLanguageDocument } from "../model/NaturalLanguageDocument";
 import axios from "axios";
 import PresentationElement from "../model/PresentationElement";
 import { List } from "immutable";
@@ -7,11 +6,14 @@ import {
   decodeExtendPresentationElementsResultDto,
   ExtendPresentationElementsResultDto,
 } from "../model/ExtendPresentationElementsResultDto";
+import FileDownload from "js-file-download";
 
-export const convertDocumentToNaturalLanguage = (projectId: string, document: Document): Promise<NaturalLanguageDocument> => {
-  return axios.post("/projects/" + projectId + "/documents/convert/natural-language", { document: document }).then((response) => {
-    return decodeNaturalLanguageDocument(response.data);
-  });
+export const downloadDocument = (projectId: string, document: Document): void => {
+  axios
+    .post("/projects/" + projectId + "/documents/convert/natural-language", { document: document }, { responseType: "blob" })
+    .then((response) => {
+      FileDownload(response.data, "Contract.docx");
+    });
 };
 
 export const extendPresentationElements = (

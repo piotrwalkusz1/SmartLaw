@@ -36,7 +36,8 @@ interface SectionPresentationElementViewProps {
 }
 
 const getListStyle = (isDraggingOver: boolean) => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
+  background: isDraggingOver ? "lightblue" : "white",
+  minHeight: "1px",
 });
 
 const SectionPresentationElementView = ({

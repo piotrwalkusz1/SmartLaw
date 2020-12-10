@@ -27,4 +27,8 @@ class Output {
     fun getMessages(): List<OutputMessage> {
         return messages.toList()
     }
+
+    fun clearMessages() {
+        messages.clear()
+    }
 }

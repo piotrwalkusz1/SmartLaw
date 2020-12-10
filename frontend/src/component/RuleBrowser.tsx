@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import Id from "../model/Id";
 import { searchRules } from "../service/RuleService";
@@ -23,33 +23,48 @@ const convertIdToString = (id: Id): string => {
 const RuleBrowser = ({ projectId, searchResult, onSearchResultChange }: RuleBrowserProps) => {
   const [searchPhrase, setSearchPhrase] = useState("");
   useEffect(() => {
-    searchRules({ searchPhrase, projectId }).then(onSearchResultChange);
+    let isSubscribed = true;
+    searchRules({ searchPhrase, projectId }).then((rules) => {
+      if (isSubscribed) {
+        onSearchResultChange(rules);
+      }
+    });
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [searchPhrase]);
 
   return (
     <div>
-      <Form.Control
-        type="text"
-        placeholder="Search phrase"
-        value={searchPhrase}
-        onChange={(event) => setSearchPhrase(event.target.value)}
-      />
-      <Droppable droppableId="search" type="nested">
-        {(provided, snapshot) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
-            {searchResult.map((rule, index) => (
-              <Draggable key={convertIdToString(rule.id)} draggableId={convertIdToString(rule.id)} index={index}>
-                {(provided, snapshot) => (
-                  <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
-                    <div {...provided.dragHandleProps}>{rule.name}</div>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      <div style={{ marginBottom: "15px" }}>
+        <Form.Control
+          type="text"
+          placeholder="Search phrase"
+          value={searchPhrase}
+          onChange={(event) => setSearchPhrase(event.target.value)}
+        />
+      </div>
+      <div style={{ height: "400px", overflowY: "auto" }}>
+        <Droppable droppableId="search" type="nested">
+          {(provided, snapshot) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {searchResult.map((rule, index) => (
+                <Draggable key={convertIdToString(rule.id)} draggableId={convertIdToString(rule.id)} index={index}>
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
+                      <div {...provided.dragHandleProps}>
+                        <Card body>{rule.name}</Card>
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
     </div>
   );
 };

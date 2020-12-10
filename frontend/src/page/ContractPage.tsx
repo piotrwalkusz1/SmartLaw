@@ -4,8 +4,8 @@ import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
 import PresentationElementView from "../component/PresentationElementView";
 import { DocumentEditorContext } from "../context/DocumentEditorContext";
-import { extendPresentationElements } from "../service/ProjectService";
-import { Col, Container, Row } from "react-bootstrap";
+import { downloadDocument, extendPresentationElements } from "../service/ProjectService";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { css } from "@emotion/react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import { List } from "immutable";
@@ -14,7 +14,7 @@ import { ExtendedSectionPresentationElement } from "../model/ExtendedSectionPres
 import { ExtendedRuleInvocationPresentationElement } from "../model/ExtendedRuleInvocationPresentationElement";
 import { ExtendedPresentationElement } from "../model/ExtendedPresentationElement";
 import { moveItemInList } from "../utils/ListUtils";
-import MetaValue from "../model/MetaValue";
+import MetaValue, { MetaValueType } from "../model/MetaValue";
 import PresentationElement from "../model/PresentationElement";
 import SectionPresentationElement from "../model/SectionPresentationElement";
 import RuleInvocationPresentationElement from "../model/RuleInvocationPresentationElement";
@@ -22,6 +22,10 @@ import RuleBrowser from "../component/RuleBrowser";
 import Rule from "../model/Rule";
 import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 import { OutputMessage } from "../model/OutputMessage";
+import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
+import { PlusSquare } from "react-bootstrap-icons";
+import Id from "../model/Id";
+import { DocumentType } from "../model/Document";
 
 const Style = {
   title: css`
@@ -75,34 +79,62 @@ export class DocumentEditorRuleInvocationElement extends DocumentEditorElement {
 }
 
 const ContractPage = () => {
-  const contractId = "2";
+  const contractDbId = "2";
   const projectId = "1";
+  const [contractId, setContractId] = useState<Id | undefined>(undefined);
   const [contractName, setContractName] = useState<string | undefined>(undefined);
+  const [contractDescription, setContractDescription] = useState<string | null>(null);
   const [elements, setElements] = useState<List<DocumentEditorElement> | undefined>(undefined);
+  const [presentationElementsPendingExtending, setPresentationElementsExtending] = useState<List<PresentationElement> | undefined>(
+    undefined
+  );
   const [nextElementId, _] = useState(new AtomicInteger());
   const [rulesSearchResult, setRulesSearchResult] = useState<List<Rule>>(List());
   const [outputMessages, setOutputMessages] = useState<List<OutputMessage>>(List());
   useEffect(() => {
-    DocumentService.getDocument<Contract>(contractId).then((contract) => {
-      setContractName(contract.name);
+    let isSubscribed = true;
+    DocumentService.getDocument<Contract>(contractDbId).then((contract) => {
       extendPresentationElements(projectId, contract.presentationElements).then((result) => {
+        if (isSubscribed) {
+          setContractId(contract.id);
+          setContractName(contract.name);
+          setContractDescription(contract.description);
+          setElements((oldElements) =>
+            mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
+          );
+          setOutputMessages(result.outputMessages);
+        }
+      });
+    });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (presentationElementsPendingExtending === undefined) {
+      return;
+    }
+    let isSubscribed = true;
+
+    extendPresentationElements(projectId, presentationElementsPendingExtending).then((result) => {
+      if (isSubscribed) {
         setElements((oldElements) =>
           mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
         );
         setOutputMessages(result.outputMessages);
-      });
+      }
     });
-  }, []);
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [presentationElementsPendingExtending]);
 
   const refreshElements = (elements: List<DocumentEditorElement>): void => {
-    setElements(elements);
     const presentationElements = extractPresentationElementsFromDocumentEditorElements(elements);
-    extendPresentationElements(projectId, presentationElements).then((result) => {
-      setElements((oldElements) =>
-        mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
-      );
-      setOutputMessages(result.outputMessages);
-    });
+    setElements(elements);
+    setPresentationElementsExtending(presentationElements);
   };
 
   const extractPresentationElementsFromDocumentEditorElements = (elements: List<DocumentEditorElement>): List<PresentationElement> => {
@@ -224,6 +256,13 @@ const ContractPage = () => {
     });
   };
 
+  const prepareEmptyRuleInvocationArgument = (): MetaValue => {
+    return {
+      type: MetaValueType.Primitive,
+      value: "",
+    } as MetaPrimitiveValue;
+  };
+
   const onDragEnd = (result: DropResult) => {
     if (!elements || !result.destination) {
       return;
@@ -238,7 +277,12 @@ const ContractPage = () => {
         const newElement = new DocumentEditorRuleInvocationElement(
           nextElementId.next().toString(),
           new ExtendedRuleInvocationPresentationElement(
-            new RuleInvocationPresentationElement({ ruleId: rule.id, arguments: List() }),
+            new RuleInvocationPresentationElement({
+              ruleId: rule.id,
+              arguments: rule.arguments.map(() => {
+                return prepareEmptyRuleInvocationArgument();
+              }),
+            }),
             new NaturalLanguageProvision(""),
             rule,
             List()
@@ -261,49 +305,105 @@ const ContractPage = () => {
     }
   };
 
-  return !contractName || !elements ? (
+  return !contractName || !elements || !contractId ? (
     <div />
   ) : (
-    <Container>
-      <Row>
-        <Col>
-          <div css={Style.title}>{contractName}</div>
-          <DocumentEditorContext.Provider value={{ projectId: projectId, documentId: contractId }}>
-            <DragDropContext onDragEnd={onDragEnd}>
-              <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
-              <div>
-                {outputMessages.map((message, index) => (
-                  <div key={index}>{message.message}</div>
-                ))}
-              </div>
-              <Droppable droppableId="droppable" type="top">
-                {(provided, snapshot) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
-                    {elements.map((element, index) => (
-                      <Draggable key={element.id} draggableId={element.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
-                            <PresentationElementView
-                              key={index}
-                              element={element}
-                              onElementChange={(element) => {
-                                refreshElements(elements.set(index, element));
-                              }}
-                              dragHandleProps={provided.dragHandleProps}
-                              onElementRemove={() => refreshElements(elements.remove(index))}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
+    <Container style={{ maxWidth: "100%" }}>
+      <DocumentEditorContext.Provider value={{ projectId: projectId, documentId: contractDbId }}>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Row>
+            <Col xs={4}>
+              <Row>
+                <Col>
+                  <div css={Style.title}>Rule browser</div>
+                  <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div>
+                    <div css={Style.title} style={{ marginTop: "20px" }}>
+                      Actions
+                    </div>
+                    <Button
+                      onClick={() =>
+                        downloadDocument(projectId, {
+                          documentType: DocumentType.Contract,
+                          id: contractId,
+                          name: contractName,
+                          description: contractDescription,
+                          presentationElements: extractPresentationElementsFromDocumentEditorElements(elements),
+                        } as Contract)
+                      }
+                    >
+                      Generate document
+                    </Button>
                   </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </DocumentEditorContext.Provider>
-        </Col>
-      </Row>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <div>
+                    <div css={Style.title} style={{ marginTop: "20px" }}>
+                      Compilation errors
+                    </div>
+                    <div style={{ overflowY: "auto" }}>
+                      {outputMessages.map((message, index) => (
+                        <div key={index}>{message.message}</div>
+                      ))}
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </Col>
+            <Col style={{ height: "100vh", overflowY: "auto" }}>
+              <div>
+                <div css={Style.title}>{contractName}</div>
+                <div>
+                  <Droppable droppableId="droppable" type="top">
+                    {(provided, snapshot) => (
+                      <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
+                        {elements.map((element, index) => (
+                          <Draggable key={element.id} draggableId={element.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
+                                <PresentationElementView
+                                  key={index}
+                                  element={element}
+                                  onElementChange={(element) => {
+                                    refreshElements(elements.set(index, element));
+                                  }}
+                                  dragHandleProps={provided.dragHandleProps}
+                                  onElementRemove={() => refreshElements(elements.remove(index))}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                  <Card style={{ marginTop: "30px", marginBottom: "15px" }}>
+                    <Card.Header>
+                      <div style={{ textAlign: "center", fontSize: "26px" }}>
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            refreshElements(elements.push(new DocumentEditorSectionElement(nextElementId.next().toString(), "", List())))
+                          }
+                        >
+                          <PlusSquare />
+                        </span>
+                      </div>
+                    </Card.Header>
+                  </Card>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </DragDropContext>
+      </DocumentEditorContext.Provider>
     </Container>
   );
 };

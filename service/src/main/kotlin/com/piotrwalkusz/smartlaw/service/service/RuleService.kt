@@ -1,11 +1,13 @@
 package com.piotrwalkusz.smartlaw.service.service
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.service.controller.dto.SearchRuleDto
 import com.piotrwalkusz.smartlaw.service.dao.DocumentDao
+import org.litote.kmongo.ascending
 import org.litote.kmongo.eq
 import org.litote.kmongo.regex
 import org.springframework.stereotype.Service
@@ -39,6 +41,6 @@ class RuleService(private val documentDao: DocumentDao, private val projectServi
                 searchRuleDto.searchPhrase?.let { Rule::name regex it })
         val filter = if (filters.isEmpty()) null else Filters.and(filters)
 
-        return documentDao.getRulesByFilter(filter, documentsIds, 10)
+        return documentDao.getRulesByFilter(filter, documentsIds, 10, ascending(Rule::name))
     }
 }

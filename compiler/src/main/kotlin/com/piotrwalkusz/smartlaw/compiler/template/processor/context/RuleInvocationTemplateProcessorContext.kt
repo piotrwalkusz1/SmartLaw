@@ -62,7 +62,11 @@ data class RuleInvocationTemplateProcessorContext(
                 argumentValue.value
             }
             "Integer" -> {
-                argumentValue.value.toInt()
+                val number = argumentValue.value.toIntOrNull()
+                if (number == null) {
+                    Output.get().addError("Cannot convert \"${argumentValue.value}\" to number")
+                }
+                number ?: ""
             }
             "LocalDate" -> {
                 argumentValue.value

@@ -29,6 +29,7 @@ const PresentationElementView = ({ element, onElementChange, dragHandleProps, on
         element={element}
         onArgumentsChange={(newArguments) => onElementChange(element.withRuleInvocationArguments(newArguments))}
         dragHandleProps={dragHandleProps}
+        onRemove={onElementRemove}
       />
     );
   } else {
