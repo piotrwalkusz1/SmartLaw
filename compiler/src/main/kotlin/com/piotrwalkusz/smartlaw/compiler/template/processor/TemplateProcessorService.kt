@@ -1,10 +1,12 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor
 
-import com.piotrwalkusz.smartlaw.compiler.common.Output
+import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.template.processor.context.RuleInvocationTemplateProcessorContext
 import com.piotrwalkusz.smartlaw.compiler.template.processor.context.TemplateProcessorContext
 import com.piotrwalkusz.smartlaw.compiler.template.processor.textengine.FreeMarkerTextEngine
+import com.piotrwalkusz.smartlaw.compiler.validator.RuleArgumentValidationResult
+import com.piotrwalkusz.smartlaw.compiler.validator.ValidatorService
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
@@ -18,12 +20,12 @@ import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 import java.util.concurrent.atomic.AtomicInteger
 
 class TemplateProcessorService(
-        private val templateProcessors: List<TemplateProcessor<*, *>> = TemplateProcessor.DEFAULT_TEMPLATE_PROCESSORS
+        private val templateProcessors: List<TemplateProcessor<*, *>> = TemplateProcessor.DEFAULT_TEMPLATE_PROCESSORS,
 ) {
 
-    fun processRuleContentTemplate(rule: Rule, arguments: List<MetaValue>, linksByElementsIds: Map<Id, String>, config: ProcessRuleContentTemplateConfig): String {
-        val templateProcessorContext = RuleInvocationTemplateProcessorContext(rule, arguments, linksByElementsIds)
-        val ruleContentTemplate = if (config.addStyleToContent) addStyleToRuleContentTemplate(rule.content) else rule.content
+    fun processRuleContentTemplate(content: Template<String>, ruleArgumentValidationResults: List<RuleArgumentValidationResult>, linksByElementsIds: Map<Id, String>, config: ProcessRuleContentTemplateConfig): String {
+        val templateProcessorContext = RuleInvocationTemplateProcessorContext(ruleArgumentValidationResults, linksByElementsIds)
+        val ruleContentTemplate = if (config.addStyleToContent) addStyleToRuleContentTemplate(content) else content
 
         return processTemplate(ruleContentTemplate, templateProcessorContext)
     }

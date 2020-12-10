@@ -23,16 +23,17 @@ class DocumentDao(private val mongoDatabase: MongoDatabase) {
     }
 
     fun getRuleById(ruleId: Id, documentsIds: List<String>): Rule? {
-        return getRulesByFilter(Rule::id eq ruleId, documentsIds).getOrNull(0);
+        return getRulesByFilter(Rule::id eq ruleId, documentsIds, 1).getOrNull(0);
     }
 
-    fun getRulesByFilter(filter: Bson?, documentsIds: List<String>): List<Rule> {
+    fun getRulesByFilter(filter: Bson?, documentsIds: List<String>, limit: Int): List<Rule> {
         return getCollection().aggregate(
                 listOfNotNull(
                         Aggregates.match(DocumentWrapper::id `in` documentsIds),
                         Aggregates.unwind("\$document.rules"),
                         Aggregates.replaceRoot("\$document.rules"),
-                        filter?.let { Aggregates.match(it) }
+                        filter?.let { Aggregates.match(it) },
+                        Aggregates.limit(limit)
                 ),
                 Rule::class.java
         ).toList();

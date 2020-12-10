@@ -39,6 +39,6 @@ class RuleService(private val documentDao: DocumentDao, private val projectServi
                 searchRuleDto.searchPhrase?.let { Rule::name regex it })
         val filter = if (filters.isEmpty()) null else Filters.and(filters)
 
-        return documentDao.getRulesByFilter(filter, documentsIds)
+        return documentDao.getRulesByFilter(filter, documentsIds, 10)
     }
 }

@@ -13,6 +13,8 @@ import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElem
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
+import com.piotrwalkusz.smartlaw.core.model.validator.GenericValidator
+import com.piotrwalkusz.smartlaw.core.model.validator.RegexValidator
 
 object CarSalesContractExample {
 
@@ -40,17 +42,19 @@ object CarSalesContractExample {
                                     MetaArgument(name = "miejscowość", type = Id("String"), displayName = "Miejscowość"),
                                     MetaArgument(name = "dzień", type = Id("LocalDate"), displayName = "Dzień"),
                                     MetaArgument(name = "sprzedającyImięNazwisko", type = Id("String"), displayName = "Imię i nazwisko sprzedającego"),
-                                    MetaArgument(name = "sprzedającyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego sprzedającego"),
+                                    MetaArgument(name = "sprzedającyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego sprzedającego", validators = listOf(RegexValidator("[A-Z]{3} [0-9]{6}"))),
                                     MetaArgument(name = "sprzedającyDowódOsobistWydanyPrzez", type = Id("String"), displayName = "Wystawca dowodu osobistego sprzedającego"),
                                     MetaArgument(name = "sprzedającyMiejsceZamieszkania", type = Id("String"), displayName = "Adres sprzedającego: miesjcowość"),
                                     MetaArgument(name = "sprzedającyUlica", type = Id("String"), displayName = "Adres sprzedającego: ulica"),
-                                    MetaArgument(name = "sprzedającyPESEL", type = Id("String"), displayName = "PESEL sprzedającego"),
+                                    MetaArgument(name = "sprzedającyPESEL", type = Id("String"), displayName = "PESEL sprzedającego",
+                                            validators = listOf(RegexValidator("[0-9]{11}"), GenericValidator("FreeMarker", "<#if (value[0]?number+3*value[1]?number+7*value[2]?number+9*value[3]?number+value[4]?number+3*value[5]?number+7*value[6]?number+9*value[7]?number+value[8]?number+3*value[9]?number)%10!=(10-value[10]?number)%10>Incorrect PESEL</#if>"))),
                                     MetaArgument(name = "kupującyImięNazwisko", type = Id("String"), displayName = "Imię i nazwisko kupującego"),
-                                    MetaArgument(name = "kupującyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego kupującego"),
+                                    MetaArgument(name = "kupującyNumerDowoduOsobistego", type = Id("String"), displayName = "Numer dowodu osobistego kupującego", validators = listOf(RegexValidator("[A-Z]{3} [0-9]{6}"))),
                                     MetaArgument(name = "kupującyDowódOsobistWydanyPrzez", type = Id("String"), displayName = "Wystawca dowodu osobistego kupującego"),
                                     MetaArgument(name = "kupującyMiejsceZamieszkania", type = Id("String"), displayName = "Adres kupującego: miesjcowość"),
                                     MetaArgument(name = "kupującyUlica", type = Id("String"), displayName = "Adres kupującego: ulica"),
-                                    MetaArgument(name = "kupującyPESEL", type = Id("String"), displayName = "PESEL kupującego")
+                                    MetaArgument(name = "kupującyPESEL", type = Id("String"), displayName = "PESEL kupującego",
+                                            validators = listOf(RegexValidator("[0-9]{11}"), GenericValidator("FreeMarker", "<#if (value[0]?number+3*value[1]?number+7*value[2]?number+9*value[3]?number+value[4]?number+3*value[5]?number+7*value[6]?number+9*value[7]?number+value[8]?number+3*value[9]?number)%10!=(10-value[10]?number)%10>Incorrect PESEL</#if>")))
                             ),
                             elements = listOf()),
                     Rule(

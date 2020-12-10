@@ -3,8 +3,10 @@ import NaturalLanguageDocument, { decodeNaturalLanguageDocument } from "../model
 import axios from "axios";
 import PresentationElement from "../model/PresentationElement";
 import { List } from "immutable";
-import { decodeList } from "../utils/Decoders";
-import { decodeExtendedPresentationElement, ExtendedPresentationElement } from "../model/ExtendedPresentationElement";
+import {
+  decodeExtendPresentationElementsResultDto,
+  ExtendPresentationElementsResultDto,
+} from "../model/ExtendPresentationElementsResultDto";
 
 export const convertDocumentToNaturalLanguage = (projectId: string, document: Document): Promise<NaturalLanguageDocument> => {
   return axios.post("/projects/" + projectId + "/documents/convert/natural-language", { document: document }).then((response) => {
@@ -15,8 +17,8 @@ export const convertDocumentToNaturalLanguage = (projectId: string, document: Do
 export const extendPresentationElements = (
   projectId: string,
   presentationElements: List<PresentationElement>
-): Promise<List<ExtendedPresentationElement>> => {
+): Promise<ExtendPresentationElementsResultDto> => {
   return axios.post("/projects/" + projectId + "/documents/extend-presentation-elements", presentationElements).then((response) => {
-    return decodeList(response.data, decodeExtendedPresentationElement);
+    return decodeExtendPresentationElementsResultDto(response.data);
   });
 };

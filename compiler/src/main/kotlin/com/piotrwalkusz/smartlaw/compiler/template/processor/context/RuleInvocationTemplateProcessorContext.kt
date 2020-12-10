@@ -1,23 +1,31 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor.context
 
-import com.piotrwalkusz.smartlaw.compiler.common.Output
+import com.piotrwalkusz.smartlaw.compiler.common.output.Output
+import com.piotrwalkusz.smartlaw.compiler.validator.RuleArgumentValidationResult
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaListValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
-import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import freemarker.template.TemplateMethodModel
 
 data class RuleInvocationTemplateProcessorContext(
-        val rule: Rule,
-        val arguments: List<MetaValue>,
+        val ruleArgumentValidationResults: List<RuleArgumentValidationResult>,
         val linksByElementsIds: Map<Id, String>
 ) : TemplateProcessorContext {
 
     override fun getTemplateParameters(): Map<String, Any> {
         return mapOf("args" to getTemplateParametersFromRuleInvocationArguments(),
-                "context" to mapOf("getLinkToElement" to TemplateMethodModel { args -> linksByElementsIds[convertStringToId(args[0] as String)]!! }))
+                "context" to mapOf("getLinkToElement" to TemplateMethodModel { args -> getLinkToElement(args[0] as String, linksByElementsIds) }))
+    }
+
+    private fun getLinkToElement(elementId: String, linksByElementsIds: Map<Id, String>): String? {
+        val linkToElement = linksByElementsIds[convertStringToId(elementId)]
+        if (linkToElement == null) {
+            Output.get().addError("Element with id \"$elementId\" does not exist")
+        }
+
+        return linkToElement
     }
 
     private fun convertStringToId(idAsString: String): Id {
@@ -25,12 +33,9 @@ data class RuleInvocationTemplateProcessorContext(
     }
 
     private fun getTemplateParametersFromRuleInvocationArguments(): Map<String, Any> {
-        if (rule.arguments.size != arguments.size) {
-            Output.get().addError("Count of arguments in rule and rule's invocation must be equal. Rule has" +
-                    "${rule.arguments.size} arguments rule invocation has ${arguments.size} arguments.")
-        }
+        val arguments = ruleArgumentValidationResults.mapNotNull { if (it.value == null) null else it.argument to it.value }
 
-        return getTemplateParametersValuesFromRuleInvocationArguments(rule.arguments.zip(arguments))
+        return getTemplateParametersValuesFromRuleInvocationArguments(arguments)
     }
 
     private fun getTemplateParametersValuesFromRuleInvocationArguments(arguments: List<Pair<MetaArgument, MetaValue>>): Map<String, Any> {

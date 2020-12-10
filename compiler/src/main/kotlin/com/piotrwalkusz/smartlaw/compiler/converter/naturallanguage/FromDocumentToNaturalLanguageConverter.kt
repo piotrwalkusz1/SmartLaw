@@ -4,17 +4,19 @@ import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.*
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.template.processor.ProcessRuleContentTemplateConfig
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
+import com.piotrwalkusz.smartlaw.compiler.validator.ValidatorService
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
-import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import java.util.concurrent.atomic.AtomicInteger
 
 class FromDocumentToNaturalLanguageConverter(
         private val ruleProvider: RuleProvider,
         private val templateProcessorService: TemplateProcessorService,
-        private val config: Config
+        private val config: Config,
+        private val validatorService: ValidatorService
 ) {
 
     data class Config(
@@ -68,9 +70,10 @@ class FromDocumentToNaturalLanguageConverter(
     private fun extendRuleInvocationPresentationElement(presentationElement: RuleInvocationPresentationElement, linksByElementsIds: Map<Id, String>): ExtendedRuleInvocationPresentationElement {
         val rule = ruleProvider.getRule(presentationElement.ruleInvocation.ruleId)!!
         val processRuleContentTemplateConfig = ProcessRuleContentTemplateConfig(addStyleToContent = config.addStyleToRuleContent)
-        val content = templateProcessorService.processRuleContentTemplate(rule, presentationElement.ruleInvocation.arguments, linksByElementsIds, processRuleContentTemplateConfig)
+        val ruleArgumentValidationResults = validatorService.validateRuleArgumentsValues(rule, presentationElement.ruleInvocation)
+        val content = templateProcessorService.processRuleContentTemplate(rule.content, ruleArgumentValidationResults, linksByElementsIds, processRuleContentTemplateConfig)
         val naturalLanguageProvision = NaturalLanguageProvision(content)
 
-        return ExtendedRuleInvocationPresentationElement(presentationElement, naturalLanguageProvision, rule)
+        return ExtendedRuleInvocationPresentationElement(presentationElement, naturalLanguageProvision, rule, ruleArgumentValidationResults.map { it.results })
     }
 }

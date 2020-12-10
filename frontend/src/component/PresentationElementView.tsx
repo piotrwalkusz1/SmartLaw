@@ -7,10 +7,11 @@ import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 interface PresentationElementViewProps {
   element: DocumentEditorElement;
   onElementChange: (element: DocumentEditorElement) => void;
-  dragHandleProps?: DraggableProvidedDragHandleProps;
+  onElementRemove: () => void;
+  dragHandleProps: DraggableProvidedDragHandleProps | undefined;
 }
 
-const PresentationElementView = ({ element, onElementChange, dragHandleProps }: PresentationElementViewProps) => {
+const PresentationElementView = ({ element, onElementChange, dragHandleProps, onElementRemove }: PresentationElementViewProps) => {
   if (element instanceof DocumentEditorSectionElement) {
     return (
       <SectionPresentationElementView
@@ -19,6 +20,7 @@ const PresentationElementView = ({ element, onElementChange, dragHandleProps }: 
           onElementChange(new DocumentEditorSectionElement(element.id, element.title, nestedElements))
         }
         dragHandleProps={dragHandleProps}
+        onRemove={onElementRemove}
       />
     );
   } else if (element instanceof DocumentEditorRuleInvocationElement) {

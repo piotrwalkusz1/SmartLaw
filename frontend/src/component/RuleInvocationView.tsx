@@ -9,6 +9,7 @@ import DOMPurify from "dompurify";
 import { DocumentEditorRuleInvocationElement } from "../page/ContractPage";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import { css } from "@emotion/react";
+import { ValidationResult } from "../model/ValidationResult";
 
 const Styles = {
   holder: css`
@@ -33,22 +34,32 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
       }}
     />
   );
-  const renderArgument = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
+  const renderArgumentValidationResults = (validationResults?: List<ValidationResult>) => {
+    if (validationResults === undefined) {
+      return <div />;
+    }
+
+    return validationResults
+      .map((validationResult) => validationResult.error)
+      .filter((error) => error !== null)
+      .map((error, index) => <div key={index}>{error}</div>);
+  };
+  const renderArgumentEditor = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
     if (ruleInvocationArgument === undefined) {
-      return <div key={index}>Null value</div>;
+      return <div>Null value</div>;
     }
 
     switch (ruleArgument.type.id) {
       case "String":
         if (ruleInvocationArgument.type !== MetaValueType.Primitive) {
           return (
-            <div key={index}>
+            <div>
               Bad type of type. Expected {MetaValueType.Primitive} but was {ruleInvocationArgument.type}
             </div>
           );
         }
         return (
-          <div key={index}>
+          <div>
             <span>{ruleArgument.displayName || ruleArgument.name}</span>
             <input
               type="text"
@@ -68,6 +79,19 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
         return <div key={index}>Unknown argument type {ruleArgument.type.id}</div>;
     }
   };
+  const renderArgument = (
+    index: number,
+    ruleArgument: MetaArgument,
+    ruleInvocationArgument: MetaValue | undefined,
+    validationResults: List<ValidationResult> | undefined
+  ) => {
+    return (
+      <div key={index}>
+        {renderArgumentEditor(index, ruleArgument, ruleInvocationArgument)}
+        {renderArgumentValidationResults(validationResults)}
+      </div>
+    );
+  };
   const renderArgumentsEditor = () =>
     element.extendedPresentationElement.rule === null ? (
       <div />
@@ -76,7 +100,8 @@ const RuleInvocationView = ({ element, onArgumentsChange, dragHandleProps }: Rul
         return renderArgument(
           index,
           ruleArgument,
-          element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.get(index)
+          element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.get(index),
+          element.extendedPresentationElement.validationResults.get(index)
         );
       })
     );

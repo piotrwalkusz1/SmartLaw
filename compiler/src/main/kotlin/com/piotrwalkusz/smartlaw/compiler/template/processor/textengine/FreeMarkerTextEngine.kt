@@ -1,6 +1,6 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor.textengine
 
-import com.piotrwalkusz.smartlaw.compiler.common.Output
+import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import freemarker.template.Configuration
 import freemarker.template.Template
 import java.io.StringReader

@@ -21,6 +21,7 @@ import RuleInvocationPresentationElement from "../model/RuleInvocationPresentati
 import RuleBrowser from "../component/RuleBrowser";
 import Rule from "../model/Rule";
 import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
+import { OutputMessage } from "../model/OutputMessage";
 
 const Style = {
   title: css`
@@ -80,11 +81,15 @@ const ContractPage = () => {
   const [elements, setElements] = useState<List<DocumentEditorElement> | undefined>(undefined);
   const [nextElementId, _] = useState(new AtomicInteger());
   const [rulesSearchResult, setRulesSearchResult] = useState<List<Rule>>(List());
+  const [outputMessages, setOutputMessages] = useState<List<OutputMessage>>(List());
   useEffect(() => {
     DocumentService.getDocument<Contract>(contractId).then((contract) => {
       setContractName(contract.name);
-      extendPresentationElements(projectId, contract.presentationElements).then((extendedPresentationElements) => {
-        setElements((oldElements) => mergeDocumentEditorElementsAndExtendedPresentationElements(extendedPresentationElements, oldElements));
+      extendPresentationElements(projectId, contract.presentationElements).then((result) => {
+        setElements((oldElements) =>
+          mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
+        );
+        setOutputMessages(result.outputMessages);
       });
     });
   }, []);
@@ -92,8 +97,11 @@ const ContractPage = () => {
   const refreshElements = (elements: List<DocumentEditorElement>): void => {
     setElements(elements);
     const presentationElements = extractPresentationElementsFromDocumentEditorElements(elements);
-    extendPresentationElements(projectId, presentationElements).then((extendedPresentationElements) => {
-      setElements((oldElements) => mergeDocumentEditorElementsAndExtendedPresentationElements(extendedPresentationElements, oldElements));
+    extendPresentationElements(projectId, presentationElements).then((result) => {
+      setElements((oldElements) =>
+        mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
+      );
+      setOutputMessages(result.outputMessages);
     });
   };
 
@@ -232,7 +240,8 @@ const ContractPage = () => {
           new ExtendedRuleInvocationPresentationElement(
             new RuleInvocationPresentationElement({ ruleId: rule.id, arguments: List() }),
             new NaturalLanguageProvision(""),
-            rule
+            rule,
+            List()
           )
         );
         refreshElements(addElementToSection(elements, result.destination.droppableId, result.destination.index, newElement));
@@ -262,6 +271,11 @@ const ContractPage = () => {
           <DocumentEditorContext.Provider value={{ projectId: projectId, documentId: contractId }}>
             <DragDropContext onDragEnd={onDragEnd}>
               <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
+              <div>
+                {outputMessages.map((message, index) => (
+                  <div key={index}>{message.message}</div>
+                ))}
+              </div>
               <Droppable droppableId="droppable" type="top">
                 {(provided, snapshot) => (
                   <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
@@ -276,6 +290,7 @@ const ContractPage = () => {
                                 refreshElements(elements.set(index, element));
                               }}
                               dragHandleProps={provided.dragHandleProps}
+                              onElementRemove={() => refreshElements(elements.remove(index))}
                             />
                           </div>
                         )}

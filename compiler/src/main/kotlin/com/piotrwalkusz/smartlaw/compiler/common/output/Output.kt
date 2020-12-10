@@ -1,4 +1,4 @@
-package com.piotrwalkusz.smartlaw.compiler.common
+package com.piotrwalkusz.smartlaw.compiler.common.output
 
 class Output {
 
@@ -11,7 +11,6 @@ class Output {
     }
 
     private val messages: MutableList<OutputMessage> = mutableListOf()
-        get() = field.toMutableList()
 
     fun addError(message: String) {
         messages.add(OutputMessage(OutputMessageType.ERROR, message))
@@ -23,5 +22,9 @@ class Output {
 
     fun addMessage(type: OutputMessageType, message: String) {
         messages.add(OutputMessage(type, message))
+    }
+
+    fun getMessages(): List<OutputMessage> {
+        return messages.toList()
     }
 }
