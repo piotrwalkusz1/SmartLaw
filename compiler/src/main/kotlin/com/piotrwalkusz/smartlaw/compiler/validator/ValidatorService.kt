@@ -2,10 +2,15 @@ package com.piotrwalkusz.smartlaw.compiler.validator
 
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.validator.executor.ValidatorExecutor
+import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
+import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
 import com.piotrwalkusz.smartlaw.core.model.validator.Validator
+import com.sun.jdi.PrimitiveValue
+import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 class ValidatorService(
         private val validatorExecutors: List<ValidatorExecutor<*>> = ValidatorExecutor.DEFAULT_VALIDATOR_EXECUTORS
@@ -19,18 +24,32 @@ class ValidatorService(
 
         return rule.arguments
                 .mapIndexed { index, argument -> argument to ruleInvocation.arguments.getOrNull(index) }
-                .map { RuleArgumentValidationResult(it.first, it.second, runValidators(it.first.validators, it.second)) }
+                .map { RuleArgumentValidationResult(it.first, it.second, runValidators(it.first.validators, it.first, it.second)) }
     }
 
-    private fun runValidators(validators: List<Validator>, value: MetaValue?): List<ValidationResult> {
+    private fun runValidators(validators: List<Validator>, argument: MetaArgument, value: MetaValue?): List<ValidationResult> {
+        if (value == null) {
+            return listOf(ValidationResult.error("Value cannot be null"))
+        }
+        if (!(value is MetaPrimitiveValue)) {
+            return listOf(ValidationResult.error("Value has bad type"))
+        }
+        if (argument.type.id == "Integer") {
+            if (value.value.toIntOrNull() == null) {
+                return listOf(ValidationResult.error("Value cannot be parsed as number"))
+            }
+        } else if (argument.type.id == "LocalDate") {
+            try {
+                LocalDate.parse(value.value)
+            } catch (exception: DateTimeParseException) {
+                return listOf(ValidationResult.error("Value cannot be parsed as local date"))
+            }
+        }
+
         return validators.map { runValidator(it, value) }
     }
 
-    private fun runValidator(validator: Validator, value: MetaValue?): ValidationResult {
-        if (value == null) {
-            return ValidationResult.error("Value cannot be null")
-        }
-
+    private fun runValidator(validator: Validator, value: MetaValue): ValidationResult {
         val validatorExecutor = getValidatorExecutor(validator)
 
         return validatorExecutor.validate(validator, value)
