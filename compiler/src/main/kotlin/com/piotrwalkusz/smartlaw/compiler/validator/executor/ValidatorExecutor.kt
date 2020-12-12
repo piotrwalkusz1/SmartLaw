@@ -9,7 +9,8 @@ interface ValidatorExecutor<T : Validator> {
     companion object {
         val DEFAULT_VALIDATOR_EXECUTORS = listOf<ValidatorExecutor<*>>(
                 RegexValidatorExecutor(),
-                GenericValidatorExecutor()
+                GenericValidatorExecutor(),
+                NumberRangeValidatorExecutor()
         )
     }
 

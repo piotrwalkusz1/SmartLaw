@@ -7,5 +7,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(
         JsonSubTypes.Type(name = "Regex", value = RegexValidator::class),
         JsonSubTypes.Type(name = "Generic", value = GenericValidator::class),
+        JsonSubTypes.Type(name = "NumberRange", value = NumberRangeValidator::class)
 )
 interface Validator

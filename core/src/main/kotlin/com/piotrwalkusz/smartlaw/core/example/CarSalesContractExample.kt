@@ -14,6 +14,7 @@ import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentat
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 import com.piotrwalkusz.smartlaw.core.model.validator.GenericValidator
+import com.piotrwalkusz.smartlaw.core.model.validator.NumberRangeValidator
 import com.piotrwalkusz.smartlaw.core.model.validator.RegexValidator
 
 object CarSalesContractExample {
@@ -70,12 +71,12 @@ object CarSalesContractExample {
                                 """.trimIndent()),
                             arguments = listOf(
                                     MetaArgument(name = "markaModel", type = Id("String"), displayName = "Marka i model"),
-                                    MetaArgument(name = "rokProdukcji", type = Id("Integer"), displayName = "Rok produkcji"),
+                                    MetaArgument(name = "rokProdukcji", type = Id("Integer"), displayName = "Rok produkcji", validators = listOf(NumberRangeValidator(1900, 2100))),
                                     MetaArgument(name = "nrSilnika", type = Id("String"), displayName = "Numer silnika"),
                                     MetaArgument(name = "nrNadwozia", type = Id("String"), displayName = "Numer nadwozia"),
                                     MetaArgument(name = "nrRejestracyjny", type = Id("String"), displayName = "Numer rejestracyjny"),
                                     MetaArgument(name = "kolor", type = Id("String"), displayName = "Kolor"),
-                                    MetaArgument(name = "przebieg", type = Id("Integer"), displayName = "Przebieg")
+                                    MetaArgument(name = "przebieg", type = Id("Integer"), displayName = "Przebieg", validators = listOf(NumberRangeValidator(0, 10000000)))
                             ),
                             elements = listOf(State(
                                     id = StaticTemplate(Id("SAMOCHOD", "pl.piotrwalkusz")),
@@ -95,11 +96,10 @@ object CarSalesContractExample {
                             content = TextEngineTemplate(type = "FreeMarker", template =
                             """
                                 Strony zgodnie ustalają cenę sprzedaży samochodu określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")}
-                                niniejszej umowy na kwotę: ${'$'}{args.kwota?string["000.00"]} zł., słownie ${'$'}{args.kwotaSlownie} złotych
+                                niniejszej umowy na kwotę: ${'$'}{args.kwota?string["000.00"]} zł., słownie ${'$'}{context.getNumberInWords(args.kwota?c)}.
                                 """.trimIndent()),
                             arguments = listOf(
-                                    MetaArgument(name = "kwota", type = Id("Integer"), displayName = "Kwota"),
-                                    MetaArgument(name = "kwotaSlownie", type = Id("String"), displayName = "Kwota - słownie")),
+                                    MetaArgument(name = "kwota", type = Id("Integer"), displayName = "Kwota", validators = listOf(NumberRangeValidator(0, 100000000)))),
                             elements = listOf(State(
                                     id = StaticTemplate(Id("CENA_SAMOCHODU", "pl.piotrwalkusz")),
                                     type = StaticTemplate(DefinitionRef(StaticTemplate(Id("Int", "pl.piotrwalkusz")))),
@@ -142,7 +142,7 @@ object CarSalesContractExample {
                                 służące do korzystania z samochodu, w tym: ${'$'}{args.rzeczy} oraz niezbędne dokumenty związane z samochodem,
                                 w tym dowód rejestracyjny oraz kartę pojazdu.
                             """.trimIndent()),
-                            arguments = listOf(MetaArgument(name = "Rzeczy służące do korzystania z samochodu", type = Id("String")))
+                            arguments = listOf(MetaArgument(name = "rzeczy", type = Id("String"), displayName = "Rzeczy służące do korzystania z samochodu"))
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz"),
@@ -210,8 +210,7 @@ object CarSalesContractExample {
                     SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
                             arguments = listOf(
-                                    MetaPrimitiveValue("10000"),
-                                    MetaPrimitiveValue("dziesięć tysięcy"))
+                                    MetaPrimitiveValue("10000"))
                     )))),
                     SectionPresentationElement(listOf(
                             RuleInvocationPresentationElement(RuleInvocation(

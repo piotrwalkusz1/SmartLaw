@@ -8,6 +8,11 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaListValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 import freemarker.template.TemplateMethodModel
+import pl.allegro.finance.tradukisto.MoneyConverters
+import pl.allegro.finance.tradukisto.ValueConverters
+import pl.allegro.finance.tradukisto.internal.converters.IntegerToWordsConverter
+import java.math.BigDecimal
+
 
 data class RuleInvocationTemplateProcessorContext(
         val ruleArgumentValidationResults: List<RuleArgumentValidationResult>,
@@ -16,7 +21,8 @@ data class RuleInvocationTemplateProcessorContext(
 
     override fun getTemplateParameters(): Map<String, Any> {
         return mapOf("args" to getTemplateParametersFromRuleInvocationArguments(),
-                "context" to mapOf("getLinkToElement" to TemplateMethodModel { args -> getLinkToElement(args[0] as String, linksByElementsIds) }))
+                "context" to mapOf("getLinkToElement" to TemplateMethodModel { args -> getLinkToElement(args[0] as String, linksByElementsIds) },
+                        "getNumberInWords" to TemplateMethodModel { args -> getNumberInWords(args[0]) }))
     }
 
     private fun getLinkToElement(elementId: String, linksByElementsIds: Map<Id, String>): String? {
@@ -26,6 +32,16 @@ data class RuleInvocationTemplateProcessorContext(
         }
 
         return linkToElement
+    }
+
+    private fun getNumberInWords(value: Any?): String {
+        if (value !is String) {
+            return ""
+        }
+        val number = value.toIntOrNull() ?: return ""
+        val converter = ValueConverters.POLISH_INTEGER
+
+        return converter.asWords(number) + " PLN"
     }
 
     private fun convertStringToId(idAsString: String): Id {
