@@ -22,4 +22,9 @@ class DocumentService(private val documentDao: DocumentDao, private val sequence
 
         return documentWrapper
     }
+
+    fun saveDocument(documentId: String, document: Document) {
+        val documentWrapper = DocumentWrapper(documentId, document)
+        documentDao.saveDocument(documentWrapper)
+    }
 }

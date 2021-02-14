@@ -4,7 +4,7 @@ import PresentationElementView from "./PresentationElementView";
 import { List } from "immutable";
 import { css } from "@emotion/react";
 import { Draggable, DraggableProvidedDragHandleProps, Droppable } from "react-beautiful-dnd";
-import { DocumentEditorElement, DocumentEditorSectionElement } from "../page/ContractPage";
+import { DocumentEditorElement, DocumentEditorSectionElement } from "../../page/ContractPage";
 import { Trash } from "react-bootstrap-icons";
 
 const Styles = {

@@ -6,3 +6,7 @@ export const getDocument = <T extends Document>(documentId: string): Promise<T> 
     return decodeDocument(response.data) as T;
   });
 };
+
+export const saveDocument = <T extends Document>(documentId: string, document: T): Promise<void> => {
+  return axios.put("/documents/" + documentId, document);
+};

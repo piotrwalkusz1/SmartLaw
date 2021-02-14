@@ -1,10 +1,10 @@
-import Element, { ElementType } from "./Element";
+import ElementTemplate, { ElementTemplateType } from "./ElementTemplate";
 import Template, { decodeTemplate } from "./Template";
 import { decodeEnum } from "../utils/Decoders";
 
-export const decodeState = (json: any): State => {
+export const decodeStateTemplate = (json: any): StateTemplate => {
   return {
-    elementType: decodeEnum(json.elementType, ElementType),
+    elementType: decodeEnum(json.elementType, ElementTemplateType),
     id: decodeTemplate(json.id),
     annotations: decodeTemplate(json.annotations),
     name: decodeTemplate(json.name),
@@ -14,7 +14,7 @@ export const decodeState = (json: any): State => {
   };
 };
 
-export default interface State extends Element {
+export default interface StateTemplate extends ElementTemplate {
   name: Template;
   description: Template;
   type: Template;

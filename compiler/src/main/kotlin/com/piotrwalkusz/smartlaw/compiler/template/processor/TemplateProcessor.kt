@@ -8,7 +8,8 @@ interface TemplateProcessor<T : Template<R>, R> {
     companion object {
         val DEFAULT_TEMPLATE_PROCESSORS = listOf<TemplateProcessor<*, *>>(
                 StaticTemplateProcessor(),
-                TextEngineTemplateProcessor()
+                TextEngineTemplateProcessor(),
+                GroovyTemplateProcessor()
         )
     }
 

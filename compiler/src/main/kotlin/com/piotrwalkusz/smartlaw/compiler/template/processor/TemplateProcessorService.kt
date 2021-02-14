@@ -62,8 +62,14 @@ class TemplateProcessorService(
                     return listOf()
                 }
                 val elementLink = "§ " + nextIndentationIndex.get()
-                rule.elements
-                        .map { element -> (element.id as StaticTemplate<Id>).value } // TODO: Support dynamic element id
+                val elements = rule.elements
+                if (elements !is StaticTemplate) {
+                    Output.get().addError("Template other than StaticTemplate is not supported for elements")
+                    return listOf()
+                }
+
+                return elements.value
+                        .map { element -> (element.id) } // TODO: Support dynamic element id
                         .map { id -> id to elementLink }
             }
             else ->

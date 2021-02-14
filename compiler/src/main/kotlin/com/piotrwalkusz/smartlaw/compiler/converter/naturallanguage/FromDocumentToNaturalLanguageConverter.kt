@@ -1,5 +1,6 @@
 package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage
 
+import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.*
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.template.processor.ProcessRuleContentTemplateConfig
@@ -10,6 +11,9 @@ import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguag
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.rule.Rule
+import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
+import com.piotrwalkusz.smartlaw.core.model.template.Template
 import java.util.concurrent.atomic.AtomicInteger
 
 class FromDocumentToNaturalLanguageConverter(

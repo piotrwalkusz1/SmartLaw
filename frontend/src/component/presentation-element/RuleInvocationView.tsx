@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
-import MetaValue, { MetaValueType } from "../model/MetaValue";
+import MetaValue, { MetaValueType } from "../../model/MetaValue";
 import { List } from "immutable";
-import MetaArgument from "../model/MetaArgument";
-import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
+import MetaArgument from "../../model/MetaArgument";
+import MetaPrimitiveValue from "../../model/MetaPrimitiveValue";
 import { Accordion, Button, Card, Form } from "react-bootstrap";
 import DOMPurify from "dompurify";
-import { DocumentEditorRuleInvocationElement } from "../page/ContractPage";
+import { DocumentEditorRuleInvocationElement } from "../../page/ContractPage";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import { css } from "@emotion/react";
-import { ValidationResult } from "../model/ValidationResult";
+import { ValidationResult } from "../../model/ValidationResult";
 import Datetime from "react-datetime";
 
 const Styles = {

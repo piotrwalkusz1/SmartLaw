@@ -4,7 +4,9 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.Contract
 import com.piotrwalkusz.smartlaw.core.model.document.Library
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
+import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRefTemplate
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
+import com.piotrwalkusz.smartlaw.core.model.element.state.StateTemplate
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
@@ -56,8 +58,7 @@ object CarSalesContractExample {
                                     MetaArgument(name = "kupującyUlica", type = Id("String"), displayName = "Adres kupującego: ulica"),
                                     MetaArgument(name = "kupującyPESEL", type = Id("String"), displayName = "PESEL kupującego",
                                             validators = listOf(RegexValidator("[0-9]{11}"), GenericValidator("FreeMarker", "<#if (value[0]?number+3*value[1]?number+7*value[2]?number+9*value[3]?number+value[4]?number+3*value[5]?number+7*value[6]?number+9*value[7]?number+value[8]?number+3*value[9]?number)%10!=(10-value[10]?number)%10>Incorrect PESEL</#if>")))
-                            ),
-                            elements = listOf()),
+                            )),
                     Rule(
                             id = Id("DEFINICJA_SAMOCHODU", "pl.piotrwalkusz"),
                             name = "Opis samochodu",
@@ -78,17 +79,16 @@ object CarSalesContractExample {
                                     MetaArgument(name = "kolor", type = Id("String"), displayName = "Kolor"),
                                     MetaArgument(name = "przebieg", type = Id("Integer"), displayName = "Przebieg", validators = listOf(NumberRangeValidator(0, 10000000)))
                             ),
-                            elements = listOf(State(
-                                    id = StaticTemplate(Id("SAMOCHOD", "pl.piotrwalkusz")),
-                                    type = StaticTemplate(DefinitionRef(StaticTemplate(Id("SAMOCHOD_TYP", "pl.piotrwalkusz")))),
-                                    name = StaticTemplate("Samochód")
-                            ))
+                            elements = StaticTemplate(listOf(State(
+                                    id = Id("SAMOCHOD", "pl.piotrwalkusz"),
+                                    type = DefinitionRef(Id("SAMOCHOD_TYP", "pl.piotrwalkusz")),
+                                    name = "Samochód"
+                            )))
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz"),
                             name = "Oświadczenie o posiadaniu parawa własności do samochodu",
-                            content = StaticTemplate("Sprzedający oświadcza, że pojazd będący przedmiotem umowy stanowi jego własność i jest wolny od wad prawnych."),
-                            elements = listOf()
+                            content = StaticTemplate("Sprzedający oświadcza, że pojazd będący przedmiotem umowy stanowi jego własność i jest wolny od wad prawnych.")
                     ),
                     Rule(
                             id = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
@@ -100,12 +100,11 @@ object CarSalesContractExample {
                                 """.trimIndent()),
                             arguments = listOf(
                                     MetaArgument(name = "kwota", type = Id("Integer"), displayName = "Kwota", validators = listOf(NumberRangeValidator(0, 100000000)))),
-                            elements = listOf(State(
-                                    id = StaticTemplate(Id("CENA_SAMOCHODU", "pl.piotrwalkusz")),
-                                    type = StaticTemplate(DefinitionRef(StaticTemplate(Id("Int", "pl.piotrwalkusz")))),
-                                    name = StaticTemplate("Cena samochodu")
-                            ))
-                    ),
+                            elements = StaticTemplate(listOf(State(
+                                    id = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
+                                    type = DefinitionRef(Id("Int", "pl.piotrwalkusz")),
+                                    name = "Cena samochodu"
+                            )))),
                     Rule(
                             id = Id("PRZENIESIENIE_WLASNOSCI", "pl.piotrwalkusz"),
                             name = "Przeniesienie własności samochodu",
@@ -113,8 +112,8 @@ object CarSalesContractExample {
                             """
                                 Sprzedający przenosi na rzecz Kupującego własność pojazdu określonego w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.SAMOCHOD")}
                                 niniejszej umowy za kwotę określoną w ${'$'}{context.getLinkToElement("pl.piotrwalkusz.CENA_SAMOCHODU")} umowy.
-                                """.trimIndent()),
-                            elements = listOf()),
+                                """.trimIndent())
+                    ),
                     Rule(
                             id = Id("SPOSOB_ZAPLATY", "pl.piotrwalkusz"),
                             name = "Wybór sposobu dokonania zakupu",
@@ -124,7 +123,7 @@ object CarSalesContractExample {
                                 ${'$'}{context.getLinkToElement("pl.piotrwalkusz.CENA_SAMOCHODU")} zostanie dokonana w następujący sposób: ${'$'}{args.sposobZaplaty}
                                 """.trimIndent()),
                             arguments = listOf(MetaArgument(name = "sposobZaplaty", type = Id("String"), displayName = "Sposób zapłaty")),
-                            elements = listOf()),
+                    ),
                     Rule(
                             id = Id("POTWIERDZENIE_ODBIORU", "pl.piotrwalkusz"),
                             name = "Potwierdzenie odbioru",

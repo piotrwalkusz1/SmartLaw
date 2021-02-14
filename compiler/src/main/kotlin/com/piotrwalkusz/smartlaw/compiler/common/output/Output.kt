@@ -3,7 +3,7 @@ package com.piotrwalkusz.smartlaw.compiler.common.output
 class Output {
 
     companion object {
-        var LOCAL_OUTPUT: ThreadLocal<Output> = ThreadLocal.withInitial { Output() }
+        private var LOCAL_OUTPUT: ThreadLocal<Output> = ThreadLocal.withInitial { Output() }
 
         fun get(): Output {
             return LOCAL_OUTPUT.get()

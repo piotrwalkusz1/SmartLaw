@@ -1,4 +1,4 @@
-import { List } from "immutable";
+import { List, Map } from "immutable";
 
 export const decodeNullable = <T extends {}>(json: any, decoder: (value: any) => T): T | null => {
   if (json === undefined || json === null) {
@@ -37,6 +37,14 @@ export const decodeList = <T extends {}>(json: any, mapper: (value: any) => T): 
     return List(json.map(mapper));
   } else {
     throw Error("Array expected but was " + json);
+  }
+};
+
+export const decodeMap = <T extends {}>(json: any, mapper: (value: any) => T): Map<String, T> => {
+  if (typeof json === "object") {
+    return Map(Object.entries(json).map(([key, value]) => [key, mapper(value)]));
+  } else {
+    throw Error("Object expected but was " + json);
   }
 };
 

@@ -1,7 +1,7 @@
 import React from "react";
 import SectionPresentationElementView from "./SectionPresentationElementView";
 import RuleInvocationView from "./RuleInvocationView";
-import { DocumentEditorElement, DocumentEditorRuleInvocationElement, DocumentEditorSectionElement } from "../page/ContractPage";
+import { DocumentEditorElement, DocumentEditorRuleInvocationElement, DocumentEditorSectionElement } from "../../page/ContractPage";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 
 interface PresentationElementViewProps {
