@@ -1,9 +1,10 @@
-import { ruleArgumentTypes } from "../../service/RuleArgumentService";
+import { RULE_ARGUMENT_TYPES } from "../../service/Types";
 import React from "react";
 import MetaArgument from "../../model/MetaArgument";
 import TextField from "../../common/TextField";
 import SelectField from "../../common/SelectField";
 import { areIdsEqual } from "../../model/Id";
+import { List } from "immutable";
 
 interface RuleArgumentEditorProps {
   ruleArgument: MetaArgument;
@@ -16,9 +17,9 @@ const RuleArgumentEditor = ({ ruleArgument, onRuleArgumentChange }: RuleArgument
       <TextField label="Name" value={ruleArgument.name} onChange={(value) => onRuleArgumentChange({ ...ruleArgument, name: value })} />
       <SelectField
         label="Type"
-        value={ruleArgumentTypes.find((type) => areIdsEqual(type, ruleArgument.type)) || null}
+        value={RULE_ARGUMENT_TYPES.find((type) => areIdsEqual(type, ruleArgument.type)) || null}
         onChange={(value) => onRuleArgumentChange({ ...ruleArgument, type: value })}
-        options={ruleArgumentTypes}
+        options={List(RULE_ARGUMENT_TYPES)}
         display={(option) => option.id}
       />
     </div>

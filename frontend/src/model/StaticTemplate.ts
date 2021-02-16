@@ -1,9 +1,8 @@
 import Template, { TemplateType } from "./Template";
-import { decodeEnum } from "../utils/Decoders";
 
 export const decodeStaticTemplate = (json: any): StaticTemplate => {
   return {
-    templateType: decodeEnum(json.templateType, TemplateType),
+    templateType: TemplateType.Static,
     value: json.value,
   };
 };
@@ -11,3 +10,10 @@ export const decodeStaticTemplate = (json: any): StaticTemplate => {
 export default interface StaticTemplate extends Template {
   value: any;
 }
+
+export const prepareStaticTemplate = (value: any): StaticTemplate => {
+  return {
+    templateType: TemplateType.Static,
+    value: value,
+  };
+};

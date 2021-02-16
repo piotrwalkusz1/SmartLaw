@@ -5,6 +5,7 @@ import Id, { decodeId } from "./Id";
 import Rule, { decodeRule } from "./Rule";
 import AnnotationType, { decodeAnnotationType } from "./AnnotationType";
 import Element, { decodeElement } from "./Element";
+import RuleInterface, { decodeRuleInterface } from "./RuleInterface";
 
 export const decodeLibrary = (json: any): Library => {
   return new Library({
@@ -13,6 +14,7 @@ export const decodeLibrary = (json: any): Library => {
     name: decodeString(json.name),
     description: decodeNullable(json.description, decodeString),
     rules: decodeList(json.rules, decodeRule),
+    rulesInterfaces: decodeList(json.rulesInterfaces, decodeRuleInterface),
     elements: decodeList(json.elements, decodeElement),
     annotations: decodeList(json.annotations, decodeAnnotationType),
   });
@@ -24,6 +26,7 @@ export default class Library implements Document {
   name: string;
   description: string | null;
   rules: List<Rule>;
+  rulesInterfaces: List<RuleInterface>;
   elements: List<Element>;
   annotations: List<AnnotationType>;
 
@@ -33,6 +36,7 @@ export default class Library implements Document {
     name,
     description,
     rules,
+    rulesInterfaces,
     elements,
     annotations,
   }: {
@@ -41,6 +45,7 @@ export default class Library implements Document {
     name: string;
     description: string | null;
     rules: List<Rule>;
+    rulesInterfaces: List<RuleInterface>;
     elements: List<Element>;
     annotations: List<AnnotationType>;
   }) {
@@ -49,6 +54,7 @@ export default class Library implements Document {
     this.name = name;
     this.description = description;
     this.rules = rules;
+    this.rulesInterfaces = rulesInterfaces;
     this.elements = elements;
     this.annotations = annotations;
   }
@@ -59,5 +65,9 @@ export default class Library implements Document {
 
   withRules(rules: List<Rule>): Library {
     return new Library({ ...this, rules: rules });
+  }
+
+  withRulesInterfaces(rulesInterfaces: List<RuleInterface>): Library {
+    return new Library({ ...this, rulesInterfaces: rulesInterfaces });
   }
 }

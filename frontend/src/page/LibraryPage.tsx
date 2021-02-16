@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Library from "../model/Library";
 import * as DocumentService from "../service/DocumentService";
 import { useFetchedData } from "../utils/Hooks";
-import RuleEditor from "../component/rule/RuleEditor";
 import { Button } from "react-bootstrap";
+import RuleListEditor from "../component/rule/RuleListEditor";
+import RuleInterfaceListEditor from "../component/rule/RuleInterfaceListEditor";
+import ExpandableArea from "../common/ExpandableArea";
 
 const LibraryPage = () => {
   const libraryDbId = "1";
@@ -33,11 +35,15 @@ const LibraryPage = () => {
           Save
         </Button>
       </div>
-      <div>
-        {library.rules.map((rule, index) => (
-          <RuleEditor key={index} rule={rule} onRuleChange={(rule) => setLibrary(library.withRule(index, rule))} />
-        ))}
-      </div>
+      <ExpandableArea header="Rules">
+        <RuleListEditor rules={library.rules} onRulesChange={(rules) => setLibrary(library.withRules(rules))} />
+      </ExpandableArea>
+      <ExpandableArea header={"Interfaces"}>
+        <RuleInterfaceListEditor
+          rulesInterfaces={library.rulesInterfaces}
+          onRulesInterfacesChange={(rulesInterfaces) => setLibrary(library.withRulesInterfaces(rulesInterfaces))}
+        />
+      </ExpandableArea>
     </div>
   );
 };

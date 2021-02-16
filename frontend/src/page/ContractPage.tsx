@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
+import { saveDocument } from "../service/DocumentService";
 import PresentationElementView from "../component/presentation-element/PresentationElementView";
 import { DocumentEditorContext } from "../context/DocumentEditorContext";
 import { downloadDocument, extendPresentationElements } from "../service/ProjectService";
@@ -26,6 +27,7 @@ import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import { PlusSquare } from "react-bootstrap-icons";
 import Id from "../model/Id";
 import { DocumentType } from "../model/Document";
+import AddButton from "../common/AddButton";
 
 const Style = {
   title: css`
@@ -305,6 +307,16 @@ const ContractPage = () => {
     }
   };
 
+  const convertToContract = (elements: List<DocumentEditorElement>): Contract => {
+    return {
+      documentType: DocumentType.Contract,
+      id: contractId,
+      name: contractName,
+      description: contractDescription,
+      presentationElements: extractPresentationElementsFromDocumentEditorElements(elements),
+    } as Contract;
+  };
+
   return !contractName || !elements || !contractId ? (
     <div />
   ) : (
@@ -324,19 +336,8 @@ const ContractPage = () => {
                   <div css={Style.title} style={{ marginTop: "20px" }}>
                     Actions
                   </div>
-                  <Button
-                    onClick={() =>
-                      downloadDocument(projectId, {
-                        documentType: DocumentType.Contract,
-                        id: contractId,
-                        name: contractName,
-                        description: contractDescription,
-                        presentationElements: extractPresentationElementsFromDocumentEditorElements(elements),
-                      } as Contract)
-                    }
-                  >
-                    Generate document
-                  </Button>
+                  <Button onClick={() => saveDocument(contractDbId, convertToContract(elements))}>Save</Button>
+                  <Button onClick={() => downloadDocument(projectId, convertToContract(elements))}>Generate document</Button>
                 </div>
               </Col>
             </Row>
@@ -383,20 +384,11 @@ const ContractPage = () => {
                     </div>
                   )}
                 </Droppable>
-                <Card style={{ marginTop: "30px", marginBottom: "15px" }}>
-                  <Card.Header>
-                    <div style={{ textAlign: "center", fontSize: "26px" }}>
-                      <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          refreshElements(elements.push(new DocumentEditorSectionElement(nextElementId.next().toString(), "", List())))
-                        }
-                      >
-                        <PlusSquare />
-                      </span>
-                    </div>
-                  </Card.Header>
-                </Card>
+                <AddButton
+                  onClick={() =>
+                    refreshElements(elements.push(new DocumentEditorSectionElement(nextElementId.next().toString(), "", List())))
+                  }
+                />
               </div>
             </div>
           </Col>

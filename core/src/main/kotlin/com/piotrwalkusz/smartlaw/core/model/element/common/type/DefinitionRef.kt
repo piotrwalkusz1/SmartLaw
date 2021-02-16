@@ -4,5 +4,5 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 
 data class DefinitionRef(
         val definition: Id,
-        val parameters: List<TypeTemplate> = listOf()
+        val parameters: List<Type> = listOf()
 ) : Type

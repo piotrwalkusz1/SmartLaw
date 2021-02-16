@@ -2,16 +2,17 @@ import { Form } from "react-bootstrap";
 import React from "react";
 
 interface TextFieldProps {
-  label: string;
+  label?: string;
+  placeholder?: string;
   value: string;
   onChange: (value: string) => void;
 }
 
-const TextField = ({ label, value, onChange }: TextFieldProps) => {
+const TextField = ({ label, placeholder, value, onChange }: TextFieldProps) => {
   return (
     <Form.Group>
-      <Form.Label>{label}</Form.Label>
-      <Form.Control type="text" value={value} onChange={(event) => onChange(event.target.value)} />
+      {label && <Form.Label>{label}</Form.Label>}
+      <Form.Control type="text" placeholder={placeholder} value={value} onChange={(event) => onChange(event.target.value)} />
     </Form.Group>
   );
 };

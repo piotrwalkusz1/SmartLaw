@@ -4,15 +4,13 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.Contract
 import com.piotrwalkusz.smartlaw.core.model.document.Library
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
-import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRefTemplate
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
-import com.piotrwalkusz.smartlaw.core.model.element.state.StateTemplate
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
+import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
+import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
-import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
-import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 import com.piotrwalkusz.smartlaw.core.model.validator.GenericValidator
