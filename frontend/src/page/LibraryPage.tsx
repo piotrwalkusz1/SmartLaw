@@ -6,11 +6,16 @@ import { Button } from "react-bootstrap";
 import RuleListEditor from "../component/rule/RuleListEditor";
 import RuleInterfaceListEditor from "../component/rule/RuleInterfaceListEditor";
 import ExpandableArea from "../common/ExpandableArea";
+import Id from "../model/Id";
+import { List } from "immutable";
+import { getRulesArgumentsTypes } from "../service/RuleService";
 
 const LibraryPage = () => {
   const libraryDbId = "1";
+  const projectId = "1";
   const [savedLibrary, setSavedLibrary] = useState<Library | undefined>();
   const [library, setLibrary] = useState<Library | undefined>();
+  const [rulesArgumentsTypes, setRulesArgumentsTypes] = useState<List<Id> | undefined>(undefined);
   useFetchedData(
     () => DocumentService.getDocument<Library>(libraryDbId),
     (downloadedLibrary) => {
@@ -19,6 +24,7 @@ const LibraryPage = () => {
     },
     []
   );
+  useFetchedData(() => getRulesArgumentsTypes({ projectId }), setRulesArgumentsTypes, [savedLibrary]);
 
   const saveLibrary = (library: Library) => {
     DocumentService.saveDocument(libraryDbId, library).then(() => {
@@ -26,7 +32,7 @@ const LibraryPage = () => {
     });
   };
 
-  return library === undefined ? (
+  return library === undefined || rulesArgumentsTypes === undefined ? (
     <div />
   ) : (
     <div>
@@ -36,7 +42,12 @@ const LibraryPage = () => {
         </Button>
       </div>
       <ExpandableArea header="Rules">
-        <RuleListEditor rules={library.rules} onRulesChange={(rules) => setLibrary(library.withRules(rules))} />
+        <RuleListEditor
+          projectId={projectId}
+          rules={library.rules}
+          onRulesChange={(rules) => setLibrary(library.withRules(rules))}
+          ruleArgumentTypes={rulesArgumentsTypes}
+        />
       </ExpandableArea>
       <ExpandableArea header={"Interfaces"}>
         <RuleInterfaceListEditor

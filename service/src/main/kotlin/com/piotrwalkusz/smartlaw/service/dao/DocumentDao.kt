@@ -8,6 +8,7 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.Document
 import com.piotrwalkusz.smartlaw.core.model.document.RulesContainer
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
+import com.piotrwalkusz.smartlaw.core.model.rule.RuleInterface
 import com.piotrwalkusz.smartlaw.service.model.DocumentWrapper
 import org.bson.conversions.Bson
 import org.litote.kmongo.*
@@ -35,6 +36,20 @@ class DocumentDao(private val mongoDatabase: MongoDatabase) {
                         Aggregates.limit(limit)
                 ),
                 Rule::class.java
+        ).toList();
+    }
+
+    fun getRulesInterfacesByFilter(filter: Bson?, documentsIds: List<String>, limit: Int? = null, sortBy: Bson? = null): List<RuleInterface> {
+        return getCollection().aggregate(
+                listOfNotNull(
+                        Aggregates.match(DocumentWrapper::id `in` documentsIds),
+                        Aggregates.unwind("\$document.rulesInterfaces"),
+                        Aggregates.replaceRoot("\$document.rulesInterfaces"),
+                        filter?.let { Aggregates.match(it) },
+                        sortBy?.let { Aggregates.sort(it) },
+                        limit?.let { Aggregates.limit(it) }
+                ),
+                RuleInterface::class.java
         ).toList();
     }
 

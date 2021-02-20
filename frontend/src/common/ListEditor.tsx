@@ -8,10 +8,13 @@ interface ListEditorProps<T> {
   onItemsChange: (items: List<T>) => void;
   header: (item: T) => string;
   content: (item: T, onItemChange: (item: T) => void) => ReactElement;
-  emptyItem: () => T;
+  emptyItem?: () => T;
+  onItemAdd?: () => void;
 }
 
-const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem }: ListEditorProps<T>) => {
+const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onItemAdd }: ListEditorProps<T>) => {
+  const handleItemAdd = onItemAdd ? onItemAdd : emptyItem ? () => onItemsChange(items.push(emptyItem())) : null;
+
   return (
     <div>
       <div>
@@ -28,7 +31,7 @@ const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem }: Li
           </Accordion>
         ))}
       </div>
-      <AddButton onClick={() => onItemsChange(items.push(emptyItem()))} />
+      {handleItemAdd ? <AddButton onClick={handleItemAdd} /> : <></>}
     </div>
   );
 };

@@ -3,21 +3,22 @@ import RuleArgumentEditor from "./RuleArgumentEditor";
 import MetaArgument from "../../model/MetaArgument";
 import { List } from "immutable";
 import { Accordion, Card } from "react-bootstrap";
-import { RULE_ARGUMENT_TYPES } from "../../service/Types";
 import ListEditor from "../../common/ListEditor";
+import Id, { prepareEmptyId } from "../../model/Id";
 
 interface RuleArgumentsEditorProps {
   ruleArguments: List<MetaArgument>;
   onRuleArgumentsChange: (ruleArguments: List<MetaArgument>) => void;
+  ruleArgumentTypes: List<Id>;
 }
 
-const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange }: RuleArgumentsEditorProps) => {
+const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange, ruleArgumentTypes }: RuleArgumentsEditorProps) => {
   const prepareEmptyRuleArgument = (): MetaArgument => {
     return {
       name: "",
       displayName: null,
       description: null,
-      type: RULE_ARGUMENT_TYPES[0],
+      type: ruleArgumentTypes.get(0) || prepareEmptyId(),
     };
   };
 
@@ -34,7 +35,11 @@ const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange }: RuleAr
               onItemsChange={onRuleArgumentsChange}
               header={(ruleArgument) => ruleArgument.name}
               content={(ruleArgument, onRuleArgumentChange) => (
-                <RuleArgumentEditor ruleArgument={ruleArgument} onRuleArgumentChange={onRuleArgumentChange} />
+                <RuleArgumentEditor
+                  ruleArgument={ruleArgument}
+                  onRuleArgumentChange={onRuleArgumentChange}
+                  ruleArgumentTypes={ruleArgumentTypes}
+                />
               )}
               emptyItem={prepareEmptyRuleArgument}
             />

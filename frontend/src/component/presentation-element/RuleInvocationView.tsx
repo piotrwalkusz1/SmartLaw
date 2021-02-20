@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React from "react";
-import MetaValue, { MetaValueType } from "../../model/MetaValue";
-import { List } from "immutable";
+import MetaValue from "../../model/MetaValue";
+import { List, Map } from "immutable";
 import MetaArgument from "../../model/MetaArgument";
 import MetaPrimitiveValue from "../../model/MetaPrimitiveValue";
 import { Accordion, Button, Card, Form } from "react-bootstrap";
@@ -11,6 +11,10 @@ import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import { css } from "@emotion/react";
 import { ValidationResult } from "../../model/ValidationResult";
 import Datetime from "react-datetime";
+import SelectorButtonField from "../../common/SelectorButtonField";
+import MetaRuleValue from "../../model/MetaRuleValue";
+import RuleSelectorPopup from "../rule/RuleSelectorPopup";
+import { prepareEmptyRuleInvocationArgument } from "../../service/RuleService";
 
 const Styles = {
   holder: css`
@@ -22,13 +26,14 @@ const Styles = {
 };
 
 interface RuleInvocationViewProps {
+  projectId: string;
   element: DocumentEditorRuleInvocationElement;
-  onArgumentsChange: (newArguments: List<MetaValue>) => void;
+  onArgumentsChange: (newArguments: Map<String, MetaValue>) => void;
   onRemove: () => void;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }
 
-const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandleProps }: RuleInvocationViewProps) => {
+const RuleInvocationView = ({ projectId, element, onArgumentsChange, onRemove, dragHandleProps }: RuleInvocationViewProps) => {
   const renderContent = () => (
     <div
       dangerouslySetInnerHTML={{
@@ -51,7 +56,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
       ));
   };
 
-  const renderArgumentValue = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument: MetaPrimitiveValue) => {
+  const renderArgumentValue = (ruleArgument: MetaArgument, ruleInvocationArgument: MetaValue) => {
     switch (ruleArgument.type.id) {
       case "String":
         return (
@@ -60,7 +65,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
             value={(ruleInvocationArgument as MetaPrimitiveValue).value}
             onChange={(event) =>
               onArgumentsChange(
-                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(ruleArgument.name, {
                   ...ruleInvocationArgument,
                   value: event.target.value,
                 } as MetaPrimitiveValue)
@@ -75,7 +80,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
             value={(ruleInvocationArgument as MetaPrimitiveValue).value}
             onChange={(event) =>
               onArgumentsChange(
-                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(ruleArgument.name, {
                   ...ruleInvocationArgument,
                   value: event.target.value,
                 } as MetaPrimitiveValue)
@@ -92,7 +97,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
             value={(ruleInvocationArgument as MetaPrimitiveValue).value}
             onChange={(value) =>
               onArgumentsChange(
-                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(index, {
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(ruleArgument.name, {
                   ...ruleInvocationArgument,
                   value: typeof value === "string" ? value : value.format("YYYY-MM-DD"),
                 } as MetaPrimitiveValue)
@@ -101,28 +106,36 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
           />
         );
       default:
-        return <div>Unknown argument type {ruleArgument.type.id}</div>;
+        return (
+          <SelectorButtonField
+            value={(ruleInvocationArgument as MetaRuleValue).ruleId}
+            onChange={(ruleId) =>
+              onArgumentsChange(
+                element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.set(ruleArgument.name, {
+                  ...ruleInvocationArgument,
+                  ruleId: ruleId,
+                } as MetaRuleValue)
+              )
+            }
+            popup={(show, handleClose, onSelect) => (
+              <RuleSelectorPopup
+                projectId={projectId}
+                ruleInterfaceId={(ruleInvocationArgument as MetaRuleValue).ruleId}
+                show={show}
+                handleClose={handleClose}
+                onRuleSelected={onSelect}
+              />
+            )}
+          />
+        );
     }
   };
 
   const renderArgumentEditor = (index: number, ruleArgument: MetaArgument, ruleInvocationArgument?: MetaValue) => {
-    if (ruleInvocationArgument === undefined) {
-      return <div>Null value</div>;
-    }
-
-    if (ruleInvocationArgument.type !== MetaValueType.Primitive) {
-      return (
-        <div>
-          Bad type of type. Expected {MetaValueType.Primitive} but was {ruleInvocationArgument.type}
-        </div>
-      );
-    }
-    const metaPrimitiveValue = ruleInvocationArgument as MetaPrimitiveValue;
-
     return (
       <div>
         <span>{ruleArgument.displayName || ruleArgument.name}</span>
-        {renderArgumentValue(index, ruleArgument, metaPrimitiveValue)}
+        {renderArgumentValue(ruleArgument, ruleInvocationArgument || prepareEmptyRuleInvocationArgument(ruleArgument))}
       </div>
     );
   };
@@ -148,8 +161,8 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
         return renderArgument(
           index,
           ruleArgument,
-          element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.get(index),
-          element.extendedPresentationElement.validationResults.get(index)
+          element.extendedPresentationElement.presentationElement.ruleInvocation.arguments.get(ruleArgument.name),
+          element.extendedPresentationElement.validationResults.get(ruleArgument.name)
         );
       })
     );

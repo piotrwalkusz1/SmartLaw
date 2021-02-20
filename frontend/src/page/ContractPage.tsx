@@ -4,12 +4,11 @@ import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
 import { saveDocument } from "../service/DocumentService";
 import PresentationElementView from "../component/presentation-element/PresentationElementView";
-import { DocumentEditorContext } from "../context/DocumentEditorContext";
 import { downloadDocument, extendPresentationElements } from "../service/ProjectService";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { css } from "@emotion/react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
-import { List } from "immutable";
+import { List, Map } from "immutable";
 import { AtomicInteger } from "../utils/AtomicInteger";
 import { ExtendedSectionPresentationElement } from "../model/ExtendedSectionPresentationElement";
 import { ExtendedRuleInvocationPresentationElement } from "../model/ExtendedRuleInvocationPresentationElement";
@@ -24,10 +23,10 @@ import Rule from "../model/Rule";
 import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 import { OutputMessage } from "../model/OutputMessage";
 import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
-import { PlusSquare } from "react-bootstrap-icons";
 import Id from "../model/Id";
 import { DocumentType } from "../model/Document";
 import AddButton from "../common/AddButton";
+import { prepareEmptyRuleInvocationArgument } from "../service/RuleService";
 
 const Style = {
   title: css`
@@ -69,7 +68,7 @@ export class DocumentEditorRuleInvocationElement extends DocumentEditorElement {
     this.extendedPresentationElement = extendedPresentationElement;
   }
 
-  withRuleInvocationArguments(ruleInvocationArguments: List<MetaValue>): DocumentEditorRuleInvocationElement {
+  withRuleInvocationArguments(ruleInvocationArguments: Map<String, MetaValue>): DocumentEditorRuleInvocationElement {
     return this.withExtendedPresentationElement(this.extendedPresentationElement.withRuleInvocationArguments(ruleInvocationArguments));
   }
 
@@ -258,13 +257,6 @@ const ContractPage = () => {
     });
   };
 
-  const prepareEmptyRuleInvocationArgument = (): MetaValue => {
-    return {
-      type: MetaValueType.Primitive,
-      value: "",
-    } as MetaPrimitiveValue;
-  };
-
   const onDragEnd = (result: DropResult) => {
     if (!elements || !result.destination) {
       return;
@@ -281,13 +273,11 @@ const ContractPage = () => {
           new ExtendedRuleInvocationPresentationElement(
             new RuleInvocationPresentationElement({
               ruleId: rule.id,
-              arguments: rule.arguments.map(() => {
-                return prepareEmptyRuleInvocationArgument();
-              }),
+              arguments: Map(rule.arguments.map((argument) => [argument.name, prepareEmptyRuleInvocationArgument(argument)])),
             }),
             new NaturalLanguageProvision(""),
             rule,
-            List()
+            Map()
           )
         );
         refreshElements(addElementToSection(elements, result.destination.droppableId, result.destination.index, newElement));
@@ -320,81 +310,80 @@ const ContractPage = () => {
   return !contractName || !elements || !contractId ? (
     <div />
   ) : (
-    <DocumentEditorContext.Provider value={{ projectId: projectId, documentId: contractDbId }}>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Row>
-          <Col xs={4}>
-            <Row>
-              <Col>
-                <div css={Style.title}>Rule browser</div>
-                <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div>
-                  <div css={Style.title} style={{ marginTop: "20px" }}>
-                    Actions
-                  </div>
-                  <Button onClick={() => saveDocument(contractDbId, convertToContract(elements))}>Save</Button>
-                  <Button onClick={() => downloadDocument(projectId, convertToContract(elements))}>Generate document</Button>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div>
-                  <div css={Style.title} style={{ marginTop: "20px" }}>
-                    Compilation errors
-                  </div>
-                  <div style={{ overflowY: "auto" }}>
-                    {outputMessages.map((message, index) => (
-                      <div key={index}>{message.message}</div>
-                    ))}
-                  </div>
-                </div>
-              </Col>
-            </Row>
-          </Col>
-          <Col>
-            <div>
-              <div css={Style.title}>{contractName}</div>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Row>
+        <Col xs={4}>
+          <Row>
+            <Col>
+              <div css={Style.title}>Rule browser</div>
+              <RuleBrowser projectId={projectId} searchResult={rulesSearchResult} onSearchResultChange={setRulesSearchResult} />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
               <div>
-                <Droppable droppableId="droppable" type="top">
-                  {(provided, snapshot) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
-                      {elements.map((element, index) => (
-                        <Draggable key={element.id} draggableId={element.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
-                              <PresentationElementView
-                                key={index}
-                                element={element}
-                                onElementChange={(element) => {
-                                  refreshElements(elements.set(index, element));
-                                }}
-                                dragHandleProps={provided.dragHandleProps}
-                                onElementRemove={() => refreshElements(elements.remove(index))}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-                <AddButton
-                  onClick={() =>
-                    refreshElements(elements.push(new DocumentEditorSectionElement(nextElementId.next().toString(), "", List())))
-                  }
-                />
+                <div css={Style.title} style={{ marginTop: "20px" }}>
+                  Actions
+                </div>
+                <Button onClick={() => saveDocument(contractDbId, convertToContract(elements))}>Save</Button>
+                <Button onClick={() => downloadDocument(projectId, convertToContract(elements))}>Generate document</Button>
               </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <div>
+                <div css={Style.title} style={{ marginTop: "20px" }}>
+                  Compilation errors
+                </div>
+                <div style={{ overflowY: "auto" }}>
+                  {outputMessages.map((message, index) => (
+                    <div key={index}>{message.message}</div>
+                  ))}
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Col>
+        <Col>
+          <div>
+            <div css={Style.title}>{contractName}</div>
+            <div>
+              <Droppable droppableId="droppable" type="top">
+                {(provided, snapshot) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
+                    {elements.map((element, index) => (
+                      <Draggable key={element.id} draggableId={element.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
+                            <PresentationElementView
+                              key={index}
+                              projectId={projectId}
+                              element={element}
+                              onElementChange={(element) => {
+                                refreshElements(elements.set(index, element));
+                              }}
+                              dragHandleProps={provided.dragHandleProps}
+                              onElementRemove={() => refreshElements(elements.remove(index))}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+              <AddButton
+                onClick={() =>
+                  refreshElements(elements.push(new DocumentEditorSectionElement(nextElementId.next().toString(), "", List())))
+                }
+              />
             </div>
-          </Col>
-        </Row>
-      </DragDropContext>
-    </DocumentEditorContext.Provider>
+          </div>
+        </Col>
+      </Row>
+    </DragDropContext>
   );
 };
 

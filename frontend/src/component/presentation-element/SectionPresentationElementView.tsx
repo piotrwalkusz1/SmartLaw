@@ -29,6 +29,7 @@ const Styles = {
 };
 
 interface SectionPresentationElementViewProps {
+  projectId: string;
   element: DocumentEditorSectionElement;
   onNestedElementsChange: (nestedElements: List<DocumentEditorElement>) => void;
   onRemove: () => void;
@@ -41,6 +42,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
 });
 
 const SectionPresentationElementView = ({
+  projectId,
   element,
   onNestedElementsChange,
   onRemove,
@@ -66,6 +68,7 @@ const SectionPresentationElementView = ({
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
                       <PresentationElementView
+                        projectId={projectId}
                         element={documentEditorElement}
                         onElementChange={(nestedElement) => {
                           onNestedElementsChange(element.documentEditorElements.set(index, nestedElement));

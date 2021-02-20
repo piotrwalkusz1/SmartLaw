@@ -174,40 +174,40 @@ object CarSalesContractExample {
             presentationElements = listOf(
                     RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SPRZEDAJACEGO_I_KUPUJACEGO", "pl.piotrwalkusz"),
-                            arguments = listOf(
-                                    MetaPrimitiveValue("Gdańsk"),
-                                    MetaPrimitiveValue("2020-10-10"),
-                                    MetaPrimitiveValue("Jan Kowalski"),
-                                    MetaPrimitiveValue("CAG 123456"),
-                                    MetaPrimitiveValue("Prezydent Miasta Warszawa"),
-                                    MetaPrimitiveValue("Warszawa"),
-                                    MetaPrimitiveValue("Długa"),
-                                    MetaPrimitiveValue("12345678901"),
-                                    MetaPrimitiveValue("Sławomir Nowak"),
-                                    MetaPrimitiveValue("CAG 234567"),
-                                    MetaPrimitiveValue("Prezydent Miasta Kraków"),
-                                    MetaPrimitiveValue("Kraków"),
-                                    MetaPrimitiveValue("Krótka"),
-                                    MetaPrimitiveValue("23456789012"))
+                            arguments = mapOf(
+                                    "miejscowość" to MetaPrimitiveValue("Gdańsk"),
+                                    "dzień" to MetaPrimitiveValue("2020-10-10"),
+                                    "sprzedającyImięNazwisko" to MetaPrimitiveValue("Jan Kowalski"),
+                                    "sprzedającyNumerDowoduOsobistego" to MetaPrimitiveValue("CAG 123456"),
+                                    "sprzedającyDowódOsobistWydanyPrzez" to MetaPrimitiveValue("Prezydent Miasta Warszawa"),
+                                    "sprzedającyMiejsceZamieszkania" to MetaPrimitiveValue("Warszawa"),
+                                    "sprzedającyUlica" to MetaPrimitiveValue("Długa"),
+                                    "sprzedającyPESEL" to MetaPrimitiveValue("12345678901"),
+                                    "kupującyImięNazwisko" to MetaPrimitiveValue("Sławomir Nowak"),
+                                    "kupującyNumerDowoduOsobistego" to MetaPrimitiveValue("CAG 234567"),
+                                    "kupującyDowódOsobistWydanyPrzez" to MetaPrimitiveValue("Prezydent Miasta Kraków"),
+                                    "kupującyMiejsceZamieszkania" to MetaPrimitiveValue("Kraków"),
+                                    "kupującyUlica" to MetaPrimitiveValue("Krótka"),
+                                    "kupującyPESEL" to MetaPrimitiveValue("23456789012"))
                     )),
                     SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("DEFINICJA_SAMOCHODU", "pl.piotrwalkusz"),
-                            arguments = listOf(
-                                    MetaPrimitiveValue("Audi A4"),
-                                    MetaPrimitiveValue("1999"),
-                                    MetaPrimitiveValue("XXXXXXXX"),
-                                    MetaPrimitiveValue("YYYYYYYY"),
-                                    MetaPrimitiveValue("ZZZZZZZZ"),
-                                    MetaPrimitiveValue("czarny"),
-                                    MetaPrimitiveValue("320000"))
+                            arguments = mapOf(
+                                    "markaModel" to MetaPrimitiveValue("Audi A4"),
+                                    "rokProdukcji" to MetaPrimitiveValue("1999"),
+                                    "nrSilnika" to MetaPrimitiveValue("XXXXXXXX"),
+                                    "nrNadwozia" to MetaPrimitiveValue("YYYYYYYY"),
+                                    "nrRejestracyjny" to MetaPrimitiveValue("ZZZZZZZZ"),
+                                    "kolor" to MetaPrimitiveValue("czarny"),
+                                    "przebieg" to MetaPrimitiveValue("320000"))
                     )))),
                     SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz")
                     )))),
                     SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
-                            arguments = listOf(
-                                    MetaPrimitiveValue("10000"))
+                            arguments = mapOf(
+                                    "kwota" to MetaPrimitiveValue("10000"))
                     )))),
                     SectionPresentationElement(listOf(
                             RuleInvocationPresentationElement(RuleInvocation(
@@ -215,14 +215,14 @@ object CarSalesContractExample {
                             )),
                             RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("SPOSOB_ZAPLATY", "pl.piotrwalkusz"),
-                                    arguments = listOf(MetaPrimitiveValue("gotówka"))
+                                    arguments = mapOf("sposobZaplaty" to MetaPrimitiveValue("gotówka"))
                             )),
                             RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("POTWIERDZENIE_ODBIORU", "pl.piotrwalkusz")
                             )),
                             RuleInvocationPresentationElement(RuleInvocation(
                                     ruleId = Id("PRZEKAZANIE_RZECZY_SLUZACYCH_DO_KORZYSTANIA_Z_SAMOCHODU", "pl.piotrwalkusz"),
-                                    arguments = listOf(MetaPrimitiveValue("dwie sztuki kluczyków"))
+                                    arguments = mapOf("rzeczy" to MetaPrimitiveValue("dwie sztuki kluczyków"))
                             )))),
                     SectionPresentationElement(listOf(RuleInvocationPresentationElement(RuleInvocation(
                             ruleId = Id("OSWIADCZENIE_KUPUJACEGO", "pl.piotrwalkusz")

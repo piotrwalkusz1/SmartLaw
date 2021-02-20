@@ -1,7 +1,7 @@
 package com.piotrwalkusz.smartlaw.core.model.meta
 
-import com.piotrwalkusz.smartlaw.core.model.common.Id
+import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
 
 data class MetaRuleValue(
-        val ruleId: Id
+        val ruleInvocation: RuleInvocation
 ) : MetaValue

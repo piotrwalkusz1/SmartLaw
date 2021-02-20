@@ -13,6 +13,7 @@ export const decodeRule = (json: any): Rule => {
     content: decodeTemplate(json.content),
     elements: decodeTemplate(json.elements),
     outputs: decodeMap(json.outputs, decodeTemplate),
+    interfaces: decodeList(json.interfaces, decodeId),
   };
 };
 
@@ -24,4 +25,5 @@ export default interface Rule {
   content: Template;
   elements: Template;
   outputs: Map<String, Template>;
+  interfaces: List<Id>;
 }

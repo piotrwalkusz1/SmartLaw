@@ -5,5 +5,5 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 
 data class RuleInvocation(
         val ruleId: Id,
-        val arguments: List<MetaValue> = listOf()
+        val arguments: Map<String, MetaValue> = mapOf()
 )

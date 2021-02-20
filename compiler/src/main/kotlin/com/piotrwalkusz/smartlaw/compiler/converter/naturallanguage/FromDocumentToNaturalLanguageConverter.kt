@@ -78,6 +78,6 @@ class FromDocumentToNaturalLanguageConverter(
         val content = templateProcessorService.processRuleContentTemplate(rule.content, ruleArgumentValidationResults, linksByElementsIds, processRuleContentTemplateConfig)
         val naturalLanguageProvision = NaturalLanguageProvision(content)
 
-        return ExtendedRuleInvocationPresentationElement(presentationElement, naturalLanguageProvision, rule, ruleArgumentValidationResults.map { it.results })
+        return ExtendedRuleInvocationPresentationElement(presentationElement, naturalLanguageProvision, rule, ruleArgumentValidationResults.map { it.argument.name to it.results }.toMap())
     }
 }

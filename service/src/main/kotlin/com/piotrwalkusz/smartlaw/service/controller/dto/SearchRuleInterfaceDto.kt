@@ -3,9 +3,8 @@ package com.piotrwalkusz.smartlaw.service.controller.dto
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 
 
-data class SearchRuleDto(
+data class SearchRuleInterfaceDto(
         val searchPhrase: String?,
-        val ruleId: Id?,
         val ruleInterfaceId: Id?,
         val projectId: String
 )

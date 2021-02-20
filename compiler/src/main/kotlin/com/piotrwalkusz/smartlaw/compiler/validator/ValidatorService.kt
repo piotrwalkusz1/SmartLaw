@@ -17,14 +17,25 @@ class ValidatorService(
 ) {
 
     fun validateRuleArgumentsValues(rule: Rule, ruleInvocation: RuleInvocation): List<RuleArgumentValidationResult> {
-        if (rule.arguments.size != ruleInvocation.arguments.size) {
-            Output.get().addError("Count of arguments in rule and rule's invocation must be equal. Rule has" +
-                    "${rule.arguments.size} arguments rule invocation has ${ruleInvocation.arguments.size} arguments.")
+        val results = mutableListOf<RuleArgumentValidationResult>()
+
+        for (ruleArgument in rule.arguments) {
+            val ruleInvocationArgument = ruleInvocation.arguments[ruleArgument.name]
+            if (ruleInvocationArgument == null) {
+                Output.get().addError("Required rule argument \"${ruleArgument.name}\" is missing.")
+            } else {
+                val result = runValidators(ruleArgument.validators, ruleArgument, ruleInvocationArgument)
+                results.add(RuleArgumentValidationResult(ruleArgument, ruleInvocationArgument, result))
+            }
         }
 
-        return rule.arguments
-                .mapIndexed { index, argument -> argument to ruleInvocation.arguments.getOrNull(index) }
-                .map { RuleArgumentValidationResult(it.first, it.second, runValidators(it.first.validators, it.first, it.second)) }
+        for (ruleInvocationArgument in ruleInvocation.arguments.keys) {
+            if (rule.arguments.find { it.name == ruleInvocationArgument } == null) {
+                Output.get().addError("Argument with name \"${ruleInvocationArgument}\" is not needed.")
+            }
+        }
+
+        return results
     }
 
     private fun runValidators(validators: List<Validator>, argument: MetaArgument, value: MetaValue?): List<ValidationResult> {

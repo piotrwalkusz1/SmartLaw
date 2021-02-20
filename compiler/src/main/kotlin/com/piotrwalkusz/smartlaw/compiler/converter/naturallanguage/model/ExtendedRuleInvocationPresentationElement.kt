@@ -8,5 +8,5 @@ data class ExtendedRuleInvocationPresentationElement(
         override val presentationElement: RuleInvocationPresentationElement,
         override val naturalLanguageDocumentObject: NaturalLanguageProvision,
         val rule: Rule,
-        val validationResults: List<List<ValidationResult>>
+        val validationResults: Map<String, List<ValidationResult>>
 ) : ExtendedPresentationElement<RuleInvocationPresentationElement, NaturalLanguageProvision>
