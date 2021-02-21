@@ -22,7 +22,7 @@ const RuleInvocationArgumentListEditor = ({
   return (
     <div>
       {ruleArguments.map((ruleArgument, index) => (
-        <div key={index} style={{ marginBottom: "15px" }}>
+        <div key={index}>
           <RuleInvocationArgumentEditor
             ruleArgument={ruleArgument}
             ruleInvocationArgument={ruleInvocationArguments.get(ruleArgument.name) || prepareEmptyRuleInvocationArgument(ruleArgument)}
@@ -32,7 +32,7 @@ const RuleInvocationArgumentListEditor = ({
             validationResults={validationResults.get(ruleArgument.name) || List()}
           />
         </div>
-      ))}{" "}
+      ))}
     </div>
   );
 };

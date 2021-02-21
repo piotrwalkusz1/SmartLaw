@@ -1,30 +1,25 @@
 import React from "react";
-import { Container, Tab, Tabs } from "react-bootstrap";
-import ContractPage from "./ContractPage";
-import LibraryPage from "./LibraryPage";
-import { ProjectContext } from "../context/ProjectContext";
+import Switch from "react-bootstrap/Switch";
+import { BrowserRouter, Route } from "react-router-dom";
+import ProjectsManagerPage from "./ProjectsManagerPage";
+import ProjectEditorPage from "./ProjectEditorPage";
+import CreateProjectPage from "./CreateProjectPage";
 
 const RootPage = () => {
   return (
-    <ProjectContext.Provider value={{ projectId: "1" }}>
-      <Container style={{ maxWidth: "100%" }}>
-        <Tabs defaultActiveKey="contract">
-          <Tab eventKey="contract" title="Contract">
-            <ContractPage />
-          </Tab>
-          <Tab eventKey="library" title="Library">
-            <LibraryPage />
-          </Tab>
-        </Tabs>
-      </Container>
-    </ProjectContext.Provider>
-    // <div style={{ display: "flex", flexDirection: "column", height: "600px" }}>
-    //   <div>Top</div>
-    //   <div style={{ flexGrow: 1, overflowY: "auto" }}>
-    //     <div style={{ height: "600px" }}>Bottom 1</div>
-    //     <div style={{ height: "200px" }}>Bottom 2</div>
-    //   </div>
-    // </div>
+    <BrowserRouter>
+      <Switch style={{ paddingLeft: "0" }}>
+        <Route exact path="/">
+          <ProjectsManagerPage />
+        </Route>
+        <Route exact path="/projects/new">
+          <CreateProjectPage />
+        </Route>
+        <Route path="/projects/:projectId">
+          <ProjectEditorPage />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   );
 };
 

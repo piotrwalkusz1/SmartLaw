@@ -19,6 +19,7 @@ const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange, ruleArgu
       displayName: null,
       description: null,
       type: ruleArgumentTypes.get(0) || prepareEmptyId(),
+      validators: List(),
     };
   };
 

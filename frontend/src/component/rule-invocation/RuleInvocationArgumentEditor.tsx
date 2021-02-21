@@ -5,6 +5,7 @@ import RuleInvocationArgumentValueEditor from "./RuleInvocationArgumentValueEdit
 import { List } from "immutable";
 import { ValidationResult } from "../../model/ValidationResult";
 import RuleInvocationValidationResults from "./RuleInvocationValidationResults";
+import ExpandableArea from "../../common/ExpandableArea";
 
 interface RuleInvocationArgumentEditorProps {
   ruleArgument: MetaArgument;
@@ -19,16 +20,21 @@ const RuleInvocationArgumentEditor = ({
   onRuleInvocationArgumentChange,
   validationResults,
 }: RuleInvocationArgumentEditorProps) => {
+  const isAnyValidationError = (): boolean => {
+    return !!validationResults.find((validationResult) => validationResult.error !== null);
+  };
+
   return (
-    <div>
-      <span>{ruleArgument.displayName || ruleArgument.name}</span>
-      <RuleInvocationArgumentValueEditor
-        ruleInvocationArgument={ruleInvocationArgument}
-        onRuleInvocationArgumentChange={onRuleInvocationArgumentChange}
-        ruleArgument={ruleArgument}
-      />
-      <RuleInvocationValidationResults validationResults={validationResults} />
-    </div>
+    <ExpandableArea header={ruleArgument.displayName || ruleArgument.name} errorBorder={isAnyValidationError()}>
+      <div>
+        <RuleInvocationArgumentValueEditor
+          ruleInvocationArgument={ruleInvocationArgument}
+          onRuleInvocationArgumentChange={onRuleInvocationArgumentChange}
+          ruleArgument={ruleArgument}
+        />
+        <RuleInvocationValidationResults validationResults={validationResults} />
+      </div>
+    </ExpandableArea>
   );
 };
 

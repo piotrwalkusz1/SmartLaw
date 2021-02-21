@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Library from "../model/Library";
 import * as DocumentService from "../service/DocumentService";
 import { useFetchedData } from "../utils/Hooks";
@@ -9,10 +9,10 @@ import ExpandableArea from "../common/ExpandableArea";
 import Id from "../model/Id";
 import { List } from "immutable";
 import { getRulesArgumentsTypes } from "../service/RuleService";
+import { ProjectContext } from "../context/ProjectContext";
 
-const LibraryPage = () => {
-  const libraryDbId = "1";
-  const projectId = "1";
+const LibraryPage = ({ libraryDbId }: { libraryDbId: string }) => {
+  const { projectId } = useContext(ProjectContext);
   const [savedLibrary, setSavedLibrary] = useState<Library | undefined>();
   const [library, setLibrary] = useState<Library | undefined>();
   const [rulesArgumentsTypes, setRulesArgumentsTypes] = useState<List<Id> | undefined>(undefined);
@@ -37,7 +37,7 @@ const LibraryPage = () => {
   ) : (
     <div>
       <div>
-        <Button disabled={library === savedLibrary} onClick={() => saveLibrary(library)}>
+        <Button style={{ margin: "15px 0" }} disabled={library === savedLibrary} onClick={() => saveLibrary(library)}>
           Save
         </Button>
       </div>

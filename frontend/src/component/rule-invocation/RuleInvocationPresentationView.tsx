@@ -49,30 +49,38 @@ const RuleInvocationPresentationView = ({
     }
   };
 
+  const isAnyValidationError = (): boolean => {
+    return !!List(validationResults.values())
+      .flatMap((validationResults) => validationResults)
+      .find((validationResult) => validationResult.error !== null);
+  };
+
   return (
-    <Accordion>
-      <Card>
-        <Accordion.Toggle {...dragHandleProps} as={Card.Header} eventKey="0">
-          {renderContent()}
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="0">
-          <Card.Body>
-            {renderRemoveButton()}
-            <RuleInvocationArgumentListEditor
-              ruleArguments={rule.arguments}
-              ruleInvocationArguments={ruleInvocation.arguments}
-              onRuleInvocationArgumentsChange={(newArguments) =>
-                onRuleInvocationChange({
-                  ...ruleInvocation,
-                  arguments: newArguments,
-                })
-              }
-              validationResults={validationResults}
-            />
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-    </Accordion>
+    <div style={isAnyValidationError() ? { border: "solid 2px red" } : {}}>
+      <Accordion>
+        <Card>
+          <Accordion.Toggle {...dragHandleProps} as={Card.Header} eventKey="0">
+            {renderContent()}
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="0">
+            <Card.Body>
+              {renderRemoveButton()}
+              <RuleInvocationArgumentListEditor
+                ruleArguments={rule.arguments}
+                ruleInvocationArguments={ruleInvocation.arguments}
+                onRuleInvocationArgumentsChange={(newArguments) =>
+                  onRuleInvocationChange({
+                    ...ruleInvocation,
+                    arguments: newArguments,
+                  })
+                }
+                validationResults={validationResults}
+              />
+            </Card.Body>
+          </Accordion.Collapse>
+        </Card>
+      </Accordion>
+    </div>
   );
 };
 

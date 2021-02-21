@@ -4,7 +4,7 @@ import TextField from "../../common/TextField";
 import SelectField from "../../common/SelectField";
 import Id, { areIdsEqual } from "../../model/Id";
 import { List } from "immutable";
-import { Button } from "react-bootstrap";
+import RuleArgumentValidatorListEditor from "./RuleArgumentValidatorListEditor";
 
 interface RuleArgumentEditorProps {
   ruleArgument: MetaArgument;
@@ -22,6 +22,15 @@ const RuleArgumentEditor = ({ ruleArgument, onRuleArgumentChange, ruleArgumentTy
         onChange={(value) => onRuleArgumentChange({ ...ruleArgument, type: value })}
         options={ruleArgumentTypes}
         display={(option) => option.id}
+      />
+      <RuleArgumentValidatorListEditor
+        validators={ruleArgument.validators}
+        onValidatorsChange={(validators) =>
+          onRuleArgumentChange({
+            ...ruleArgument,
+            validators,
+          })
+        }
       />
     </div>
   );

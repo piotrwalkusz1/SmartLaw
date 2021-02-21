@@ -10,7 +10,7 @@ export interface IdFieldProps {
 
 const IdField = ({ label, value, onValueChange }: IdFieldProps) => {
   return (
-    <Form.Group>
+    <div>
       <Form.Label>{label}</Form.Label>
       <Row>
         <Col>
@@ -29,7 +29,7 @@ const IdField = ({ label, value, onValueChange }: IdFieldProps) => {
           />
         </Col>
       </Row>
-    </Form.Group>
+    </div>
   );
 };
 

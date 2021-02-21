@@ -19,7 +19,10 @@ const RuleSelectorPopup = ({ projectId, ruleInterfaceId, show, handleClose, onRu
       show={show}
       handleClose={handleClose}
       search={(searchPhrase) => searchRules({ searchPhrase, ruleInterfaceId, projectId })}
-      onSelect={(rule: Rule) => onRuleSelected(rule.id)}
+      onSelect={(rule: Rule) => {
+        onRuleSelected(rule.id);
+        handleClose();
+      }}
       display={(rule: Rule) => <div>{rule.name}</div>}
     />
   );

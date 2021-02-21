@@ -36,6 +36,7 @@ const RuleListEditor = ({ projectId, rules, onRulesChange, ruleArgumentTypes }: 
         <RuleEditor projectId={projectId} rule={rule} onRuleChange={onRuleChange} ruleArgumentTypes={ruleArgumentTypes} />
       )}
       emptyItem={prepareEmptyRule}
+      allowRemove={true}
     />
   );
 };

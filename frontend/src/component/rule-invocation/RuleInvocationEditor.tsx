@@ -2,7 +2,6 @@ import { List } from "immutable";
 import RuleInvocationPresentationView from "./RuleInvocationPresentationView";
 import React, { useContext, useState } from "react";
 import RuleInvocation from "../../model/RuleInvocation";
-import { Button } from "react-bootstrap";
 import { ExtendedRuleInvocationPresentationElement } from "../../model/ExtendedRuleInvocationPresentationElement";
 import { useFetchedData } from "../../utils/Hooks";
 import { extendPresentationElements } from "../../service/ProjectService";
@@ -30,26 +29,26 @@ const fetchExtendedPresentationElement = (
 };
 
 const RuleInvocationEditor = ({ ruleInvocation, onRuleInvocationChange }: RuleInvocationEditorProps) => {
-  const [refresh, setRefresh] = useState(0);
   const [extendedPresentationElement, setExtendedPresentationElement] = useState<ExtendedRuleInvocationPresentationElement | null>(null);
   const projectContext = useContext(ProjectContext);
   useFetchedData(() => fetchExtendedPresentationElement(projectContext.projectId, ruleInvocation), setExtendedPresentationElement, [
-    refresh,
+    ruleInvocation,
   ]);
 
-  return extendedPresentationElement ? (
+  return (
     <div>
-      <Button onClick={() => setRefresh(refresh + 1)}>Refresh</Button>
-      <RuleInvocationPresentationView
-        ruleInvocation={ruleInvocation}
-        onRuleInvocationChange={onRuleInvocationChange}
-        rule={extendedPresentationElement.rule}
-        ruleContent={extendedPresentationElement.naturalLanguageDocumentObject.content}
-        validationResults={extendedPresentationElement.validationResults}
-      />
+      {extendedPresentationElement ? (
+        <RuleInvocationPresentationView
+          ruleInvocation={ruleInvocation}
+          onRuleInvocationChange={onRuleInvocationChange}
+          rule={extendedPresentationElement.rule}
+          ruleContent={extendedPresentationElement.naturalLanguageDocumentObject.content}
+          validationResults={extendedPresentationElement.validationResults}
+        />
+      ) : (
+        <> </>
+      )}
     </div>
-  ) : (
-    <></>
   );
 };
 

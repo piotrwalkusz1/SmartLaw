@@ -8,7 +8,7 @@ import {
 } from "../model/ExtendPresentationElementsResultDto";
 import FileDownload from "js-file-download";
 import { decodeList } from "../utils/Decoders";
-import { decodeProject } from "../model/Project";
+import Project, { decodeProject } from "../model/Project";
 
 export const downloadDocument = (projectId: string, document: Document): void => {
   axios
@@ -31,6 +31,18 @@ export const extendPresentationElements = (
     .then((response) => {
       return decodeExtendPresentationElementsResultDto(response.data);
     });
+};
+
+export const getProject = (projectId: string) => {
+  return axios.get("/projects/" + projectId).then((response) => {
+    return decodeProject(response.data);
+  });
+};
+
+export const createProject = (request: { name: string }): Promise<Project> => {
+  return axios.post("/projects", request).then((response) => {
+    return decodeProject(response.data);
+  });
 };
 
 export const searchProjects = (searchPhrase: string) => {

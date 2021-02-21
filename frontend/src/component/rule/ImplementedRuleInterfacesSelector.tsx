@@ -27,6 +27,7 @@ const ImplementedRuleInterfacesSelector = ({
           header={(ruleInterfaceId) => ruleInterfaceId.id}
           content={(ruleInterfaceId) => <div>{ruleInterfaceId.id}</div>}
           onItemAdd={() => setShowBrowser(true)}
+          allowRemove={true}
         />
         <RuleInterfaceSelectorPopup
           projectId={projectId}

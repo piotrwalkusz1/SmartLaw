@@ -16,7 +16,7 @@ export const decodeString = (json: any): string => {
   }
 };
 
-export const decodeNumber = (json: any): Number => {
+export const decodeNumber = (json: any): number => {
   if (typeof json === "number") {
     return json;
   } else {

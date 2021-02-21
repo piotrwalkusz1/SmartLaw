@@ -5,12 +5,12 @@ import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.FromDocument
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.exporter.DocxExporter
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.ExtendedPresentationElement
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocument
+import com.piotrwalkusz.smartlaw.core.example.CarSalesContractExample
+import com.piotrwalkusz.smartlaw.core.model.document.Library
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
-import com.piotrwalkusz.smartlaw.service.controller.dto.ConvertDocumentToNaturalLanguageDto
-import com.piotrwalkusz.smartlaw.service.controller.dto.ExtendPresentationElementsDto
-import com.piotrwalkusz.smartlaw.service.controller.dto.ExtendPresentationElementsResultDto
-import com.piotrwalkusz.smartlaw.service.controller.dto.SearchProjectsDto
+import com.piotrwalkusz.smartlaw.service.controller.dto.*
 import com.piotrwalkusz.smartlaw.service.model.Project
+import com.piotrwalkusz.smartlaw.service.service.DocumentService
 import com.piotrwalkusz.smartlaw.service.service.FromDocumentToNaturalLanguageConverterFactory
 import com.piotrwalkusz.smartlaw.service.service.ProjectService
 import com.piotrwalkusz.smartlaw.service.service.RuleService
@@ -31,10 +31,26 @@ import javax.servlet.http.HttpServletResponse
 class ProjectController(
         private val fromDocumentToNaturalLanguageConverterFactory: FromDocumentToNaturalLanguageConverterFactory,
         private val ruleService: RuleService,
-        private val projectService: ProjectService
+        private val projectService: ProjectService,
+        private val documentService: DocumentService
 ) {
 
+    @GetMapping("/{projectId}")
+    fun getProject(@PathVariable projectId: String): Project {
+        return projectService.getProject(projectId)
+    }
+
     @PostMapping
+    fun createProject(@RequestBody createProjectDto: CreateProjectDto): Project {
+        val contractId = documentService.createDocument(CarSalesContractExample.contract).id
+        val libraryId = documentService.createDocument(CarSalesContractExample.library).id
+
+        return projectService.createProject(
+                name = createProjectDto.name,
+                documentsIds = listOf(contractId, libraryId))
+    }
+
+    @PostMapping("/search")
     fun searchProjects(@RequestBody searchProjectsDto: SearchProjectsDto): List<Project> {
         return projectService.searchProjects(searchProjectsDto)
     }

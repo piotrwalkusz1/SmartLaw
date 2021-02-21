@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
 import { saveDocument } from "../service/DocumentService";
@@ -26,6 +26,7 @@ import Id from "../model/Id";
 import { DocumentType } from "../model/Document";
 import AddButton from "../common/AddButton";
 import { prepareEmptyRuleInvocationArgument } from "../service/RuleService";
+import { ProjectContext } from "../context/ProjectContext";
 
 const Style = {
   title: css`
@@ -78,9 +79,8 @@ export class DocumentEditorRuleInvocationElement extends DocumentEditorElement {
   }
 }
 
-const ContractPage = () => {
-  const contractDbId = "2";
-  const projectId = "1";
+const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
+  const { projectId } = useContext(ProjectContext);
   const [contractId, setContractId] = useState<Id | undefined>(undefined);
   const [contractName, setContractName] = useState<string | undefined>(undefined);
   const [contractDescription, setContractDescription] = useState<string | null>(null);
@@ -324,9 +324,20 @@ const ContractPage = () => {
                 <div css={Style.title} style={{ marginTop: "20px" }}>
                   Actions
                 </div>
-                <Button onClick={() => saveDocument(contractDbId, convertToContract(elements))}>Save</Button>
-                <Button onClick={() => refreshElements(elements)}>Refresh</Button>
-                <Button onClick={() => downloadDocument(projectId, convertToContract(elements))}>Generate document</Button>
+                <div style={{ display: "flex" }}>
+                  <Button style={{ flexGrow: 1 }} onClick={() => saveDocument(contractDbId, convertToContract(elements))}>
+                    Save
+                  </Button>
+                  <Button style={{ marginLeft: "15px", flexGrow: 1 }} onClick={() => refreshElements(elements)}>
+                    Refresh
+                  </Button>
+                  <Button
+                    style={{ marginLeft: "15px", flexGrow: 1 }}
+                    onClick={() => downloadDocument(projectId, convertToContract(elements))}
+                  >
+                    Generate document
+                  </Button>
+                </div>
               </div>
             </Col>
           </Row>

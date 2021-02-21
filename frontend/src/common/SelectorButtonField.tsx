@@ -1,5 +1,6 @@
 import { ReactElement, useState } from "react";
 import { Button } from "react-bootstrap";
+import TextField from "./TextField";
 
 interface SelectorButtonFieldProps<T> {
   value: T;
@@ -15,8 +16,12 @@ const SelectorButtonField = <T,>({ value, onChange, popup, display }: SelectorBu
 
   return (
     <div>
-      <span>{display(value)}</span>
-      <Button onClick={() => setShow(true)}>Select</Button>
+      <div style={{ display: "flex", alignItems: "baseline" }}>
+        <TextField value={display(value)} disabled={true} />
+        <Button style={{ marginLeft: "15px" }} onClick={() => setShow(true)}>
+          Select
+        </Button>
+      </div>
       {popup(show, handleClose, onChange)}
     </div>
   );
