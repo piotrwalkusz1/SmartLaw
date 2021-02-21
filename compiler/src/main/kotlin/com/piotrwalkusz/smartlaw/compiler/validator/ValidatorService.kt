@@ -42,18 +42,17 @@ class ValidatorService(
         if (value == null) {
             return listOf(ValidationResult.error("Value cannot be null"))
         }
-        if (!(value is MetaPrimitiveValue)) {
-            return listOf(ValidationResult.error("Value has bad type"))
-        }
-        if (argument.type.id == "Integer") {
-            if (value.value.toIntOrNull() == null) {
-                return listOf(ValidationResult.error("Value cannot be parsed as number"))
-            }
-        } else if (argument.type.id == "LocalDate") {
-            try {
-                LocalDate.parse(value.value)
-            } catch (exception: DateTimeParseException) {
-                return listOf(ValidationResult.error("Value cannot be parsed as local date"))
+        if (value is MetaPrimitiveValue) {
+            if (argument.type.id == "Integer") {
+                if (value.value.toIntOrNull() == null) {
+                    return listOf(ValidationResult.error("Value cannot be parsed as number"))
+                }
+            } else if (argument.type.id == "LocalDate") {
+                try {
+                    LocalDate.parse(value.value)
+                } catch (exception: DateTimeParseException) {
+                    return listOf(ValidationResult.error("Value cannot be parsed as local date"))
+                }
             }
         }
 

@@ -42,6 +42,7 @@ const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange, ruleArgu
                 />
               )}
               emptyItem={prepareEmptyRuleArgument}
+              allowRemove={true}
             />
           </Card.Body>
         </Accordion.Collapse>

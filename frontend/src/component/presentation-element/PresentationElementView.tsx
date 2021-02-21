@@ -5,24 +5,16 @@ import { DocumentEditorElement, DocumentEditorRuleInvocationElement, DocumentEdi
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 
 interface PresentationElementViewProps {
-  projectId: string;
   element: DocumentEditorElement;
   onElementChange: (element: DocumentEditorElement) => void;
   onElementRemove: () => void;
   dragHandleProps: DraggableProvidedDragHandleProps | undefined;
 }
 
-const PresentationElementView = ({
-  projectId,
-  element,
-  onElementChange,
-  dragHandleProps,
-  onElementRemove,
-}: PresentationElementViewProps) => {
+const PresentationElementView = ({ element, onElementChange, dragHandleProps, onElementRemove }: PresentationElementViewProps) => {
   if (element instanceof DocumentEditorSectionElement) {
     return (
       <SectionPresentationElementView
-        projectId={projectId}
         element={element}
         onNestedElementsChange={(nestedElements) =>
           onElementChange(new DocumentEditorSectionElement(element.id, element.title, nestedElements))
@@ -34,7 +26,6 @@ const PresentationElementView = ({
   } else if (element instanceof DocumentEditorRuleInvocationElement) {
     return (
       <RuleInvocationView
-        projectId={projectId}
         element={element}
         onArgumentsChange={(newArguments) => onElementChange(element.withRuleInvocationArguments(newArguments))}
         dragHandleProps={dragHandleProps}

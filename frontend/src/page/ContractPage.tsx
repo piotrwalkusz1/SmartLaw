@@ -14,7 +14,7 @@ import { ExtendedSectionPresentationElement } from "../model/ExtendedSectionPres
 import { ExtendedRuleInvocationPresentationElement } from "../model/ExtendedRuleInvocationPresentationElement";
 import { ExtendedPresentationElement } from "../model/ExtendedPresentationElement";
 import { moveItemInList } from "../utils/ListUtils";
-import MetaValue, { MetaValueType } from "../model/MetaValue";
+import MetaValue from "../model/MetaValue";
 import PresentationElement from "../model/PresentationElement";
 import SectionPresentationElement from "../model/SectionPresentationElement";
 import RuleInvocationPresentationElement from "../model/RuleInvocationPresentationElement";
@@ -22,7 +22,6 @@ import RuleBrowser from "../component/RuleBrowser";
 import Rule from "../model/Rule";
 import NaturalLanguageProvision from "../model/NaturalLanguageProvision";
 import { OutputMessage } from "../model/OutputMessage";
-import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import Id from "../model/Id";
 import { DocumentType } from "../model/Document";
 import AddButton from "../common/AddButton";
@@ -95,7 +94,7 @@ const ContractPage = () => {
   useEffect(() => {
     let isSubscribed = true;
     DocumentService.getDocument<Contract>(contractDbId).then((contract) => {
-      extendPresentationElements(projectId, contract.presentationElements).then((result) => {
+      extendPresentationElements(projectId, contract.presentationElements, contract.presentationElements).then((result) => {
         if (isSubscribed) {
           setContractId(contract.id);
           setContractName(contract.name);
@@ -118,7 +117,7 @@ const ContractPage = () => {
     }
     let isSubscribed = true;
 
-    extendPresentationElements(projectId, presentationElementsPendingExtending).then((result) => {
+    extendPresentationElements(projectId, presentationElementsPendingExtending, presentationElementsPendingExtending).then((result) => {
       if (isSubscribed) {
         setElements((oldElements) =>
           mergeDocumentEditorElementsAndExtendedPresentationElements(result.extendedPresentationElements, oldElements)
@@ -326,6 +325,7 @@ const ContractPage = () => {
                   Actions
                 </div>
                 <Button onClick={() => saveDocument(contractDbId, convertToContract(elements))}>Save</Button>
+                <Button onClick={() => refreshElements(elements)}>Refresh</Button>
                 <Button onClick={() => downloadDocument(projectId, convertToContract(elements))}>Generate document</Button>
               </div>
             </Col>
@@ -358,7 +358,6 @@ const ContractPage = () => {
                           <div ref={provided.innerRef} {...provided.draggableProps} style={provided.draggableProps.style}>
                             <PresentationElementView
                               key={index}
-                              projectId={projectId}
                               element={element}
                               onElementChange={(element) => {
                                 refreshElements(elements.set(index, element));

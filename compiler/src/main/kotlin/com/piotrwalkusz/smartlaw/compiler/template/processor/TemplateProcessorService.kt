@@ -14,17 +14,25 @@ import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElem
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
+import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.Template
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Function
 
 class TemplateProcessorService(
         private val templateProcessors: List<TemplateProcessor<*, *>> = TemplateProcessor.DEFAULT_TEMPLATE_PROCESSORS,
 ) {
 
-    fun processRuleContentTemplate(content: Template<String>, ruleArgumentValidationResults: List<RuleArgumentValidationResult>, linksByElementsIds: Map<Id, String>, config: ProcessRuleContentTemplateConfig): String {
-        val templateProcessorContext = RuleInvocationTemplateProcessorContext(ruleArgumentValidationResults, linksByElementsIds)
+    fun processRuleContentTemplate(
+            content: Template<String>,
+            ruleArgumentValidationResults: List<RuleArgumentValidationResult>,
+            linksByElementsIds: Map<Id, String>,
+            config: ProcessRuleContentTemplateConfig,
+            convertRuleInvocationToNatualLanguage: Function<RuleInvocation, String>
+    ): String {
+        val templateProcessorContext = RuleInvocationTemplateProcessorContext(ruleArgumentValidationResults, linksByElementsIds, convertRuleInvocationToNatualLanguage)
         val ruleContentTemplate = if (config.addStyleToContent) addStyleToRuleContentTemplate(content) else content
 
         return processTemplate(ruleContentTemplate, templateProcessorContext)

@@ -1,9 +1,12 @@
 package com.piotrwalkusz.smartlaw.service.service;
 
+import com.piotrwalkusz.smartlaw.service.controller.dto.SearchProjectsDto
 import com.piotrwalkusz.smartlaw.service.dao.ModuleDao
 import com.piotrwalkusz.smartlaw.service.dao.ProjectDao
 import com.piotrwalkusz.smartlaw.service.dao.common.Sequence
 import com.piotrwalkusz.smartlaw.service.model.Project
+import org.litote.kmongo.ascending
+import org.litote.kmongo.regex
 import org.springframework.stereotype.Service
 
 @Service
@@ -35,5 +38,11 @@ class ProjectService(
         projectDao.insertProject(project)
 
         return project
+    }
+
+    fun searchProjects(searchProjectsDto: SearchProjectsDto): List<Project> {
+        val filter = Project::name regex searchProjectsDto.searchPhrase
+
+        return projectDao.getProjectsByFilter(filter, 10, ascending(Project::name))
     }
 }

@@ -1,6 +1,6 @@
 import { List } from "immutable";
 import React, { ReactElement } from "react";
-import { Accordion, Card } from "react-bootstrap";
+import { Accordion, Button, Card } from "react-bootstrap";
 import AddButton from "./AddButton";
 
 interface ListEditorProps<T> {
@@ -10,9 +10,10 @@ interface ListEditorProps<T> {
   content: (item: T, onItemChange: (item: T) => void) => ReactElement;
   emptyItem?: () => T;
   onItemAdd?: () => void;
+  allowRemove?: boolean;
 }
 
-const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onItemAdd }: ListEditorProps<T>) => {
+const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onItemAdd, allowRemove }: ListEditorProps<T>) => {
   const handleItemAdd = onItemAdd ? onItemAdd : emptyItem ? () => onItemsChange(items.push(emptyItem())) : null;
 
   return (
@@ -25,7 +26,10 @@ const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onIt
                 {header(item)}
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="0">
-                <Card.Body>{content(item, (item) => onItemsChange(items.set(index, item)))}</Card.Body>
+                <div>
+                  {allowRemove ? <Button onClick={() => onItemsChange(items.remove(index))}>Remove</Button> : <> </>}
+                  <Card.Body>{content(item, (item) => onItemsChange(items.set(index, item)))}</Card.Body>
+                </div>
               </Accordion.Collapse>
             </Card>
           </Accordion>

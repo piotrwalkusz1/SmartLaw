@@ -4,6 +4,7 @@ import TextField from "../../common/TextField";
 import SelectField from "../../common/SelectField";
 import Id, { areIdsEqual } from "../../model/Id";
 import { List } from "immutable";
+import { Button } from "react-bootstrap";
 
 interface RuleArgumentEditorProps {
   ruleArgument: MetaArgument;

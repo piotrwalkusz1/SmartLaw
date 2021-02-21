@@ -7,6 +7,8 @@ import {
   ExtendPresentationElementsResultDto,
 } from "../model/ExtendPresentationElementsResultDto";
 import FileDownload from "js-file-download";
+import { decodeList } from "../utils/Decoders";
+import { decodeProject } from "../model/Project";
 
 export const downloadDocument = (projectId: string, document: Document): void => {
   axios
@@ -18,9 +20,21 @@ export const downloadDocument = (projectId: string, document: Document): void =>
 
 export const extendPresentationElements = (
   projectId: string,
-  presentationElements: List<PresentationElement>
+  allPresentationElements: List<PresentationElement>,
+  presentationElementsToExtend: List<PresentationElement>
 ): Promise<ExtendPresentationElementsResultDto> => {
-  return axios.post("/projects/" + projectId + "/documents/extend-presentation-elements", presentationElements).then((response) => {
-    return decodeExtendPresentationElementsResultDto(response.data);
+  return axios
+    .post("/projects/" + projectId + "/documents/extend-presentation-elements", {
+      allPresentationElements: allPresentationElements,
+      presentationElementsToExtend: presentationElementsToExtend,
+    })
+    .then((response) => {
+      return decodeExtendPresentationElementsResultDto(response.data);
+    });
+};
+
+export const searchProjects = (searchPhrase: string) => {
+  return axios.post("/projects/search", { searchPhrase: searchPhrase }).then((response) => {
+    return decodeList(response.data, decodeProject);
   });
 };

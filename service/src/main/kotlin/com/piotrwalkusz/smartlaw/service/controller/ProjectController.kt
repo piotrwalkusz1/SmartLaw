@@ -7,8 +7,12 @@ import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.Extend
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocument
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.service.controller.dto.ConvertDocumentToNaturalLanguageDto
+import com.piotrwalkusz.smartlaw.service.controller.dto.ExtendPresentationElementsDto
 import com.piotrwalkusz.smartlaw.service.controller.dto.ExtendPresentationElementsResultDto
+import com.piotrwalkusz.smartlaw.service.controller.dto.SearchProjectsDto
+import com.piotrwalkusz.smartlaw.service.model.Project
 import com.piotrwalkusz.smartlaw.service.service.FromDocumentToNaturalLanguageConverterFactory
+import com.piotrwalkusz.smartlaw.service.service.ProjectService
 import com.piotrwalkusz.smartlaw.service.service.RuleService
 import org.springframework.web.bind.annotation.*
 import org.springframework.core.io.InputStreamResource
@@ -27,7 +31,13 @@ import javax.servlet.http.HttpServletResponse
 class ProjectController(
         private val fromDocumentToNaturalLanguageConverterFactory: FromDocumentToNaturalLanguageConverterFactory,
         private val ruleService: RuleService,
+        private val projectService: ProjectService
 ) {
+
+    @PostMapping
+    fun searchProjects(@RequestBody searchProjectsDto: SearchProjectsDto): List<Project> {
+        return projectService.searchProjects(searchProjectsDto)
+    }
 
     @PostMapping("/{projectId}/documents/convert/natural-language")
     fun convertDocumentToNaturalLanguage(@PathVariable projectId: String, @RequestBody request: ConvertDocumentToNaturalLanguageDto, response: HttpServletResponse) {
@@ -42,11 +52,14 @@ class ProjectController(
     }
 
     @PostMapping("/{projectId}/documents/extend-presentation-elements")
-    fun extendPresentationElements(@PathVariable projectId: String, @RequestBody presentationElements: List<PresentationElement>): ExtendPresentationElementsResultDto {
+    fun extendPresentationElements(@PathVariable projectId: String, @RequestBody extendPresentationElementsDto: ExtendPresentationElementsDto): ExtendPresentationElementsResultDto {
         Output.get().clearMessages()
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
         val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(ruleProvider, FromDocumentToNaturalLanguageConverter.Config(addStyleToRuleContent = true))
-        val extendedPresentationElements = naturalLanguageConverter.extendPresentationElements(presentationElements)
+        val extendedPresentationElements = naturalLanguageConverter.extendPresentationElements(
+                extendPresentationElementsDto.allPresentationElements,
+                extendPresentationElementsDto.presentationElementsToExtend
+        )
 
         return ExtendPresentationElementsResultDto(
                 extendedPresentationElements,

@@ -3,20 +3,20 @@ package com.piotrwalkusz.smartlaw.compiler.template.processor.context
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.validator.RuleArgumentValidationResult
 import com.piotrwalkusz.smartlaw.core.model.common.Id
-import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
-import com.piotrwalkusz.smartlaw.core.model.meta.MetaListValue
-import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
-import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
+import com.piotrwalkusz.smartlaw.core.model.meta.*
+import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
 import freemarker.template.TemplateMethodModel
 import pl.allegro.finance.tradukisto.MoneyConverters
 import pl.allegro.finance.tradukisto.ValueConverters
 import pl.allegro.finance.tradukisto.internal.converters.IntegerToWordsConverter
 import java.math.BigDecimal
+import java.util.function.Function
 
 
 data class RuleInvocationTemplateProcessorContext(
         val ruleArgumentValidationResults: List<RuleArgumentValidationResult>,
-        val linksByElementsIds: Map<Id, String>
+        val linksByElementsIds: Map<Id, String>,
+        val convertRuleInvocationToNatualLanguage: Function<RuleInvocation, String>
 ) : TemplateProcessorContext {
 
     override fun getTemplateParameters(): Map<String, Any> {
@@ -65,6 +65,9 @@ data class RuleInvocationTemplateProcessorContext(
             }
             is MetaListValue -> {
                 argumentValue.values
+            }
+            is MetaRuleValue -> {
+                return mapOf("content" to convertRuleInvocationToNatualLanguage.apply(argumentValue.ruleInvocation))
             }
             else -> {
                 throw IllegalArgumentException("Cannot convert class ${argumentValue::class.java} to template parameter value")
