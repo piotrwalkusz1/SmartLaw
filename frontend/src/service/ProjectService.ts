@@ -9,12 +9,21 @@ import {
 import FileDownload from "js-file-download";
 import { decodeList } from "../utils/Decoders";
 import Project, { decodeProject } from "../model/Project";
+import Contract from "../model/Contract";
 
 export const downloadDocument = (projectId: string, document: Document): void => {
   axios
     .post("/projects/" + projectId + "/documents/convert/natural-language", { document: document }, { responseType: "blob" })
     .then((response) => {
       FileDownload(response.data, "Contract.docx");
+    });
+};
+
+export const convertToSmartContract = (projectId: string, contract: Contract): void => {
+  axios
+    .post("/projects/" + projectId + "/documents/convert/smart-contract", { contract: contract }, { responseType: "blob" })
+    .then((response) => {
+      FileDownload(response.data, "Contract.txt");
     });
 };
 

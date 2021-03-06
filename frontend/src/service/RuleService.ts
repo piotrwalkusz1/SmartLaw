@@ -7,7 +7,7 @@ import RuleInterface, { decodeRuleInterface } from "../model/RuleInterface";
 import MetaValue, { MetaValueType } from "../model/MetaValue";
 import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import MetaArgument from "../model/MetaArgument";
-import { TYPES } from "./Types";
+import { META_TYPES } from "./MetaTypes";
 import MetaRuleValue from "../model/MetaRuleValue";
 
 export const searchRules = (request: {
@@ -38,7 +38,7 @@ export const getRulesArgumentsTypes = (request: { projectId: string }): Promise<
 };
 
 export const prepareEmptyRuleInvocationArgument = (argument: MetaArgument): MetaValue => {
-  if ([TYPES.STRING.id, TYPES.INTEGER.id, TYPES.LOCAL_DATE.id].includes(argument.type.id)) {
+  if ([META_TYPES.STRING.id, META_TYPES.INTEGER.id, META_TYPES.LOCAL_DATE.id].includes(argument.type.id)) {
     return {
       type: MetaValueType.Primitive,
       value: "",

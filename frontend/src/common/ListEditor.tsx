@@ -36,7 +36,13 @@ const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onIt
   const renderRemoveIcon = (index: number) => {
     if (allowRemove) {
       return (
-        <span css={Styles.removeIcon} onClick={() => onItemsChange(items.remove(index))}>
+        <span
+          css={Styles.removeIcon}
+          onClick={(event) => {
+            event.stopPropagation();
+            onItemsChange(items.remove(index));
+          }}
+        >
           <Trash />
         </span>
       );

@@ -5,8 +5,8 @@ import React from "react";
 import { Accordion, Card } from "react-bootstrap";
 
 interface RuleContentEditorProps {
-  template: Template;
-  onTemplateChange: (template: Template) => void;
+  template: Template<string>;
+  onTemplateChange: (template: Template<string>) => void;
 }
 
 const RuleContentEditor = ({ template, onTemplateChange }: RuleContentEditorProps) => {

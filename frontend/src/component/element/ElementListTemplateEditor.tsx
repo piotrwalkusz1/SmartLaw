@@ -1,21 +1,22 @@
-import Template, { TemplateType } from "../../model/Template";
+import Template from "../../model/Template";
 import { Accordion, Card } from "react-bootstrap";
 import React from "react";
 import ElementListStaticTemplateEditor from "./ElementListStaticTemplateEditor";
-import StaticTemplate from "../../model/StaticTemplate";
+import { isStaticTemplate } from "../../model/StaticTemplate";
+import { List } from "immutable";
+import Element from "../../model/Element";
 
 interface ElementListTemplateEditorProps {
-  template: Template;
-  onTemplateChange: (template: Template) => void;
+  template: Template<List<Element>>;
+  onTemplateChange: (template: Template<List<Element>>) => void;
 }
 
 const ElementListTemplateEditor = ({ template, onTemplateChange }: ElementListTemplateEditorProps) => {
   const renderContent = () => {
-    switch (template.templateType) {
-      case TemplateType.Static:
-        return <ElementListStaticTemplateEditor template={template as StaticTemplate} onTemplateChange={onTemplateChange} />;
-      default:
-        return <div>Template type {template.templateType} is not supported</div>;
+    if (isStaticTemplate(template)) {
+      return <ElementListStaticTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
+    } else {
+      return <div>Template type {template.templateType} is not supported</div>;
     }
   };
 

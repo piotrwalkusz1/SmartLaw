@@ -11,7 +11,7 @@ import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 interface RuleInvocationPresentationViewProps {
   ruleInvocation: RuleInvocation;
   onRuleInvocationChange: (ruleInvocation: RuleInvocation) => void;
-  rule: Rule;
+  rule: Rule | null;
   ruleContent: string;
   validationResults: Map<String, List<ValidationResult>>;
   onRemove?: () => void;
@@ -66,7 +66,7 @@ const RuleInvocationPresentationView = ({
             <Card.Body>
               {renderRemoveButton()}
               <RuleInvocationArgumentListEditor
-                ruleArguments={rule.arguments}
+                ruleArguments={rule ? rule.arguments : List()}
                 ruleInvocationArguments={ruleInvocation.arguments}
                 onRuleInvocationArgumentsChange={(newArguments) =>
                   onRuleInvocationChange({

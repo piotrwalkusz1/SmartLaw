@@ -1,5 +1,8 @@
 import Template from "./Template";
 import { decodeStateTemplate } from "./StateTemplate";
+import Id from "./Id";
+import { List } from "immutable";
+import Annotation from "./Annotation";
 
 export enum ElementTemplateType {
   State = "State",
@@ -16,6 +19,6 @@ export const decodeElementTemplate = (json: any): ElementTemplate => {
 
 export default interface ElementTemplate {
   elementType: ElementTemplateType;
-  id: Template;
-  annotations: Template;
+  id: Template<Id>;
+  annotations: Template<List<Annotation>>;
 }

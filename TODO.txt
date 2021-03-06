@@ -1,6 +1,0 @@
-- high order rules - reguły mogą przyjmować jako argumenty inne reguły
-- zgodność umowy z prawem
-- weryfikacja czy reguła rzeczywiście implementuje interfejs
-- walidacja umowy pod kątem semantycznym (na poziomie elementów) i składniowym (na poziomie reguł)
-
-- Compilation errors - pokazać tam wszystkie błędy

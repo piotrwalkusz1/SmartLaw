@@ -21,9 +21,16 @@ import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Function
 
-class TemplateProcessorService(
-        private val templateProcessors: List<TemplateProcessor<*, *>> = TemplateProcessor.DEFAULT_TEMPLATE_PROCESSORS,
-) {
+class TemplateProcessorService {
+
+    private val templateProcessors: List<TemplateProcessor<*, *>> by lazy {
+        listOf<TemplateProcessor<*, *>>(
+                StaticTemplateProcessor(),
+                TextEngineTemplateProcessor(),
+                GroovyTemplateProcessor(),
+                ComplexTemplateProcessor(this)
+        )
+    }
 
     fun processRuleContentTemplate(
             content: Template<String>,
@@ -38,7 +45,7 @@ class TemplateProcessorService(
         return processTemplate(ruleContentTemplate, templateProcessorContext)
     }
 
-    private fun <T> processTemplate(template: Template<T>, templateProcessorContext: TemplateProcessorContext): T {
+    fun <T> processTemplate(template: Template<T>, templateProcessorContext: TemplateProcessorContext): T {
         val templateProcessor = getTemplateProcessorForTemplate(template)
 
         return templateProcessor.processTemplate(template, templateProcessorContext)

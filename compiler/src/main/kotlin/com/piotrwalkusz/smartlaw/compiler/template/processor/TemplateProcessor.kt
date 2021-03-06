@@ -5,14 +5,6 @@ import com.piotrwalkusz.smartlaw.core.model.template.Template
 
 interface TemplateProcessor<T : Template<R>, R> {
 
-    companion object {
-        val DEFAULT_TEMPLATE_PROCESSORS = listOf<TemplateProcessor<*, *>>(
-                StaticTemplateProcessor(),
-                TextEngineTemplateProcessor(),
-                GroovyTemplateProcessor()
-        )
-    }
-
     val templateType: Class<T>
 
     val resultType: Class<R>

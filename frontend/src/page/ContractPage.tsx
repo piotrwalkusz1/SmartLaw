@@ -4,7 +4,7 @@ import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
 import { saveDocument } from "../service/DocumentService";
 import PresentationElementView from "../component/presentation-element/PresentationElementView";
-import { downloadDocument, extendPresentationElements } from "../service/ProjectService";
+import { convertToSmartContract, downloadDocument, extendPresentationElements } from "../service/ProjectService";
 import { Button, Col, Row } from "react-bootstrap";
 import { css } from "@emotion/react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
@@ -27,6 +27,7 @@ import { DocumentType } from "../model/Document";
 import AddButton from "../common/AddButton";
 import { prepareEmptyRuleInvocationArgument } from "../service/RuleService";
 import { ProjectContext } from "../context/ProjectContext";
+import EditableTextField from "../common/EditableTextField";
 
 const Style = {
   title: css`
@@ -93,7 +94,7 @@ const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
   const [outputMessages, setOutputMessages] = useState<List<OutputMessage>>(List());
   useEffect(() => {
     let isSubscribed = true;
-    DocumentService.getDocument<Contract>(contractDbId).then((contract) => {
+    DocumentService.getContract(contractDbId).then((contract) => {
       extendPresentationElements(projectId, contract.presentationElements, contract.presentationElements).then((result) => {
         if (isSubscribed) {
           setContractId(contract.id);
@@ -337,6 +338,12 @@ const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
                   >
                     Generate document
                   </Button>
+                  <Button
+                    style={{ marginLeft: "15px", flexGrow: 1 }}
+                    onClick={() => convertToSmartContract(projectId, convertToContract(elements))}
+                  >
+                    Smart contract
+                  </Button>
                 </div>
               </div>
             </Col>
@@ -358,7 +365,9 @@ const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
         </Col>
         <Col>
           <div>
-            <div css={Style.title}>{contractName}</div>
+            <div css={Style.title}>
+              <EditableTextField value={contractName} onChange={setContractName} />
+            </div>
             <div>
               <Droppable droppableId="droppable" type="top">
                 {(provided, snapshot) => (

@@ -3,11 +3,11 @@ import { Form } from "react-bootstrap";
 import React from "react";
 
 interface StaticTemplateEditorProps {
-  template: StaticTemplate;
-  onTemplateChange: (template: StaticTemplate) => void;
+  template: StaticTemplate<any>;
+  onTemplateChange: (template: StaticTemplate<any>) => void;
 }
 
-const StaticTemplateEditor = ({ template, onTemplateChange }: StaticTemplateEditorProps) => {
+const StaticTemplateEditor = <T,>({ template, onTemplateChange }: StaticTemplateEditorProps) => {
   return (
     <Form.Group>
       <Form.Label>Content</Form.Label>

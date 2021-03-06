@@ -15,6 +15,6 @@ class P001_Initialize {
     fun P001_Initialize_001(@NonLockGuarded projectService: ProjectService, @NonLockGuarded documentService: DocumentService) {
         val libraryId = documentService.createDocument(CarSalesContractExample.library).id
         val contractId = documentService.createDocument(CarSalesContractExample.contract).id
-        projectService.createProject("Test", listOf(libraryId, contractId))
+        projectService.createProject("Test", listOf(contractId, libraryId))
     }
 }

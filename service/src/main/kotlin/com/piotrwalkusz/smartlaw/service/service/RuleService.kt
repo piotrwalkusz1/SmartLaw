@@ -2,6 +2,9 @@ package com.piotrwalkusz.smartlaw.service.service
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
+import com.piotrwalkusz.smartlaw.compiler.meta.IntegerMetaType
+import com.piotrwalkusz.smartlaw.compiler.meta.LocalDateMetaType
+import com.piotrwalkusz.smartlaw.compiler.meta.StringMetaType
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
@@ -20,11 +23,11 @@ import java.util.logging.Filter
 @Service
 class RuleService(private val documentDao: DocumentDao, private val projectService: ProjectService) {
 
-    companion object {
-        val BASIC_RULES_ARGUMENTS_TYPES = listOf(
-                Id("String"),
-                Id("Integer"),
-                Id("LocalDate"),
+    fun getBasicRulesArgumentsTypes(): List<Id> {
+        return listOf(
+                IntegerMetaType().getId(),
+                StringMetaType().getId(),
+                LocalDateMetaType().getId()
         )
     }
 
@@ -71,6 +74,6 @@ class RuleService(private val documentDao: DocumentDao, private val projectServi
         val documentsIds = projectService.getDocumentsIdsInProjectAndModules(request.projectId)
         val rulesInterfacesIds = documentDao.getRulesInterfacesByFilter(null, documentsIds).map { it.id }
 
-        return BASIC_RULES_ARGUMENTS_TYPES + rulesInterfacesIds
+        return getBasicRulesArgumentsTypes() + rulesInterfacesIds
     }
 }

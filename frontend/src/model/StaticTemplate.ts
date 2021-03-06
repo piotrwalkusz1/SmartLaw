@@ -1,17 +1,21 @@
 import Template, { TemplateType } from "./Template";
 
-export const decodeStaticTemplate = (json: any): StaticTemplate => {
+export const decodeStaticTemplate = <T>(json: any, decodeTemplateResult: (json: any) => T): StaticTemplate<T> => {
   return {
     templateType: TemplateType.Static,
-    value: json.value,
+    value: decodeTemplateResult(json.value),
   };
 };
 
-export default interface StaticTemplate extends Template {
-  value: any;
+export default interface StaticTemplate<T> extends Template<T> {
+  value: T;
 }
 
-export const prepareStaticTemplate = (value: any): StaticTemplate => {
+export const isStaticTemplate = <T>(template: Template<T>): template is StaticTemplate<T> => {
+  return template.templateType === TemplateType.Static;
+};
+
+export const prepareStaticTemplate = <T>(value: T): StaticTemplate<T> => {
   return {
     templateType: TemplateType.Static,
     value: value,

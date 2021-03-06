@@ -5,7 +5,7 @@ export enum TextEngineType {
   FreeMarker = "FreeMarker",
 }
 
-export const decodeTextEngineTemplate = (json: any): TextEngineTemplate => {
+export const decodeTextEngineTemplate = <T>(json: any): TextEngineTemplate => {
   return {
     templateType: decodeEnum(json.templateType, TemplateType),
     type: decodeString(json.type),
@@ -13,7 +13,11 @@ export const decodeTextEngineTemplate = (json: any): TextEngineTemplate => {
   };
 };
 
-export default interface TextEngineTemplate extends Template {
+export const isTextEngineTemplate = (template: Template<string>): template is TextEngineTemplate => {
+  return template.templateType === TemplateType.TextEngine;
+};
+
+export default interface TextEngineTemplate extends Template<string> {
   type: String;
   template: String;
 }

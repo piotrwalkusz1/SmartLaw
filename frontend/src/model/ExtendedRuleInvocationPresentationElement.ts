@@ -5,13 +5,13 @@ import Rule, { decodeRule } from "./Rule";
 import MetaValue from "./MetaValue";
 import { List, Map } from "immutable";
 import { decodeValidationResult, ValidationResult } from "./ValidationResult";
-import { decodeList, decodeMap } from "../utils/Decoders";
+import { decodeList, decodeMap, decodeNullable } from "../utils/Decoders";
 
 export const decodeExtendedRuleInvocationPresentationElement = (json: any): ExtendedRuleInvocationPresentationElement => {
   return new ExtendedRuleInvocationPresentationElement(
     decodeRuleInvocationPresentationElement(json.presentationElement),
     decodeNaturalLanguageProvision(json.naturalLanguageDocumentObject),
-    decodeRule(json.rule),
+    decodeNullable(json.rule, decodeRule),
     decodeMap(json.validationResults, (validationResult) => decodeList(validationResult, decodeValidationResult))
   );
 };
@@ -19,13 +19,13 @@ export const decodeExtendedRuleInvocationPresentationElement = (json: any): Exte
 export class ExtendedRuleInvocationPresentationElement implements ExtendedPresentationElement {
   presentationElement: RuleInvocationPresentationElement;
   naturalLanguageDocumentObject: NaturalLanguageProvision;
-  rule: Rule;
+  rule: Rule | null;
   validationResults: Map<String, List<ValidationResult>>;
 
   constructor(
     presentationElement: RuleInvocationPresentationElement,
     naturalLanguageDocumentObject: NaturalLanguageProvision,
-    rule: Rule,
+    rule: Rule | null,
     validationResults: Map<String, List<ValidationResult>>
   ) {
     this.presentationElement = presentationElement;

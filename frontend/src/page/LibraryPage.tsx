@@ -17,7 +17,7 @@ const LibraryPage = ({ libraryDbId }: { libraryDbId: string }) => {
   const [library, setLibrary] = useState<Library | undefined>();
   const [rulesArgumentsTypes, setRulesArgumentsTypes] = useState<List<Id> | undefined>(undefined);
   useFetchedData(
-    () => DocumentService.getDocument<Library>(libraryDbId),
+    () => DocumentService.getLibrary(libraryDbId),
     (downloadedLibrary) => {
       setLibrary(downloadedLibrary);
       setSavedLibrary(downloadedLibrary);

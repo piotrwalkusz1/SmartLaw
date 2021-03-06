@@ -5,8 +5,8 @@ import { List } from "immutable";
 import { decodeList } from "../../utils/Decoders";
 
 interface ElementListStaticTemplateEditorProps {
-  template: StaticTemplate;
-  onTemplateChange: (template: StaticTemplate) => void;
+  template: StaticTemplate<List<Element>>;
+  onTemplateChange: (template: StaticTemplate<List<Element>>) => void;
 }
 
 const ElementListStaticTemplateEditor = ({ template, onTemplateChange }: ElementListStaticTemplateEditorProps) => {

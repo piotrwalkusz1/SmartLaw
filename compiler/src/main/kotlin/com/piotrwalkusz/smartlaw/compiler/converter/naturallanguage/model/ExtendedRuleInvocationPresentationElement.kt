@@ -7,6 +7,6 @@ import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 data class ExtendedRuleInvocationPresentationElement(
         override val presentationElement: RuleInvocationPresentationElement,
         override val naturalLanguageDocumentObject: NaturalLanguageProvision,
-        val rule: Rule,
+        val rule: Rule?,
         val validationResults: Map<String, List<ValidationResult>>
 ) : ExtendedPresentationElement<RuleInvocationPresentationElement, NaturalLanguageProvision>

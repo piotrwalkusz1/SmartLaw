@@ -1,6 +1,7 @@
 package com.piotrwalkusz.smartlaw.compiler.validator
 
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
+import com.piotrwalkusz.smartlaw.compiler.meta.MetaTypeService
 import com.piotrwalkusz.smartlaw.compiler.validator.executor.ValidatorExecutor
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
@@ -42,17 +43,12 @@ class ValidatorService(
         if (value == null) {
             return listOf(ValidationResult.error("Value cannot be null"))
         }
-        if (value is MetaPrimitiveValue) {
-            if (argument.type.id == "Integer") {
-                if (value.value.toIntOrNull() == null) {
-                    return listOf(ValidationResult.error("Value cannot be parsed as number"))
-                }
-            } else if (argument.type.id == "LocalDate") {
-                try {
-                    LocalDate.parse(value.value)
-                } catch (exception: DateTimeParseException) {
-                    return listOf(ValidationResult.error("Value cannot be parsed as local date"))
-                }
+
+        val metaType = MetaTypeService.DEFAULT_META_TYPES.findLast { it.getId() == argument.type }
+        if (metaType != null) {
+            val error = metaType.validateMetaValue(value)
+            if (error != null) {
+                return listOf(ValidationResult.error(error))
             }
         }
 

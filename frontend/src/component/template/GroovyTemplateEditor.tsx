@@ -2,8 +2,8 @@ import TextField from "../../common/TextField";
 import GroovyTemplate from "../../model/GroovyTemplate";
 
 interface GroovyTemplateEditorProps {
-  template: GroovyTemplate;
-  onTemplateChange: (template: GroovyTemplate) => void;
+  template: GroovyTemplate<any>;
+  onTemplateChange: (template: GroovyTemplate<any>) => void;
 }
 
 const GroovyTemplateEditor = ({ template, onTemplateChange }: GroovyTemplateEditorProps) => {

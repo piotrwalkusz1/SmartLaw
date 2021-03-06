@@ -1,13 +1,17 @@
 import Template, { TemplateType } from "./Template";
 import { decodeEnum, decodeString } from "../utils/Decoders";
 
-export const decodeGroovyTemplate = (json: any): GroovyTemplate => {
+export const decodeGroovyTemplate = <T>(json: any): GroovyTemplate<T> => {
   return {
     templateType: decodeEnum(json.templateType, TemplateType),
     script: decodeString(json.script),
   };
 };
 
-export default interface GroovyTemplate extends Template {
+export const isGroovyTemplate = <T>(template: Template<T>): template is GroovyTemplate<T> => {
+  return template.templateType === TemplateType.Groovy;
+};
+
+export default interface GroovyTemplate<T> extends Template<T> {
   script: string;
 }

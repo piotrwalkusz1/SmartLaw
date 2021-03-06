@@ -5,15 +5,13 @@ import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.FromDocument
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.exporter.DocxExporter
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.ExtendedPresentationElement
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocument
+import com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.FromContractToSmartContractConverter
 import com.piotrwalkusz.smartlaw.core.example.CarSalesContractExample
 import com.piotrwalkusz.smartlaw.core.model.document.Library
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.service.controller.dto.*
 import com.piotrwalkusz.smartlaw.service.model.Project
-import com.piotrwalkusz.smartlaw.service.service.DocumentService
-import com.piotrwalkusz.smartlaw.service.service.FromDocumentToNaturalLanguageConverterFactory
-import com.piotrwalkusz.smartlaw.service.service.ProjectService
-import com.piotrwalkusz.smartlaw.service.service.RuleService
+import com.piotrwalkusz.smartlaw.service.service.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
@@ -30,6 +28,7 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/projects")
 class ProjectController(
         private val fromDocumentToNaturalLanguageConverterFactory: FromDocumentToNaturalLanguageConverterFactory,
+        private val fromContractToSmartContractConverterFactory: FromContractToSmartContractConverterFactory,
         private val ruleService: RuleService,
         private val projectService: ProjectService,
         private val documentService: DocumentService
@@ -65,6 +64,17 @@ class ProjectController(
         response.setHeader("Content-Disposition", "attachment; filename=" + naturalLanguageDocument.title + ".docx");
 
         DocxExporter().export(naturalLanguageDocument, response.outputStream)
+    }
+
+    @PostMapping("/{projectId}/documents/convert/smart-contract")
+    fun convertContractToSmartContract(@PathVariable projectId: String, @RequestBody request: ConvertContractToSmartContractDto, response: HttpServletResponse) {
+        val smartContractConverter = fromContractToSmartContractConverterFactory.create()
+        val smartContract = smartContractConverter.convert(request.contract)
+
+        response.contentType = MediaType.TEXT_PLAIN_VALUE
+        response.characterEncoding = "UTF-8"
+        response.setHeader("Content-Disposition", "attachment; filename=" + request.contract.name + ".txt")
+        response.writer.write(smartContract)
     }
 
     @PostMapping("/{projectId}/documents/extend-presentation-elements")

@@ -1,9 +1,31 @@
 import axios from "axios";
-import Document, { decodeDocument } from "../model/Document";
+import Document, { decodeDocument, DocumentType } from "../model/Document";
+import Contract from "../model/Contract";
+import Library from "../model/Library";
 
-export const getDocument = <T extends Document>(documentId: string): Promise<T> => {
+export const getDocument = (documentId: string): Promise<Document> => {
   return axios.get("/documents/" + documentId).then((response) => {
-    return decodeDocument(response.data) as T;
+    return decodeDocument(response.data) as Document;
+  });
+};
+
+export const getContract = (documentId: string): Promise<Contract> => {
+  return getDocument(documentId).then((document) => {
+    if (document.documentType === DocumentType.Contract) {
+      return document as Contract;
+    } else {
+      throw Error("Expected document type " + DocumentType.Contract + " but was " + document.documentType);
+    }
+  });
+};
+
+export const getLibrary = (documentId: string): Promise<Library> => {
+  return getDocument(documentId).then((document) => {
+    if (document.documentType === DocumentType.Library) {
+      return document as Library;
+    } else {
+      throw Error("Expected document type " + DocumentType.Library + " but was " + document.documentType);
+    }
   });
 };
 

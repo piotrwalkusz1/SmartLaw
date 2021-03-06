@@ -6,7 +6,7 @@ import { decodeId, prepareEmptyId } from "./Id";
 import { decodeAnnotation } from "./Annotation";
 import { List } from "immutable";
 import { prepareDefinitionRef } from "./DefinitionRef";
-import { STATE_ELEMENT_VALUE_TYPES } from "../service/Types";
+import { TYPES } from "../service/Types";
 
 export const prepareEmptyStateElement = (): StateElement => {
   return {
@@ -16,7 +16,7 @@ export const prepareEmptyStateElement = (): StateElement => {
     defaultValue: null,
     description: null,
     id: prepareEmptyId(),
-    type: prepareDefinitionRef(STATE_ELEMENT_VALUE_TYPES[0]),
+    type: prepareDefinitionRef(TYPES.UINT),
   };
 };
 

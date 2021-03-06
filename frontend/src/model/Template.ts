@@ -8,10 +8,10 @@ export enum TemplateType {
   Groovy = "Groovy",
 }
 
-export const decodeTemplate = (json: any): Template => {
+export const decodeTemplate = <T>(json: any, decodeTemplateResult: (json: any) => T): Template<T> => {
   switch (json.templateType) {
     case TemplateType.Static:
-      return decodeStaticTemplate(json);
+      return decodeStaticTemplate(json, decodeTemplateResult);
     case TemplateType.TextEngine:
       return decodeTextEngineTemplate(json);
     case TemplateType.Groovy:
@@ -21,6 +21,6 @@ export const decodeTemplate = (json: any): Template => {
   }
 };
 
-export default interface Template {
+export default interface Template<T> {
   templateType: TemplateType;
 }

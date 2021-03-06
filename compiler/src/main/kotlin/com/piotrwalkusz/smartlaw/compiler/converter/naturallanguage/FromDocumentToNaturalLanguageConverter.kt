@@ -81,7 +81,11 @@ class FromDocumentToNaturalLanguageConverter(
     }
 
     private fun extendRuleInvocationPresentationElement(presentationElement: RuleInvocationPresentationElement, context: ExtendPresentationElementContext): ExtendedRuleInvocationPresentationElement {
-        val rule = ruleProvider.getRule(presentationElement.ruleInvocation.ruleId)!!
+        val rule = ruleProvider.getRule(presentationElement.ruleInvocation.ruleId)
+        if (rule == null) {
+            Output.get().addError("Rule with id ${presentationElement.ruleInvocation.ruleId} does not exist");
+            return ExtendedRuleInvocationPresentationElement(presentationElement, NaturalLanguageProvision("ERROR"), rule, emptyMap())
+        }
         val processRuleContentTemplateConfig = ProcessRuleContentTemplateConfig(addStyleToContent = config.addStyleToRuleContent)
         val ruleArgumentValidationResults = validatorService.validateRuleArgumentsValues(rule, presentationElement.ruleInvocation)
         val content = templateProcessorService.processRuleContentTemplate(rule.content, ruleArgumentValidationResults, context.linksByElementsIds, processRuleContentTemplateConfig, this::convertRuleInvocationToNatualLanguage)
