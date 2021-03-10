@@ -24,11 +24,10 @@ import com.piotrwalkusz.smartlaw.core.model.template.Template
         JsonSubTypes.Type(name = "Interface", value = InterfaceTemplate::class),
         JsonSubTypes.Type(name = "Implementation", value = ImplementationTemplate::class),
         JsonSubTypes.Type(name = "Proposition", value = PropositionTemplate::class),
-        JsonSubTypes.Type(name = "State", value = StateTemplate::class),
         JsonSubTypes.Type(name = "Definition", value = DefinitionTemplate::class),
         JsonSubTypes.Type(name = "Reference", value = ReferenceTemplate::class)
 )
-interface ElementTemplate {
+interface ElementTemplateOld {
     val id: Template<Id>
     val annotations: Template<List<Annotation>>
 }

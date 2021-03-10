@@ -1,8 +1,7 @@
-import TemplateEditor from "../template/TemplateEditor";
-import { List } from "immutable";
-import Template, { TemplateType } from "../../model/Template";
+import Template from "../../model/Template";
 import React from "react";
 import { Accordion, Card } from "react-bootstrap";
+import StringTemplateEditor from "../element/template/StringTemplateEditor";
 
 interface RuleContentEditorProps {
   template: Template<string>;
@@ -19,11 +18,7 @@ const RuleContentEditor = ({ template, onTemplateChange }: RuleContentEditorProp
         <Accordion.Collapse eventKey="0">
           <Card.Body>
             <div style={{ paddingLeft: "15px" }}>
-              <TemplateEditor
-                template={template}
-                onTemplateChange={onTemplateChange}
-                allowedTemplateTypes={List([TemplateType.Static, TemplateType.TextEngine])}
-              />
+              <StringTemplateEditor template={template} onChange={onTemplateChange} />
             </div>
           </Card.Body>
         </Accordion.Collapse>

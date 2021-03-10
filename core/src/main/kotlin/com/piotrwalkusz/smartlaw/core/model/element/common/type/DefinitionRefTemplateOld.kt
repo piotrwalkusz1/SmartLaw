@@ -4,7 +4,7 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
 import com.piotrwalkusz.smartlaw.core.model.template.Template
 
-data class DefinitionRefTemplate(
+data class DefinitionRefTemplateOld(
         val definition: Template<Id>,
         val parameters: Template<List<TypeTemplate>> = StaticTemplate(listOf())
 ) : TypeTemplate

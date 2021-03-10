@@ -5,6 +5,6 @@ import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 
 data class RuleArgumentValidationResult(
         val argument: MetaArgument,
-        val value: MetaValue?,
+        val value: MetaValue,
         val results: List<ValidationResult>
 )

@@ -3,7 +3,7 @@ import { List, Map } from "immutable";
 import MetaArgument, { decodeMetaArgument } from "./MetaArgument";
 import Template, { decodeTemplate } from "./Template";
 import { decodeList, decodeMap, decodeNullable, decodeString } from "../utils/Decoders";
-import { decodeElement } from "./Element";
+import Element, { decodeElement } from "./Element";
 
 export const decodeRule = (json: any): Rule => {
   return {

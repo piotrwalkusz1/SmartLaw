@@ -2,22 +2,26 @@ package com.piotrwalkusz.smartlaw.compiler.template.processor
 
 import com.piotrwalkusz.smartlaw.compiler.template.processor.context.TemplateProcessorContext
 import com.piotrwalkusz.smartlaw.compiler.template.processor.textengine.TextEngine
+import com.piotrwalkusz.smartlaw.core.model.template.Template
 import com.piotrwalkusz.smartlaw.core.model.template.TextEngineTemplate
 
 class TextEngineTemplateProcessor(
         private val textEngines: List<TextEngine> = TextEngine.DEFAULT_TEXT_ENGINES
-) : TemplateProcessor<TextEngineTemplate, String> {
+) : TemplateProcessor {
 
-    override val templateType: Class<TextEngineTemplate>
-        get() = TextEngineTemplate::class.java
+    override fun getTemplateType(): Class<*> {
+        return TextEngineTemplate::class.java
+    }
 
-    override val resultType: Class<String>
-        get() = String::class.java
+    override fun <T> processTemplate(template: Template<T>, context: TemplateProcessorContext): T {
+        if (template !is TextEngineTemplate) {
+            throw IllegalArgumentException("Template must be instance of TextEngineTemplate class")
+        }
 
-    override fun processTemplate(template: TextEngineTemplate, context: TemplateProcessorContext): String {
-        val parameters = context.getTemplateParameters()
+        val parameters = context.templateParameters
 
-        return getTextEngine(template).processTemplate(template.template, parameters)
+        @Suppress("UNCHECKED_CAST")
+        return getTextEngine(template).processTemplate(template.template, parameters) as T
     }
 
     private fun getTextEngine(template: TextEngineTemplate): TextEngine {

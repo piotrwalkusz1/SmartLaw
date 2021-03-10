@@ -3,8 +3,10 @@ package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.*
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
-import com.piotrwalkusz.smartlaw.compiler.template.processor.ProcessRuleContentTemplateConfig
+import com.piotrwalkusz.smartlaw.compiler.rule.RuleUtils
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
+import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleContentTemplateProcessor
+import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.model.ProcessRuleContentTemplateConfig
 import com.piotrwalkusz.smartlaw.compiler.validator.ValidatorService
 import com.piotrwalkusz.smartlaw.core.model.document.ConvertibleToNaturalLanguage
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
@@ -15,9 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class FromDocumentToNaturalLanguageConverter(
         private val ruleProvider: RuleProvider,
-        private val templateProcessorService: TemplateProcessorService,
         private val config: Config,
-        private val validatorService: ValidatorService
+        private val validatorService: ValidatorService,
+        private val ruleContentTemplateProcessor: RuleContentTemplateProcessor
 ) {
 
     data class Config(
@@ -39,10 +41,6 @@ class FromDocumentToNaturalLanguageConverter(
         val extendedPresentationElement = extendRuleInvocationPresentationElement(presentationElement, context)
 
         return extendedPresentationElement.naturalLanguageDocumentObject.content
-    }
-
-    fun extendPresentationElements(presentationElements: List<PresentationElement>): List<ExtendedPresentationElement<*, *>> {
-        return extendPresentationElements(presentationElements, presentationElements)
     }
 
     fun extendPresentationElements(allPresentationElements: List<PresentationElement>, presentationElementsToExtend: List<PresentationElement>): List<ExtendedPresentationElement<*, *>> {
@@ -86,9 +84,9 @@ class FromDocumentToNaturalLanguageConverter(
             Output.get().addError("Rule with id ${presentationElement.ruleInvocation.ruleId} does not exist");
             return ExtendedRuleInvocationPresentationElement(presentationElement, NaturalLanguageProvision("ERROR"), rule, emptyMap())
         }
-        val processRuleContentTemplateConfig = ProcessRuleContentTemplateConfig(addStyleToContent = config.addStyleToRuleContent)
-        val ruleArgumentValidationResults = validatorService.validateRuleArgumentsValues(rule, presentationElement.ruleInvocation)
-        val content = templateProcessorService.processRuleContentTemplate(rule.content, ruleArgumentValidationResults, context.linksByElementsIds, processRuleContentTemplateConfig, this::convertRuleInvocationToNatualLanguage)
+        val ruleArguments = RuleUtils.associateRuleArgumentsWithValues(rule, presentationElement.ruleInvocation)
+        val ruleArgumentValidationResults = validatorService.validateRuleArgumentsValues(ruleArguments)
+        val content = ruleContentTemplateProcessor.processTemplate(rule.content, ruleArguments, context.processRuleContentTemplateConfig)
         val naturalLanguageProvision = NaturalLanguageProvision(content)
         ruleArgumentValidationResults
                 .flatMap { it.results }
@@ -99,8 +97,12 @@ class FromDocumentToNaturalLanguageConverter(
     }
 
     private fun prepareExtendPresentationElementContext(presentationElements: List<PresentationElement>): ExtendPresentationElementContext {
-        val linksByElementsIds = templateProcessorService.getLinksByElementsIds(presentationElements, ruleProvider)
+        val processRuleContentTemplateConfig = ruleContentTemplateProcessor.getConfig(
+                presentationElements,
+                ruleProvider,
+                addStyleToContent = config.addStyleToRuleContent
+        )
 
-        return ExtendPresentationElementContext(linksByElementsIds)
+        return ExtendPresentationElementContext(processRuleContentTemplateConfig)
     }
 }

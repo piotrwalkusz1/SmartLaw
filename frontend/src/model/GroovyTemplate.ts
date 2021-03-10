@@ -15,3 +15,10 @@ export const isGroovyTemplate = <T>(template: Template<T>): template is GroovyTe
 export default interface GroovyTemplate<T> extends Template<T> {
   script: string;
 }
+
+export const prepareEmptyGroovyTemplate = (): GroovyTemplate<any> => {
+  return {
+    templateType: TemplateType.Groovy,
+    script: "",
+  };
+};

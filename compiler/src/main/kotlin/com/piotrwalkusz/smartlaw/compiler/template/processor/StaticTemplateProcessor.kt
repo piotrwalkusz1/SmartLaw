@@ -2,18 +2,19 @@ package com.piotrwalkusz.smartlaw.compiler.template.processor
 
 import com.piotrwalkusz.smartlaw.compiler.template.processor.context.TemplateProcessorContext
 import com.piotrwalkusz.smartlaw.core.model.template.StaticTemplate
+import com.piotrwalkusz.smartlaw.core.model.template.Template
 
-class StaticTemplateProcessor : TemplateProcessor<StaticTemplate<Any?>, Any?> {
+class StaticTemplateProcessor : TemplateProcessor {
 
-    override val templateType: Class<StaticTemplate<Any?>>
-        @Suppress("UNCHECKED_CAST")
-        get() = StaticTemplate::class.java as Class<StaticTemplate<Any?>>
+    override fun getTemplateType(): Class<*> {
+        return StaticTemplate::class.java
+    }
 
-    override val resultType: Class<Any?>
-        @Suppress("UNCHECKED_CAST")
-        get() = Any::class.java as Class<Any?>
+    override fun <T> processTemplate(template: Template<T>, context: TemplateProcessorContext): T {
+        if (template !is StaticTemplate) {
+            throw IllegalArgumentException("Template must be instance of StaticTemplate class")
+        }
 
-    override fun processTemplate(template: StaticTemplate<Any?>, context: TemplateProcessorContext): Any? {
         return template.value
     }
 }

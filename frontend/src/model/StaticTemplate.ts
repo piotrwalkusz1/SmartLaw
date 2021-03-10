@@ -1,4 +1,5 @@
 import Template, { TemplateType } from "./Template";
+import TextEngineTemplate, { TextEngineType } from "./TextEngineTemplate";
 
 export const decodeStaticTemplate = <T>(json: any, decodeTemplateResult: (json: any) => T): StaticTemplate<T> => {
   return {
@@ -19,5 +20,12 @@ export const prepareStaticTemplate = <T>(value: T): StaticTemplate<T> => {
   return {
     templateType: TemplateType.Static,
     value: value,
+  };
+};
+
+export const prepareEmptyStaticTemplate = (): StaticTemplate<any> => {
+  return {
+    templateType: TemplateType.Static,
+    value: "",
   };
 };

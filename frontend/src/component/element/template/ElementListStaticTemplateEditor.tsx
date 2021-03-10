@@ -1,8 +1,8 @@
-import StaticTemplate from "../../model/StaticTemplate";
-import ElementListEditor from "./ElementListEditor";
-import Element, { decodeElement } from "../../model/Element";
+import StaticTemplate from "../../../model/StaticTemplate";
+import ElementListEditor from "../ElementListEditor";
+import Element, { decodeElement } from "../../../model/Element";
 import { List } from "immutable";
-import { decodeList } from "../../utils/Decoders";
+import { decodeList } from "../../../utils/Decoders";
 
 interface ElementListStaticTemplateEditorProps {
   template: StaticTemplate<List<Element>>;

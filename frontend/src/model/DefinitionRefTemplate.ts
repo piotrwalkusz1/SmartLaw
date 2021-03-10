@@ -1,19 +1,33 @@
-import Type, { TypeKind } from "./Type";
+import Type, { decodeType } from "./Type";
 import Id, { decodeId } from "./Id";
 import { List } from "immutable";
 import { decodeList } from "../utils/Decoders";
-import TypeTemplate, { decodeTypeTemplate } from "./TypeTemplate";
-import Template, { decodeTemplate } from "./Template";
+import Template, { decodeTemplate, TemplateType } from "./Template";
+import DefinitionRef from "./DefinitionRef";
+import { prepareEmptyIdTemplate } from "./IdTemplate";
+import { prepareEmptyListTemplate } from "./ListTemplate";
 
-export const decodeDefinitionRef = (json: any): DefinitionRefTemplate => {
+export const decodeDefinitionRefTemplate = (json: any): DefinitionRefTemplate => {
   return {
-    type: TypeKind.DefinitionRef,
+    templateType: TemplateType.DefinitionRefTemplate,
     definition: decodeTemplate(json.definition, decodeId),
-    parameters: decodeTemplate(json.parameters, (json) => decodeList(json, decodeTypeTemplate)),
+    parameters: decodeTemplate(json.parameters, (json) => decodeList(json, decodeType)),
   };
 };
 
-export default interface DefinitionRefTemplate extends Type {
+export default interface DefinitionRefTemplate extends Template<DefinitionRef> {
   definition: Template<Id>;
-  parameters: Template<List<TypeTemplate>>;
+  parameters: Template<List<Type>>;
 }
+
+export const prepareEmptyDefinitionRefTemplate = (): DefinitionRefTemplate => {
+  return {
+    templateType: TemplateType.DefinitionRefTemplate,
+    definition: prepareEmptyIdTemplate(),
+    parameters: prepareEmptyListTemplate(),
+  };
+};
+
+export const isDefinitionRefTemplate = <T>(template: Template<Type>): template is DefinitionRefTemplate => {
+  return template.templateType === TemplateType.DefinitionRefTemplate;
+};

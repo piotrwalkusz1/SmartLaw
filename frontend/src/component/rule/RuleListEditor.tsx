@@ -5,6 +5,7 @@ import { List, Map } from "immutable";
 import { prepareStaticTemplate } from "../../model/StaticTemplate";
 import ListEditor from "../../common/ListEditor";
 import Id from "../../model/Id";
+import { prepareEmptyListTemplate } from "../../model/ListTemplate";
 
 interface RuleListEditorProps {
   projectId: string;
@@ -21,7 +22,7 @@ const RuleListEditor = ({ projectId, rules, onRulesChange, ruleArgumentTypes }: 
       description: null,
       arguments: List(),
       content: prepareStaticTemplate(""),
-      elements: prepareStaticTemplate(List()),
+      elements: prepareEmptyListTemplate(),
       outputs: Map(),
       interfaces: List(),
     };

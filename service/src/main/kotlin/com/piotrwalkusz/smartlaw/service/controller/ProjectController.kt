@@ -68,7 +68,8 @@ class ProjectController(
 
     @PostMapping("/{projectId}/documents/convert/smart-contract")
     fun convertContractToSmartContract(@PathVariable projectId: String, @RequestBody request: ConvertContractToSmartContractDto, response: HttpServletResponse) {
-        val smartContractConverter = fromContractToSmartContractConverterFactory.create()
+        val ruleProvider = ruleService.getRuleProviderForProject(projectId)
+        val smartContractConverter = fromContractToSmartContractConverterFactory.create(ruleProvider)
         val smartContract = smartContractConverter.convert(request.contract)
 
         response.contentType = MediaType.TEXT_PLAIN_VALUE

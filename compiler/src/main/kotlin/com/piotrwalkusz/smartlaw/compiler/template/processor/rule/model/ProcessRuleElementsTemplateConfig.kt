@@ -1,0 +1,3 @@
+package com.piotrwalkusz.smartlaw.compiler.template.processor.rule.model
+
+class ProcessRuleElementsTemplateConfig : ProcessRuleTemplateConfig

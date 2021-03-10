@@ -1,6 +1,4 @@
-package com.piotrwalkusz.smartlaw.core.model.validator
-
-import com.piotrwalkusz.smartlaw.core.model.template.Template
+package com.piotrwalkusz.smartlaw.core.model.template
 
 interface ComplexTemplate<T> : Template<T> {
 

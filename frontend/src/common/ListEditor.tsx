@@ -24,7 +24,7 @@ interface ListEditorProps<T> {
   items: List<T>;
   onItemsChange: (items: List<T>) => void;
   header: (item: T, index: number) => string;
-  content: (item: T, onItemChange: (item: T) => void) => ReactElement;
+  content: (item: T, onItemChange: (item: T) => void, index: number) => ReactElement;
   emptyItem?: () => T;
   onItemAdd?: () => void;
   allowRemove?: boolean;
@@ -64,7 +64,7 @@ const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onIt
                 </div>
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="0">
-                <Card.Body>{content(item, (item) => onItemsChange(items.set(index, item)))}</Card.Body>
+                <Card.Body>{content(item, (item) => onItemsChange(items.set(index, item)), index)}</Card.Body>
               </Accordion.Collapse>
             </Card>
           </Accordion>

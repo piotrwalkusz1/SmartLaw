@@ -13,6 +13,8 @@ import com.piotrwalkusz.smartlaw.core.model.element.implementation.Implementatio
 import com.piotrwalkusz.smartlaw.core.model.element.proposition.Proposition
 import com.piotrwalkusz.smartlaw.core.model.element.reference.Reference
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
+import com.piotrwalkusz.smartlaw.core.model.template.Template
+import com.piotrwalkusz.smartlaw.core.model.template.ComplexTemplate
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "elementType")
 @JsonSubTypes(
@@ -29,4 +31,13 @@ import com.piotrwalkusz.smartlaw.core.model.element.state.State
 interface Element {
     val id: Id
     val annotations: List<Annotation>
+}
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "elementType")
+@JsonSubTypes(
+        JsonSubTypes.Type(name = "State", value = State::class),
+)
+interface ElementTemplate : ComplexTemplate<Element> {
+    val id: Template<Id>
+    val annotations: Template<List<Annotation>>
 }

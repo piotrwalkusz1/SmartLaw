@@ -1,13 +1,15 @@
 import React from "react";
-import Template, { TemplateType } from "../../model/Template";
+import Template, { prepareEmptyTemplate, TemplateType } from "../../model/Template";
 import TextEngineTemplateEditor from "./TextEngineTemplateEditor";
-import TextEngineTemplate, { isTextEngineTemplate, TextEngineType } from "../../model/TextEngineTemplate";
+import { isTextEngineTemplate } from "../../model/TextEngineTemplate";
 import StaticTemplateEditor from "./StaticTemplateEditor";
-import StaticTemplate, { isStaticTemplate } from "../../model/StaticTemplate";
+import { isStaticTemplate } from "../../model/StaticTemplate";
 import GroovyTemplateEditor from "./GroovyTemplateEditor";
-import GroovyTemplate, { isGroovyTemplate } from "../../model/GroovyTemplate";
+import { isGroovyTemplate } from "../../model/GroovyTemplate";
 import { List } from "immutable";
 import SelectField from "../../common/SelectField";
+import StateTemplateEditor from "../element/template/StateTemplateEditor";
+import { isStateTemplate } from "../../model/StateTemplate";
 
 interface TemplateEditorProps {
   template: Template<any>;
@@ -23,29 +25,10 @@ const TemplateEditor = ({ template, onTemplateChange, allowedTemplateTypes }: Te
       return <StaticTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
     } else if (isGroovyTemplate(template)) {
       return <GroovyTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
+    } else if (isStateTemplate(template)) {
+      return <StateTemplateEditor template={template} onChange={onTemplateChange} />;
     } else {
       return <div>Template type "{template.templateType}" is not supported.</div>;
-    }
-  };
-
-  const prepareEmptyTemplate = (templateType: TemplateType): Template<any> => {
-    switch (templateType) {
-      case TemplateType.TextEngine:
-        return {
-          templateType: TemplateType.TextEngine,
-          type: TextEngineType.FreeMarker,
-          template: "",
-        } as TextEngineTemplate;
-      case TemplateType.Static:
-        return {
-          templateType: TemplateType.Static,
-          value: "",
-        } as StaticTemplate<any>;
-      case TemplateType.Groovy:
-        return {
-          templateType: TemplateType.Groovy,
-          script: "",
-        } as GroovyTemplate<any>;
     }
   };
 

@@ -3,11 +3,9 @@ package com.piotrwalkusz.smartlaw.compiler.template.processor
 import com.piotrwalkusz.smartlaw.compiler.template.processor.context.TemplateProcessorContext
 import com.piotrwalkusz.smartlaw.core.model.template.Template
 
-interface TemplateProcessor<T : Template<R>, R> {
+interface TemplateProcessor {
 
-    val templateType: Class<T>
+    fun getTemplateType(): Class<*>
 
-    val resultType: Class<R>
-
-    fun processTemplate(template: T, context: TemplateProcessorContext): R
+    fun <T> processTemplate(template: Template<T>, context: TemplateProcessorContext): T
 }

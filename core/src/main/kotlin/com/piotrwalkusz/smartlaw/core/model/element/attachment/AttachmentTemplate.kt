@@ -1,5 +1,5 @@
 package com.piotrwalkusz.smartlaw.core.model.element.attachment
 
-import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplate
+import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplateOld
 
-interface AttachmentTemplate : ElementTemplate
+interface AttachmentTemplate : ElementTemplateOld

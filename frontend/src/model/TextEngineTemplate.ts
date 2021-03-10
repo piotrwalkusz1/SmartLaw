@@ -18,6 +18,22 @@ export const isTextEngineTemplate = (template: Template<string>): template is Te
 };
 
 export default interface TextEngineTemplate extends Template<string> {
-  type: String;
-  template: String;
+  type: string;
+  template: string;
 }
+
+export const prepareTextEngineTemplate = (type: TextEngineType, template: string): TextEngineTemplate => {
+  return {
+    templateType: TemplateType.TextEngine,
+    type,
+    template,
+  };
+};
+
+export const prepareEmptyTextEngineTemplate = (): TextEngineTemplate => {
+  return {
+    templateType: TemplateType.TextEngine,
+    type: TextEngineType.FreeMarker,
+    template: "",
+  };
+};

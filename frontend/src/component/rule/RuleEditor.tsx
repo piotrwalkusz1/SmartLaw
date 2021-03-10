@@ -3,7 +3,7 @@ import React from "react";
 import Rule from "../../model/Rule";
 import TextField from "../../common/TextField";
 import RuleArgumentListEditor from "./RuleArgumentListEditor";
-import ElementListTemplateEditor from "../element/ElementListTemplateEditor";
+import ElementListTemplateEditor from "../element/template/ElementListTemplateEditor";
 import RuleContentEditor from "./RuleContentEditor";
 import IdField from "../IdField";
 import ImplementedRuleInterfacesSelector from "./ImplementedRuleInterfacesSelector";

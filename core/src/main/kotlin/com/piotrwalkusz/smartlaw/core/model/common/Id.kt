@@ -1,7 +1,7 @@
 package com.piotrwalkusz.smartlaw.core.model.common
 
 import com.piotrwalkusz.smartlaw.core.model.template.Template
-import com.piotrwalkusz.smartlaw.core.model.validator.ComplexTemplate
+import com.piotrwalkusz.smartlaw.core.model.template.ComplexTemplate
 
 data class Id(
         val id: String,

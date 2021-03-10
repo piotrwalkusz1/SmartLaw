@@ -1,5 +1,5 @@
 package com.piotrwalkusz.smartlaw.core.model.element.requirement
 
-import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplate
+import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplateOld
 
-interface RequirementImplementationTemplate : ElementTemplate
+interface RequirementImplementationTemplate : ElementTemplateOld

@@ -1,7 +1,7 @@
 package com.piotrwalkusz.smartlaw.core.model.element.function
 
 import com.piotrwalkusz.smartlaw.core.model.common.Id
-import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplate
+import com.piotrwalkusz.smartlaw.core.model.element.ElementTemplateOld
 import com.piotrwalkusz.smartlaw.core.model.annotation.Annotation
 import com.piotrwalkusz.smartlaw.core.model.element.common.GenericParameterTemplate
 import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Statement
@@ -16,4 +16,4 @@ data class FunctionTemplate(
         val arguments: Template<List<FunctionArgumentType>>,
         val body: Template<List<Statement>>,
         val result: Template<FunctionResult?>
-) : ElementTemplate
+) : ElementTemplateOld
