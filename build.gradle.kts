@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.4.10" apply false
+    id("org.jetbrains.kotlin.kapt") version "1.4.10" apply false
 }
 
 subprojects {

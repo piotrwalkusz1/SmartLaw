@@ -1,9 +1,10 @@
 package com.piotrwalkusz.smartlaw.core.model.element.proposition
 
+import com.piotrwalkusz.smartlaw.annotationprocessor.GenerateTemplate
 import com.piotrwalkusz.smartlaw.core.model.element.function.FunctionRef
-import com.piotrwalkusz.smartlaw.core.model.template.Template
 
+@GenerateTemplate
 data class PropositionFunctionVariable(
-        val function: Template<FunctionRef>,
-        val variables: Template<List<PropositionVariable>>
+        val function: FunctionRef,
+        val variables: List<PropositionVariable>
 ) : PropositionVariable

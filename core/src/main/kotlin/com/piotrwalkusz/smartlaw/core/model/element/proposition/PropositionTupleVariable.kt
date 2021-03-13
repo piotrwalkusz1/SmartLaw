@@ -1,7 +1,8 @@
 package com.piotrwalkusz.smartlaw.core.model.element.proposition
 
-import com.piotrwalkusz.smartlaw.core.model.template.Template
+import com.piotrwalkusz.smartlaw.annotationprocessor.GenerateTemplate
 
+@GenerateTemplate
 data class PropositionTupleVariable(
-        val variables: Template<List<PropositionVariable>>
+        val variables: List<PropositionVariable>
 ) : PropositionVariable
