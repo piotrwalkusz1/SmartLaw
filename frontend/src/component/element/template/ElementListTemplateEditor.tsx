@@ -5,6 +5,7 @@ import { List } from "immutable";
 import Element from "../../../model/Element";
 import { isListTemplate } from "../../../model/ListTemplate";
 import ListTemplateEditor from "./ListTemplateEditor";
+import { prepareEmptyStateTemplate } from "../../../model/StateTemplate";
 
 interface ElementListTemplateEditorProps {
   template: Template<List<Element>>;
@@ -15,7 +16,12 @@ const ElementListTemplateEditor = ({ template, onTemplateChange }: ElementListTe
   const renderContent = () => {
     if (isListTemplate(template)) {
       return (
-        <ListTemplateEditor template={template} onChange={onTemplateChange} allowedTemplateTypes={List([TemplateType.StateTemplate])} />
+        <ListTemplateEditor
+          template={template}
+          onChange={onTemplateChange}
+          allowedTemplateTypes={List([TemplateType.StateTemplate, TemplateType.EnumDefinitionTemplate])}
+          emptyItem={prepareEmptyStateTemplate}
+        />
       );
     } else {
       return <div>Template type {template.templateType} is not supported</div>;

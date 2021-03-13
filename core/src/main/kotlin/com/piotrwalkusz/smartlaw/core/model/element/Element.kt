@@ -8,6 +8,7 @@ import com.piotrwalkusz.smartlaw.core.model.element.`interface`.Interface
 import com.piotrwalkusz.smartlaw.core.model.element.action.ActionDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.actionvalidation.ActionValidation
 import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
+import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.function.Function
 import com.piotrwalkusz.smartlaw.core.model.element.implementation.Implementation
 import com.piotrwalkusz.smartlaw.core.model.element.proposition.Proposition
@@ -26,6 +27,7 @@ import com.piotrwalkusz.smartlaw.core.model.template.ComplexTemplate
         JsonSubTypes.Type(name = "Proposition", value = Proposition::class),
         JsonSubTypes.Type(name = "State", value = State::class),
         JsonSubTypes.Type(name = "Definition", value = Definition::class),
+        JsonSubTypes.Type(name = "EnumDefinition", value = EnumDefinition::class),
         JsonSubTypes.Type(name = "Reference", value = Reference::class)
 )
 interface Element {

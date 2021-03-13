@@ -3,15 +3,15 @@ import Template, { TemplateType } from "../../../model/Template";
 import ListEditor from "../../../common/ListEditor";
 import TemplateEditor from "../../template/TemplateEditor";
 import { List } from "immutable";
-import { prepareEmptyStateTemplate } from "../../../model/StateTemplate";
 
 interface ListTemplateEditorProps<T> {
   template: ListTemplate<Template<T>, T>;
   onChange: (template: ListTemplate<Template<T>, T>) => void;
   allowedTemplateTypes: List<TemplateType>;
+  emptyItem: () => Template<T>;
 }
 
-const ListTemplateEditor = <T,>({ template, onChange, allowedTemplateTypes }: ListTemplateEditorProps<T>) => {
+const ListTemplateEditor = <T,>({ template, onChange, allowedTemplateTypes, emptyItem }: ListTemplateEditorProps<T>) => {
   return (
     <ListEditor
       items={template.items}
@@ -24,7 +24,7 @@ const ListTemplateEditor = <T,>({ template, onChange, allowedTemplateTypes }: Li
           allowedTemplateTypes={allowedTemplateTypes}
         />
       )}
-      emptyItem={prepareEmptyStateTemplate}
+      emptyItem={emptyItem}
       allowRemove={true}
     />
   );

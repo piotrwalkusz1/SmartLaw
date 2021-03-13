@@ -10,6 +10,10 @@ import { List } from "immutable";
 import SelectField from "../../common/SelectField";
 import StateTemplateEditor from "../element/template/StateTemplateEditor";
 import { isStateTemplate } from "../../model/StateTemplate";
+import { isEnumDefinitionTemplate } from "../../model/EnumDefinitionTemplate";
+import EnumDefinitionTemplateEditor from "../element/template/EnumDefinitionTemplateEditor";
+import { isEnumVariantTemplate } from "../../model/EnumVariantTemplate";
+import EnumVariantTemplateEditor from "../element/template/EnumVariantTemplateEditor";
 
 interface TemplateEditorProps {
   template: Template<any>;
@@ -27,6 +31,10 @@ const TemplateEditor = ({ template, onTemplateChange, allowedTemplateTypes }: Te
       return <GroovyTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
     } else if (isStateTemplate(template)) {
       return <StateTemplateEditor template={template} onChange={onTemplateChange} />;
+    } else if (isEnumDefinitionTemplate(template)) {
+      return <EnumDefinitionTemplateEditor template={template} onChange={onTemplateChange} />;
+    } else if (isEnumVariantTemplate(template)) {
+      return <EnumVariantTemplateEditor template={template} onChange={onTemplateChange} />;
     } else {
       return <div>Template type "{template.templateType}" is not supported.</div>;
     }
@@ -34,13 +42,17 @@ const TemplateEditor = ({ template, onTemplateChange, allowedTemplateTypes }: Te
 
   return (
     <div>
-      <SelectField
-        label="Template type"
-        value={template.templateType}
-        onChange={(type) => onTemplateChange(prepareEmptyTemplate(type))}
-        options={allowedTemplateTypes}
-        display={(type) => type}
-      />
+      {allowedTemplateTypes.size <= 1 ? (
+        <> </>
+      ) : (
+        <SelectField
+          label="Template type"
+          value={template.templateType}
+          onChange={(type) => onTemplateChange(prepareEmptyTemplate(type))}
+          options={allowedTemplateTypes}
+          display={(type) => type}
+        />
+      )}
       {renderTemplate(template, onTemplateChange)}
     </div>
   );

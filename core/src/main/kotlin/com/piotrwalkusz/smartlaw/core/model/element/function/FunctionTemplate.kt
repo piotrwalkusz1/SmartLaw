@@ -13,7 +13,7 @@ data class FunctionTemplate(
         val name: Template<String>,
         val description: Template<String?>,
         val parameters: Template<List<GenericParameterTemplate>>,
-        val arguments: Template<List<FunctionArgumentType>>,
+        val arguments: Template<List<FunctionArgumentDefinition>>,
         val body: Template<List<Statement>>,
         val result: Template<FunctionResult?>
 ) : ElementTemplateOld

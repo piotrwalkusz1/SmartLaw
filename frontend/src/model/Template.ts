@@ -7,6 +7,8 @@ import { decodeEnum } from "../utils/Decoders";
 import { decodeStateTemplate, prepareEmptyStateTemplate } from "./StateTemplate";
 import { decodeDefinitionRefTemplate, prepareEmptyDefinitionRefTemplate } from "./DefinitionRefTemplate";
 import { decodeMetaPrimitiveValueTemplate, prepareEmptyMetaPrimitiveValueTemplate } from "./MetaPrimitiveValueTemplate";
+import { decodeEnumDefinitionTemplate, prepareEmptyEnumDefinitionTemplate } from "./EnumDefinitionTemplate";
+import { decodeEnumVariantTemplate, prepareEmptyEnumVariantTemplate } from "./EnumVariantTemplate";
 
 export enum TemplateType {
   Static = "Static",
@@ -15,7 +17,9 @@ export enum TemplateType {
   ListTemplate = "ListTemplate",
   IdTemplate = "IdTemplate",
   StateTemplate = "StateTemplate",
+  EnumDefinitionTemplate = "EnumDefinitionTemplate",
   DefinitionRefTemplate = "DefinitionRefTemplate",
+  EnumVariantTemplate = "EnumVariantTemplate",
   MetaPrimitiveValueTemplate = "MetaPrimitiveValueTemplate",
 }
 
@@ -39,6 +43,10 @@ export const decodeTemplate = <T, R extends T>(json: any, decodeTemplateResult: 
       return decodeDefinitionRefTemplate(json);
     case TemplateType.MetaPrimitiveValueTemplate:
       return decodeMetaPrimitiveValueTemplate(json);
+    case TemplateType.EnumDefinitionTemplate:
+      return decodeEnumDefinitionTemplate(json);
+    case TemplateType.EnumVariantTemplate:
+      return decodeEnumVariantTemplate(json);
   }
 };
 
@@ -64,5 +72,9 @@ export const prepareEmptyTemplate = (templateType: TemplateType): Template<any> 
       return prepareEmptyDefinitionRefTemplate();
     case TemplateType.MetaPrimitiveValueTemplate:
       return prepareEmptyMetaPrimitiveValueTemplate();
+    case TemplateType.EnumVariantTemplate:
+      return prepareEmptyEnumVariantTemplate();
+    case TemplateType.EnumDefinitionTemplate:
+      return prepareEmptyEnumDefinitionTemplate();
   }
 };
