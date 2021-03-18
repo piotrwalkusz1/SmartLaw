@@ -2,7 +2,6 @@ package com.piotrwalkusz.smartlaw.service.config
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
-import com.piotrwalkusz.smartlaw.core.model.template.Template
 import com.piotrwalkusz.smartlaw.core.serialization.SubTypeModule
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoConfiguration

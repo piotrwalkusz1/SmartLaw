@@ -1,15 +1,16 @@
-import ElementTemplate from "./ElementTemplate";
 import Template, { decodeTemplate, TemplateType } from "./Template";
 import { decodeEnum, decodeList, decodeNullable, decodeString } from "../utils/Decoders";
 import { decodeId } from "./Id";
 import { decodeAnnotation } from "./Annotation";
-import MetaValue, { decodeMetaValue } from "./MetaValue";
-import Type, { decodeType } from "./Type";
+import { decodeMetaValue } from "./MetaValue";
+import { decodeType } from "./Type";
 import { prepareStaticTemplate } from "./StaticTemplate";
 import { prepareEmptyIdTemplate } from "./IdTemplate";
 import { List } from "immutable";
 import { prepareEmptyDefinitionRefTemplate } from "./DefinitionRefTemplate";
 import { prepareEmptyMetaPrimitiveValueTemplate } from "./MetaPrimitiveValueTemplate";
+import StateElement from "./StateElement";
+import { WrapWithTemplate } from "./WrapWithTemplate";
 
 export const decodeStateTemplate = (json: any): StateTemplate => {
   return {
@@ -23,12 +24,7 @@ export const decodeStateTemplate = (json: any): StateTemplate => {
   };
 };
 
-export default interface StateTemplate extends ElementTemplate {
-  name: Template<string>;
-  description: Template<string | null>;
-  type: Template<Type>;
-  defaultValue: Template<MetaValue | null>;
-}
+export interface StateTemplate extends WrapWithTemplate<StateElement> {}
 
 export const prepareEmptyStateTemplate = (): StateTemplate => {
   return {

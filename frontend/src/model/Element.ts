@@ -4,10 +4,12 @@ import Annotation from "./Annotation";
 import { decodeStateElement } from "./StateElement";
 import { decodeEnum } from "../utils/Decoders";
 import { decodeEnumDefinitionElement } from "./EnumDefinitionElement";
+import { decodeActionDefinitionElement } from "./ActionDefinitionElement";
 
 export enum ElementType {
   State = "State",
   EnumDefinition = "EnumDefinition",
+  ActionDefinition = "ActionDefinition",
 }
 
 export const decodeElement = (json: any): Element => {
@@ -18,6 +20,8 @@ export const decodeElement = (json: any): Element => {
       return decodeStateElement(json);
     case ElementType.EnumDefinition:
       return decodeEnumDefinitionElement(json);
+    case ElementType.ActionDefinition:
+      return decodeActionDefinitionElement(json);
   }
 };
 

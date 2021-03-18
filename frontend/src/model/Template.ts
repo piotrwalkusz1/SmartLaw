@@ -9,6 +9,7 @@ import { decodeDefinitionRefTemplate, prepareEmptyDefinitionRefTemplate } from "
 import { decodeMetaPrimitiveValueTemplate, prepareEmptyMetaPrimitiveValueTemplate } from "./MetaPrimitiveValueTemplate";
 import { decodeEnumDefinitionTemplate, prepareEmptyEnumDefinitionTemplate } from "./EnumDefinitionTemplate";
 import { decodeEnumVariantTemplate, prepareEmptyEnumVariantTemplate } from "./EnumVariantTemplate";
+import { buildInheritanceMeta, buildMeta, enumMeta, stringMeta } from "../utils/Reflection";
 
 export enum TemplateType {
   Static = "Static",
@@ -21,6 +22,14 @@ export enum TemplateType {
   DefinitionRefTemplate = "DefinitionRefTemplate",
   EnumVariantTemplate = "EnumVariantTemplate",
   MetaPrimitiveValueTemplate = "MetaPrimitiveValueTemplate",
+  ActionArgumentTemplate = "ActionArgumentTemplate",
+  FunctionRefTemplate = "FunctionRefTemplate",
+  ActionDefinitionTemplate = "ActionDefinitionTemplate",
+  GenericParameterTemplate = "GenericParameterTemplate",
+  FunctionArgumentDefinitionTemplate = "FunctionArgumentDefinitionTemplate",
+  EnumValueTemplate = "EnumValueTemplate",
+  StateVariableRefTemplate = "StateVariableRefTemplate",
+  FunctionCallTemplate = "FunctionCallTemplate",
 }
 
 export const decodeTemplate = <T, R extends T>(json: any, decodeTemplateResult: (json: any) => R): Template<T> => {
@@ -78,3 +87,7 @@ export const prepareEmptyTemplate = (templateType: TemplateType): Template<any> 
       return prepareEmptyEnumDefinitionTemplate();
   }
 };
+
+export const templateMeta = buildInheritanceMeta<Template<any>>("templateType", {
+  abc: stringMeta(),
+});
