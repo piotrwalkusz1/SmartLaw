@@ -1,19 +1,20 @@
 import React from "react";
-import Template, { prepareEmptyTemplate, TemplateType } from "../../model/Template";
+import Template, { prepareEmptyTemplate } from "../../model/Template";
 import TextEngineTemplateEditor from "./TextEngineTemplateEditor";
-import { isTextEngineTemplate } from "../../model/TextEngineTemplate";
 import StaticTemplateEditor from "./StaticTemplateEditor";
 import { isStaticTemplate } from "../../model/StaticTemplate";
 import GroovyTemplateEditor from "./GroovyTemplateEditor";
-import { isGroovyTemplate } from "../../model/GroovyTemplate";
 import { List } from "immutable";
 import SelectField from "../../common/SelectField";
 import StateTemplateEditor from "../element/template/StateTemplateEditor";
-import { isStateTemplate } from "../../model/StateTemplate";
-import { isEnumDefinitionTemplate } from "../../model/EnumDefinitionTemplate";
 import EnumDefinitionTemplateEditor from "../element/template/EnumDefinitionTemplateEditor";
-import { isEnumVariantTemplate } from "../../model/EnumVariantTemplate";
 import EnumVariantTemplateEditor from "../element/template/EnumVariantTemplateEditor";
+import { StateElementUtils } from "../../model/StateElement";
+import { EnumDefinitionElementUtils } from "../../model/EnumDefinitionElement";
+import { EnumVariantUtils } from "../../model/EnumVariant";
+import { TemplateType } from "../../model/TemplateType";
+import { isTextEngineTemplate } from "../../model/TextEngineTemplate";
+import { isGroovyTemplate } from "../../model/GroovyTemplate";
 
 interface TemplateEditorProps {
   template: Template<any>;
@@ -29,11 +30,11 @@ const TemplateEditor = ({ template, onTemplateChange, allowedTemplateTypes }: Te
       return <StaticTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
     } else if (isGroovyTemplate(template)) {
       return <GroovyTemplateEditor template={template} onTemplateChange={onTemplateChange} />;
-    } else if (isStateTemplate(template)) {
+    } else if (StateElementUtils.isTemplate(template)) {
       return <StateTemplateEditor template={template} onChange={onTemplateChange} />;
-    } else if (isEnumDefinitionTemplate(template)) {
+    } else if (EnumDefinitionElementUtils.isTemplate(template)) {
       return <EnumDefinitionTemplateEditor template={template} onChange={onTemplateChange} />;
-    } else if (isEnumVariantTemplate(template)) {
+    } else if (EnumVariantUtils.isTemplate(template)) {
       return <EnumVariantTemplateEditor template={template} onChange={onTemplateChange} />;
     } else {
       return <div>Template type "{template.templateType}" is not supported.</div>;

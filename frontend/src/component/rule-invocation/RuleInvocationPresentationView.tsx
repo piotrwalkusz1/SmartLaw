@@ -13,7 +13,7 @@ interface RuleInvocationPresentationViewProps {
   onRuleInvocationChange: (ruleInvocation: RuleInvocation) => void;
   rule: Rule | null;
   ruleContent: string;
-  validationResults: Map<String, List<ValidationResult>>;
+  validationResults: Map<string, List<ValidationResult>>;
   onRemove?: () => void;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }

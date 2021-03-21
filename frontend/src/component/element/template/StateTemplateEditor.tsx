@@ -1,12 +1,12 @@
-import StateTemplate from "../../../model/StateTemplate";
 import IdTemplateEditor from "./IdTemplateEditor";
 import StringTemplateEditor from "./StringTemplateEditor";
 import TypeTemplateEditor from "./TypeTemplateEditor";
 import MetaValueTemplateEditor from "./MetaValueTemplateEditor";
+import { StateElementTemplate } from "../../../model/StateElement";
 
 interface StateTemplateEditorProps {
-  template: StateTemplate;
-  onChange: (stateTemplate: StateTemplate) => void;
+  template: StateElementTemplate;
+  onChange: (stateTemplate: StateElementTemplate) => void;
 }
 
 const StateTemplateEditor = ({ template, onChange }: StateTemplateEditorProps) => {

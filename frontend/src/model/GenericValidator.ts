@@ -1,23 +1,22 @@
-import Validator, { ValidatorType } from "./Validator";
-import { decodeString } from "../utils/Decoders";
-
-export const prepareEmptyGenericValidator = (): GenericValidator => {
-  return {
-    type: ValidatorType.Generic,
-    expressionEvaluatorType: "FreeMarker",
-    expression: "",
-  };
-};
-
-export const decodeGenericValidator = (json: any): GenericValidator => {
-  return {
-    type: ValidatorType.Generic,
-    expressionEvaluatorType: decodeString(json.expressionEvaluatorType),
-    expression: decodeString(json.expression),
-  };
-};
+import Validator, { validatorMeta, ValidatorType } from "./Validator";
+import { WrapWithTemplate } from "./WrapWithTemplate";
+import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
+import { stringMeta } from "../utils/Reflection";
+import { TemplateType } from "./TemplateType";
 
 export default interface GenericValidator extends Validator {
   expressionEvaluatorType: string;
   expression: string;
 }
+
+export interface GenericValidatorTemplate extends WrapWithTemplate<GenericValidator> {}
+
+export const GenericValidatorUtils = buildDerivativeModelUtilsWithTemplate<
+  GenericValidator,
+  Validator,
+  ValidatorType,
+  GenericValidatorTemplate
+>(validatorMeta, ValidatorType.Generic, TemplateType.GenericValidatorTemplate, {
+  expressionEvaluatorType: stringMeta,
+  expression: stringMeta,
+});

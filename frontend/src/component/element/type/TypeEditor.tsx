@@ -1,11 +1,10 @@
 import SelectField from "../../../common/SelectField";
 import Type, { TypeKind } from "../../../model/Type";
-import { prepareGenericType } from "../../../model/GenericType";
-import { prepareInterfaceRef } from "../../../model/InterfaceRef";
-import { prepareEmptyId } from "../../../model/Id";
-import DefinitionRef, { prepareDefinitionRef } from "../../../model/DefinitionRef";
 import { List } from "immutable";
 import DefinitionRefEditor from "./DefinitionRefEditor";
+import { GenericTypeUtils } from "../../../model/GenericType";
+import { InterfaceRefUtils } from "../../../model/InterfaceRef";
+import DefinitionRef, { DefinitionRefUtils } from "../../../model/DefinitionRef";
 
 interface TypeEditorProps {
   type: Type;
@@ -16,11 +15,11 @@ const TypeEditor = ({ type, onChange }: TypeEditorProps) => {
   const prepareEmptyType = (typeKind: TypeKind): Type => {
     switch (typeKind) {
       case TypeKind.GenericType:
-        return prepareGenericType("");
+        return GenericTypeUtils.create();
       case TypeKind.InterfaceRef:
-        return prepareInterfaceRef(prepareEmptyId());
+        return InterfaceRefUtils.create();
       case TypeKind.DefinitionRef:
-        return prepareDefinitionRef(prepareEmptyId());
+        return DefinitionRefUtils.create();
       default:
         throw Error("Type kind " + typeKind + " is not supported");
     }

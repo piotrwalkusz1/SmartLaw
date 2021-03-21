@@ -1,21 +1,21 @@
 import { List } from "immutable";
 import Document from "./Document";
 import { decodeList, decodeNullable, decodeString } from "../utils/Decoders";
-import Id, { decodeId } from "./Id";
 import Rule, { decodeRule } from "./Rule";
 import AnnotationType, { decodeAnnotationType } from "./AnnotationType";
-import Element, { decodeElement } from "./Element";
-import RuleInterface, { decodeRuleInterface } from "./RuleInterface";
+import RuleInterface, { RuleInterfaceUtils } from "./RuleInterface";
+import Id, { IdUtils } from "./Id";
+import Element, { elementMeta } from "./Element";
 
 export const decodeLibrary = (json: any): Library => {
   return new Library({
     documentType: decodeString(json.documentType),
-    id: decodeId(json.id),
+    id: IdUtils.decode(json.id),
     name: decodeString(json.name),
     description: decodeNullable(json.description, decodeString),
     rules: decodeList(json.rules, decodeRule),
-    rulesInterfaces: decodeList(json.rulesInterfaces, decodeRuleInterface),
-    elements: decodeList(json.elements, decodeElement),
+    rulesInterfaces: decodeList(json.rulesInterfaces, RuleInterfaceUtils.decode),
+    elements: decodeList(json.elements, elementMeta.decodeOrException),
     annotations: decodeList(json.annotations, decodeAnnotationType),
   });
 };

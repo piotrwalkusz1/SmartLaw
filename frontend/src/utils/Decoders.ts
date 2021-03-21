@@ -40,7 +40,7 @@ export const decodeList = <T extends {}>(json: any, mapper: (value: any) => T): 
   }
 };
 
-export const decodeMap = <T extends {}>(json: any, mapper: (value: any) => T): Map<String, T> => {
+export const decodeMap = <T extends {}>(json: any, mapper: (value: any) => T): Map<string, T> => {
   if (typeof json === "object") {
     return Map(Object.entries(json).map(([key, value]) => [key, mapper(value)]));
   } else {

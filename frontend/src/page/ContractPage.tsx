@@ -69,7 +69,7 @@ export class DocumentEditorRuleInvocationElement extends DocumentEditorElement {
     this.extendedPresentationElement = extendedPresentationElement;
   }
 
-  withRuleInvocationArguments(ruleInvocationArguments: Map<String, MetaValue>): DocumentEditorRuleInvocationElement {
+  withRuleInvocationArguments(ruleInvocationArguments: Map<string, MetaValue>): DocumentEditorRuleInvocationElement {
     return this.withExtendedPresentationElement(this.extendedPresentationElement.withRuleInvocationArguments(ruleInvocationArguments));
   }
 

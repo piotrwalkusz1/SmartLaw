@@ -1,10 +1,10 @@
-import RuleInvocation, { decodeRuleInvocation } from "./RuleInvocation";
+import RuleInvocation, { RuleInvocationUtils } from "./RuleInvocation";
 import PresentationElement, { PresentationElementType } from "./PresentationElement";
 import MetaValue from "./MetaValue";
-import { List, Map } from "immutable";
+import { Map } from "immutable";
 
 export const decodeRuleInvocationPresentationElement = (json: any): RuleInvocationPresentationElement => {
-  return new RuleInvocationPresentationElement(decodeRuleInvocation(json.ruleInvocation));
+  return new RuleInvocationPresentationElement(RuleInvocationUtils.decode(json.ruleInvocation));
 };
 
 export default class RuleInvocationPresentationElement implements PresentationElement {
@@ -15,7 +15,7 @@ export default class RuleInvocationPresentationElement implements PresentationEl
     this.ruleInvocation = ruleInvocation;
   }
 
-  withRuleInvocationArguments(ruleInvocationArguments: Map<String, MetaValue>): RuleInvocationPresentationElement {
+  withRuleInvocationArguments(ruleInvocationArguments: Map<string, MetaValue>): RuleInvocationPresentationElement {
     return this.withRuleInvocation({ ...this.ruleInvocation, arguments: ruleInvocationArguments });
   }
 

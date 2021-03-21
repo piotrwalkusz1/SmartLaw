@@ -4,6 +4,8 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
+// Import needed to declare derivative type
+import "./model/MetaRuleValue";
 
 ReactDOM.render(
   <React.StrictMode>

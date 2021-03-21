@@ -1,5 +1,5 @@
-import EnumVariantTemplate from "../../../model/EnumVariantTemplate";
 import StringTemplateEditor from "./StringTemplateEditor";
+import { EnumVariantTemplate } from "../../../model/EnumVariant";
 
 interface EnumVariantTemplateEditorProps {
   template: EnumVariantTemplate;

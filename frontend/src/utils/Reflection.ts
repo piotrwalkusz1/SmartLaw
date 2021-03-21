@@ -1,39 +1,69 @@
-import { decodeEnum, decodeNullable, decodeNumber, decodeString } from "./Decoders";
+import { decodeEnum, decodeList, decodeMap, decodeNullable, decodeNumber, decodeString } from "./Decoders";
+import { List, Map } from "immutable";
+import Template from "../model/Template";
+import { TemplateType } from "../model/TemplateType";
+import { ReactElement } from "react";
 
-type WrapWithMetaData<Type> = {
+export type RenderTemplateEditor<T extends Template<R>, R> = (template: T, onTemplateChange: (template: T) => void) => ReactElement;
+
+export type MetaDataFields<Type> = {
   [Property in keyof Type]: MetaData<Type[Property]>;
 };
 
-interface MetaData<T> {
+export type MetaDataDerivativeFields<Derivative, Base> = {
+  [Property in keyof Derivative as Exclude<Property, keyof Base>]: MetaData<Derivative[Property]>;
+};
+
+const mergeBaseAndDerivativeFields = <T, B>(
+  baseFields: MetaDataFields<B>,
+  derivativeFields: MetaDataDerivativeFields<T, B>
+): MetaDataFields<T> => {
+  return ({ ...baseFields, ...derivativeFields } as unknown) as MetaDataFields<T>;
+};
+
+export interface MetaData<T> {
+  excludeFromTemplate?: boolean;
+
   decodeOrException(json: any): T;
 
   create(): T;
 }
 
-interface InheritanceMetaData<T> extends MetaData<T> {
-  createChild(type: string): T;
+export interface ComplexMetaData<T> extends MetaData<T> {
+  fields: MetaDataFields<T>;
 }
 
-export const stringMeta = (): MetaData<string> => {
-  return {
-    decodeOrException(json: any): string {
-      return decodeString(json);
-    },
-    create(): string {
-      return "";
-    },
-  };
+export interface TemplateMetaData<T extends Template<any>> extends ComplexMetaData<T> {
+  templateType: TemplateType;
+}
+
+export interface BaseMetaData<T, E> extends ComplexMetaData<T> {
+  discriminator: keyof T;
+  baseMetaData: BaseMetaData<any, E> | null;
+  derivatives: Array<DerivativeMetaData<any, T, E>>;
+}
+
+export interface DerivativeMetaData<T extends B, B, E> extends ComplexMetaData<T> {
+  baseMetaData: BaseMetaData<B, E>;
+  discriminatorValue: E;
+}
+
+export const stringMeta: MetaData<string> = {
+  decodeOrException(json: any): string {
+    return decodeString(json);
+  },
+  create(): string {
+    return "";
+  },
 };
 
-export const numberMeta = (): MetaData<number> => {
-  return {
-    decodeOrException(json: any): number {
-      return decodeNumber(json);
-    },
-    create(): number {
-      return 0;
-    },
-  };
+export const numberMeta: MetaData<number> = {
+  decodeOrException(json: any): number {
+    return decodeNumber(json);
+  },
+  create(): number {
+    return 0;
+  },
 };
 
 export const enumMeta = <T>(enumObject: { [key: string]: T }): MetaData<T> => {
@@ -58,35 +88,132 @@ export const nullableMeta = <T>(metaData: MetaData<T>): MetaData<T | null> => {
   };
 };
 
-export const buildMeta = <T>(metaData: WrapWithMetaData<T>): MetaData<T> => {
+export const listMeta = <T>(metaData: MetaData<T>): MetaData<List<T>> => {
   return {
-    decodeOrException(json: any): T {
-      return Object.fromEntries(
-        Object.entries(metaData).map(([key, value]) => {
-          return [key, (value as MetaData<any>).decodeOrException(json.key)];
-        })
-      ) as T;
+    decodeOrException(json: any): List<T> {
+      return decodeList(json, metaData.decodeOrException);
     },
-    create(): T {
-      return Object.fromEntries(
-        Object.entries(metaData).map(([key, value]) => {
-          return [key, (value as MetaData<any>).create()];
-        })
-      ) as T;
+    create(): List<T> {
+      return List();
     },
   };
 };
 
-export const buildInheritanceMeta = <T>(field: string, mapping: { [key: string]: MetaData<T> }): InheritanceMetaData<T> => {
+export const mapMeta = <T>(metaData: MetaData<T>): MetaData<Map<string, T>> => {
   return {
-    decodeOrException(json: any): T {
-      return mapping[json[field]].decodeOrException(json);
+    decodeOrException(json: any): Map<string, T> {
+      return decodeMap(json, metaData.decodeOrException);
     },
-    create(): T {
-      throw Error("Cannot create abstract type");
-    },
-    createChild(type: string): T {
-      return mapping[type].create();
+    create(): Map<string, T> {
+      return Map();
     },
   };
+};
+
+export const identityMeta = <T>(): MetaData<T> => {
+  return {
+    decodeOrException(json: any): T {
+      return json;
+    },
+    create(): T {
+      throw Error("Cannot create empty static template");
+    },
+  };
+};
+
+export const excludeFromTemplate = <T>(metaData: MetaData<T>): MetaData<T> => {
+  return { ...metaData, excludeFromTemplate: true };
+};
+
+const decodeOrException = <T>(json: any, fields: MetaDataFields<T>): T => {
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => {
+      return [key, (value as MetaData<any>).decodeOrException(json[key])];
+    })
+  ) as T;
+};
+
+const create = <T>(fields: MetaDataFields<T>): T => {
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => {
+      return [key, (value as MetaData<any>).create()];
+    })
+  ) as T;
+};
+
+export const buildComplexDataMeta = <T>(fields: MetaDataFields<T>): ComplexMetaData<T> => {
+  return {
+    decodeOrException(json: any): T {
+      return decodeOrException(json, fields);
+    },
+    create(): T {
+      return create(fields);
+    },
+    fields: fields,
+  };
+};
+
+export const buildBaseMetaData = <T, E>(
+  discriminator: keyof T,
+  discriminatorType: { [key: string]: E },
+  baseMetaData: BaseMetaData<any, E> | null,
+  fields: MetaDataFields<T>
+): BaseMetaData<T, E> => {
+  const derivatives: Array<DerivativeMetaData<any, T, E>> = [];
+
+  return {
+    baseMetaData: baseMetaData,
+    derivatives: derivatives,
+    decodeOrException(json: any): T {
+      const discriminatorValue = decodeEnum(json[discriminator], discriminatorType);
+      const derivative = derivatives.find((derivative) => derivative.discriminatorValue === discriminatorValue);
+      if (derivative) {
+        return derivative.decodeOrException(json);
+      } else {
+        throw Error('Child with type "' + discriminatorValue + '" is not known');
+      }
+    },
+    create(): T {
+      const derivative = derivatives[0];
+      if (derivative) {
+        return derivative.create();
+      } else {
+        throw Error("This abstract class has no concrete type.");
+      }
+    },
+    fields: fields,
+    discriminator: discriminator,
+  };
+};
+
+const addDerivativeToBaseMetaData = <T extends B, B, E>(baseMetaData: BaseMetaData<B, E>, derivative: DerivativeMetaData<T, B, E>) => {
+  let base: BaseMetaData<any, E> | null = baseMetaData;
+  do {
+    base.derivatives.push(derivative);
+    base = base.baseMetaData;
+  } while (base !== null);
+};
+
+export const buildDerivativeMetaData = <T extends B, B, E>(
+  baseMetaData: BaseMetaData<B, E>,
+  discriminatorValue: E,
+  derivativeFields: MetaDataDerivativeFields<T, B>
+): DerivativeMetaData<T, B, E> => {
+  const fields = mergeBaseAndDerivativeFields(baseMetaData.fields, derivativeFields);
+  const derivative = {
+    create(): T {
+      const model = create(fields);
+      model[baseMetaData.discriminator] = discriminatorValue as any;
+      return model;
+    },
+    decodeOrException(json: any): T {
+      return decodeOrException(json, fields);
+    },
+    fields: fields,
+    baseMetaData: baseMetaData,
+    discriminatorValue: discriminatorValue,
+  };
+  addDerivativeToBaseMetaData(baseMetaData, derivative);
+
+  return derivative;
 };

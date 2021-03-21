@@ -1,7 +1,7 @@
 import Template from "../../../model/Template";
 import MetaValue from "../../../model/MetaValue";
-import { isMetaPrimitiveValueTemplate } from "../../../model/MetaPrimitiveValueTemplate";
 import MetaPrimitiveValueTemplateEditor from "./MetaPrimitiveValueTemplateEditor";
+import { MetaPrimitiveValueUtils } from "../../../model/MetaPrimitiveValue";
 
 interface MetaValueTemplateEditorProps {
   label: string;
@@ -10,7 +10,7 @@ interface MetaValueTemplateEditorProps {
 }
 
 const MetaValueTemplateEditor = ({ label, template, onChange }: MetaValueTemplateEditorProps) => {
-  if (isMetaPrimitiveValueTemplate(template)) {
+  if (MetaPrimitiveValueUtils.isTemplate(template)) {
     return <MetaPrimitiveValueTemplateEditor label={label} template={template} onChange={onChange} />;
   } else {
     return <div>Template type {template.templateType} is not supported</div>;

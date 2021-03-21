@@ -1,11 +1,12 @@
-import Template, { TemplateType } from "../../../model/Template";
+import Template from "../../../model/Template";
 import { Accordion, Card } from "react-bootstrap";
 import React from "react";
 import { List } from "immutable";
 import Element from "../../../model/Element";
-import { isListTemplate } from "../../../model/ListTemplate";
 import ListTemplateEditor from "./ListTemplateEditor";
-import { prepareEmptyStateTemplate } from "../../../model/StateTemplate";
+import { isListTemplate } from "../../../model/ListTemplate";
+import { StateElementUtils } from "../../../model/StateElement";
+import { TemplateType } from "../../../model/TemplateType";
 
 interface ElementListTemplateEditorProps {
   template: Template<List<Element>>;
@@ -13,21 +14,6 @@ interface ElementListTemplateEditorProps {
 }
 
 const ElementListTemplateEditor = ({ template, onTemplateChange }: ElementListTemplateEditorProps) => {
-  const renderContent = () => {
-    if (isListTemplate(template)) {
-      return (
-        <ListTemplateEditor
-          template={template}
-          onChange={onTemplateChange}
-          allowedTemplateTypes={List([TemplateType.StateTemplate, TemplateType.EnumDefinitionTemplate])}
-          emptyItem={prepareEmptyStateTemplate}
-        />
-      );
-    } else {
-      return <div>Template type {template.templateType} is not supported</div>;
-    }
-  };
-
   return (
     <Accordion>
       <Card>
@@ -35,7 +21,14 @@ const ElementListTemplateEditor = ({ template, onTemplateChange }: ElementListTe
           Elements
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="0">
-          <Card.Body>{renderContent()}</Card.Body>
+          <Card.Body>
+            <ListTemplateEditor
+              template={template}
+              onChange={onTemplateChange}
+              allowedTemplateTypes={List([TemplateType.StateTemplate, TemplateType.EnumDefinitionTemplate])}
+              emptyItem={StateElementUtils.createTemplate}
+            />
+          </Card.Body>
         </Accordion.Collapse>
       </Card>
     </Accordion>

@@ -1,6 +1,5 @@
-import { decodeDefinitionRef } from "./DefinitionRef";
-import { decodeInterfaceRef } from "./InterfaceRef";
-import { decodeGenericType } from "./GenericType";
+import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "../utils/Reflection";
+import { WrapWithTemplate } from "./WrapWithTemplate";
 
 export enum TypeKind {
   DefinitionRef = "DefinitionRef",
@@ -8,19 +7,12 @@ export enum TypeKind {
   InterfaceRef = "InterfaceRef",
 }
 
-export const decodeType = (json: any): Type => {
-  switch (json.type) {
-    case TypeKind.DefinitionRef:
-      return decodeDefinitionRef(json);
-    case TypeKind.GenericType:
-      return decodeGenericType(json);
-    case TypeKind.InterfaceRef:
-      return decodeInterfaceRef(json);
-    default:
-      throw Error("Decoding type " + json.type + " is not supported");
-  }
-};
-
 export default interface Type {
   type: TypeKind;
 }
+
+export interface TypeTemplate extends WrapWithTemplate<Type> {}
+
+export const typeMeta: BaseMetaData<Type, TypeKind> = buildBaseMetaData<Type, TypeKind>("type", TypeKind, null, {
+  type: excludeFromTemplate(enumMeta(TypeKind)),
+});

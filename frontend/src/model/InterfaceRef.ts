@@ -1,25 +1,24 @@
-import Type, { decodeType, TypeKind } from "./Type";
-import Id, { decodeId } from "./Id";
+import Type, { TypeKind, typeMeta } from "./Type";
+import Id, { IdUtils } from "./Id";
 import { List } from "immutable";
-import { decodeList } from "../utils/Decoders";
-
-export const decodeInterfaceRef = (json: any): InterfaceRef => {
-  return {
-    type: TypeKind.InterfaceRef,
-    interfaceId: decodeId(json.interfaceId),
-    parameters: decodeList(json.parameters, decodeType),
-  };
-};
-
-export const prepareInterfaceRef = (interfaceId: Id): InterfaceRef => {
-  return {
-    type: TypeKind.DefinitionRef,
-    interfaceId: interfaceId,
-    parameters: List(),
-  };
-};
+import { WrapWithTemplate } from "./WrapWithTemplate";
+import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
+import { listMeta } from "../utils/Reflection";
+import { TemplateType } from "./TemplateType";
 
 export default interface InterfaceRef extends Type {
   interfaceId: Id;
   parameters: List<Type>;
 }
+
+export interface InterfaceRefTemplate extends WrapWithTemplate<InterfaceRef> {}
+
+export const InterfaceRefUtils = buildDerivativeModelUtilsWithTemplate<InterfaceRef, Type, TypeKind, InterfaceRefTemplate>(
+  typeMeta,
+  TypeKind.InterfaceRef,
+  TemplateType.InterfaceRefTemplate,
+  {
+    interfaceId: IdUtils.metaData,
+    parameters: listMeta(typeMeta),
+  }
+);

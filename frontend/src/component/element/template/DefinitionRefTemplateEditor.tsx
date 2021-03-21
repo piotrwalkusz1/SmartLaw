@@ -1,5 +1,5 @@
-import DefinitionRefTemplate from "../../../model/DefinitionRefTemplate";
 import IdTemplateEditor from "./IdTemplateEditor";
+import { DefinitionRefTemplate } from "../../../model/DefinitionRef";
 
 interface DefinitionRefTemplateEditorProps {
   label: string;

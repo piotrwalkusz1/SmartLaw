@@ -1,12 +1,12 @@
 import Validator, { ValidatorType } from "../../model/Validator";
 import GenericValidatorEditor from "./GenericValidatorEditor";
-import GenericValidator, { prepareEmptyGenericValidator } from "../../model/GenericValidator";
-import RegexValidator, { prepareEmptyRegexValidator } from "../../model/RegexValidator";
-import NumberRangeValidator, { prepareEmptyNumberRangeValidator } from "../../model/NumberRangeValidator";
 import RegexValidatorEditor from "./RegexValidatorEditor";
 import NumberRangeValidatorEditor from "./NumberRangeValidatorEditor";
 import SelectField from "../../common/SelectField";
 import { List } from "immutable";
+import GenericValidator, { GenericValidatorUtils } from "../../model/GenericValidator";
+import RegexValidator, { RegexValidatorUtils } from "../../model/RegexValidator";
+import NumberRangeValidator, { NumberRangeValidatorUtils } from "../../model/NumberRangeValidator";
 
 interface ValidatorEditorProps {
   validator: Validator;
@@ -30,11 +30,11 @@ const ValidatorEditor = ({ validator, onValidatorChange }: ValidatorEditorProps)
   const prepareEmptyValidator = (validatorType: ValidatorType): Validator => {
     switch (validatorType) {
       case ValidatorType.Generic:
-        return prepareEmptyGenericValidator();
+        return GenericValidatorUtils.create();
       case ValidatorType.Regex:
-        return prepareEmptyRegexValidator();
+        return RegexValidatorUtils.create();
       case ValidatorType.NumberRange:
-        return prepareEmptyNumberRangeValidator();
+        return NumberRangeValidatorUtils.create();
       default:
         throw Error("Validator type " + validatorType + " is not supported");
     }

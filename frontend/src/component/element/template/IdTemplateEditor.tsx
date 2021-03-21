@@ -1,6 +1,5 @@
-import IdTemplate, { isIdTemplate } from "../../../model/IdTemplate";
 import Template from "../../../model/Template";
-import Id from "../../../model/Id";
+import Id, { IdTemplate, IdUtils } from "../../../model/Id";
 import { Col, Form, Row } from "react-bootstrap";
 import StringTemplateEditor from "./StringTemplateEditor";
 
@@ -11,7 +10,7 @@ interface IdTemplateEditorProps {
 }
 
 const IdTemplateEditor = ({ template, onChange, label }: IdTemplateEditorProps) => {
-  if (isIdTemplate(template)) {
+  if (IdUtils.isTemplate(template)) {
     return (
       <div>
         <Form.Label>{label}</Form.Label>

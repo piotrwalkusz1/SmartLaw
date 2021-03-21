@@ -1,15 +1,15 @@
-import Id, { decodeId } from "./Id";
+import Id, { IdUtils } from "./Id";
 import { decodeList, decodeNullable, decodeString } from "../utils/Decoders";
 import { List } from "immutable";
-import Validator, { decodeValidator } from "./Validator";
+import Validator, { validatorMeta } from "./Validator";
 
 export const decodeMetaArgument = (json: any): MetaArgument => {
   return {
     name: decodeString(json.name),
     displayName: decodeNullable(json.displayName, decodeString),
     description: decodeNullable(json.description, decodeString),
-    type: decodeId(json.type),
-    validators: decodeList(json.validators, decodeValidator),
+    type: IdUtils.decode(json.type),
+    validators: decodeList(json.validators, validatorMeta.decodeOrException),
   };
 };
 

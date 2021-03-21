@@ -8,7 +8,7 @@ import RuleInvocationPresentationView from "../rule-invocation/RuleInvocationPre
 
 interface RuleInvocationViewProps {
   element: DocumentEditorRuleInvocationElement;
-  onArgumentsChange: (newArguments: Map<String, MetaValue>) => void;
+  onArgumentsChange: (newArguments: Map<string, MetaValue>) => void;
   onRemove: () => void;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }

@@ -1,22 +1,19 @@
-import { decodeMetaPrimitiveValue } from "./MetaPrimitiveValue";
-import { decodeMetaRuleValue } from "./MetaRuleValue";
+import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "../utils/Reflection";
 
 export enum MetaValueType {
   Primitive = "Primitive",
   Rule = "Rule",
 }
 
-export const decodeMetaValue = (json: any): MetaValue => {
-  switch (json.type) {
-    case MetaValueType.Primitive:
-      return decodeMetaPrimitiveValue(json);
-    case MetaValueType.Rule:
-      return decodeMetaRuleValue(json);
-    default:
-      throw Error("Meta value type " + json.type + " is not supported");
-  }
-};
-
 export default interface MetaValue {
   type: MetaValueType;
 }
+
+export const metaValueMeta: BaseMetaData<MetaValue, MetaValueType> = buildBaseMetaData<MetaValue, MetaValueType>(
+  "type",
+  MetaValueType,
+  null,
+  {
+    type: excludeFromTemplate(enumMeta(MetaValueType)),
+  }
+);

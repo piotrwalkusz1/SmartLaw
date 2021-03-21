@@ -1,5 +1,5 @@
-import MetaPrimitiveValueTemplate from "../../../model/MetaPrimitiveValueTemplate";
 import StringTemplateEditor from "./StringTemplateEditor";
+import { MetaPrimitiveValueTemplate } from "../../../model/MetaPrimitiveValue";
 
 interface MetaPrimitiveValueTemplateEditorProps {
   label: string;

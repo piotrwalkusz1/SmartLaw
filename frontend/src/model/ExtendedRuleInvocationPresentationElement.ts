@@ -20,13 +20,13 @@ export class ExtendedRuleInvocationPresentationElement implements ExtendedPresen
   presentationElement: RuleInvocationPresentationElement;
   naturalLanguageDocumentObject: NaturalLanguageProvision;
   rule: Rule | null;
-  validationResults: Map<String, List<ValidationResult>>;
+  validationResults: Map<string, List<ValidationResult>>;
 
   constructor(
     presentationElement: RuleInvocationPresentationElement,
     naturalLanguageDocumentObject: NaturalLanguageProvision,
     rule: Rule | null,
-    validationResults: Map<String, List<ValidationResult>>
+    validationResults: Map<string, List<ValidationResult>>
   ) {
     this.presentationElement = presentationElement;
     this.naturalLanguageDocumentObject = naturalLanguageDocumentObject;
@@ -34,7 +34,7 @@ export class ExtendedRuleInvocationPresentationElement implements ExtendedPresen
     this.validationResults = validationResults;
   }
 
-  withRuleInvocationArguments(ruleInvocationArguments: Map<String, MetaValue>): ExtendedRuleInvocationPresentationElement {
+  withRuleInvocationArguments(ruleInvocationArguments: Map<string, MetaValue>): ExtendedRuleInvocationPresentationElement {
     return this.withPresentationElement(this.presentationElement.withRuleInvocationArguments(ruleInvocationArguments));
   }
 

@@ -4,7 +4,7 @@ import MetaArgument from "../../model/MetaArgument";
 import { List } from "immutable";
 import { Accordion, Card } from "react-bootstrap";
 import ListEditor from "../../common/ListEditor";
-import Id, { prepareEmptyId } from "../../model/Id";
+import Id, { IdUtils } from "../../model/Id";
 
 interface RuleArgumentsEditorProps {
   ruleArguments: List<MetaArgument>;
@@ -18,7 +18,7 @@ const RuleArgumentListEditor = ({ ruleArguments, onRuleArgumentsChange, ruleArgu
       name: "",
       displayName: null,
       description: null,
-      type: ruleArgumentTypes.get(0) || prepareEmptyId(),
+      type: ruleArgumentTypes.get(0) || IdUtils.create(),
       validators: List(),
     };
   };

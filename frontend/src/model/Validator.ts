@@ -1,6 +1,5 @@
-import { decodeRegexValidator } from "./RegexValidator";
-import { decodeGenericValidator } from "./GenericValidator";
-import { decodeNumberRangeValidator } from "./NumberRangeValidator";
+import { WrapWithTemplate } from "./WrapWithTemplate";
+import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "../utils/Reflection";
 
 export enum ValidatorType {
   Regex = "Regex",
@@ -8,19 +7,17 @@ export enum ValidatorType {
   NumberRange = "NumberRange",
 }
 
-export const decodeValidator = (json: any): Validator => {
-  switch (json.type) {
-    case ValidatorType.Regex:
-      return decodeRegexValidator(json);
-    case ValidatorType.Generic:
-      return decodeGenericValidator(json);
-    case ValidatorType.NumberRange:
-      return decodeNumberRangeValidator(json);
-    default:
-      throw Error("Decoding validator type " + json.type + " is not supported");
-  }
-};
-
 export default interface Validator {
   type: ValidatorType;
 }
+
+export interface ValidatorTemplate extends WrapWithTemplate<Validator> {}
+
+export const validatorMeta: BaseMetaData<Validator, ValidatorType> = buildBaseMetaData<Validator, ValidatorType>(
+  "type",
+  ValidatorType,
+  null,
+  {
+    type: excludeFromTemplate(enumMeta(ValidatorType)),
+  }
+);

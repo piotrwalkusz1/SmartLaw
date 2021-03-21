@@ -1,37 +1,18 @@
-import EnumDefinitionTemplate from "../../../model/EnumDefinitionTemplate";
 import IdTemplateEditor from "./IdTemplateEditor";
 import StringTemplateEditor from "./StringTemplateEditor";
 import ListTemplateEditor from "./ListTemplateEditor";
 import { List } from "immutable";
-import { TemplateType } from "../../../model/Template";
-import { isListTemplate } from "../../../model/ListTemplate";
-import { prepareEmptyEnumVariantTemplate } from "../../../model/EnumVariantTemplate";
 import { Form } from "react-bootstrap";
+import { EnumDefinitionElementTemplate } from "../../../model/EnumDefinitionElement";
+import { EnumVariantUtils } from "../../../model/EnumVariant";
+import { TemplateType } from "../../../model/TemplateType";
 
 interface EnumDefinitionTemplateEditorProps {
-  template: EnumDefinitionTemplate;
-  onChange: (template: EnumDefinitionTemplate) => void;
+  template: EnumDefinitionElementTemplate;
+  onChange: (template: EnumDefinitionElementTemplate) => void;
 }
 
 const EnumDefinitionTemplateEditor = ({ template, onChange }: EnumDefinitionTemplateEditorProps) => {
-  const renderList = () => {
-    if (isListTemplate(template.variants)) {
-      return (
-        <div>
-          <Form.Label>Variants</Form.Label>
-          <ListTemplateEditor
-            template={template.variants}
-            onChange={(variants) => onChange({ ...template, variants })}
-            allowedTemplateTypes={List([TemplateType.EnumVariantTemplate])}
-            emptyItem={prepareEmptyEnumVariantTemplate}
-          />
-        </div>
-      );
-    } else {
-      return <div>Template type {template.variants.templateType} is not supported</div>;
-    }
-  };
-
   return (
     <div>
       <IdTemplateEditor label="Id" template={template.id} onChange={(id) => onChange({ ...template, id })} />
@@ -41,7 +22,15 @@ const EnumDefinitionTemplateEditor = ({ template, onChange }: EnumDefinitionTemp
         template={template.description}
         onChange={(description) => onChange({ ...template, description })}
       />
-      {renderList()}
+      <div>
+        <Form.Label>Variants</Form.Label>
+        <ListTemplateEditor
+          template={template.variants}
+          onChange={(variants) => onChange({ ...template, variants })}
+          allowedTemplateTypes={List([TemplateType.EnumVariantTemplate])}
+          emptyItem={EnumVariantUtils.createTemplate}
+        />
+      </div>
     </div>
   );
 };

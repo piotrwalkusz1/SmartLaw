@@ -1,8 +1,8 @@
 import Element, { ElementType } from "../../model/Element";
 import StateElementEditor from "./StateElementEditor";
-import StateElement, { prepareEmptyStateElement } from "../../model/StateElement";
 import SelectField from "../../common/SelectField";
 import { List } from "immutable";
+import StateElement, { StateElementUtils } from "../../model/StateElement";
 
 interface ElementEditorProps {
   element: Element;
@@ -22,7 +22,7 @@ const ElementEditor = ({ element, onElementChange }: ElementEditorProps) => {
   const prepareEmptyElement = (elementType: ElementType): Element => {
     switch (elementType) {
       case ElementType.State:
-        return prepareEmptyStateElement();
+        return StateElementUtils.create();
       default:
         throw Error("Element type " + elementType + " is not supported");
     }

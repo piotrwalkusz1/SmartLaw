@@ -8,9 +8,9 @@ import React from "react";
 
 interface RuleInvocationArgumentListEditorProps {
   ruleArguments: List<MetaArgument>;
-  ruleInvocationArguments: Map<String, MetaValue>;
-  onRuleInvocationArgumentsChange: (ruleInvocationArguments: Map<String, MetaValue>) => void;
-  validationResults: Map<String, List<ValidationResult>>;
+  ruleInvocationArguments: Map<string, MetaValue>;
+  onRuleInvocationArgumentsChange: (ruleInvocationArguments: Map<string, MetaValue>) => void;
+  validationResults: Map<string, List<ValidationResult>>;
 }
 
 const RuleInvocationArgumentListEditor = ({

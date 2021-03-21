@@ -1,11 +1,12 @@
-import Template, { TemplateType } from "../../../model/Template";
+import Template from "../../../model/Template";
 import StaticTemplate, { isStaticTemplate, prepareStaticTemplate } from "../../../model/StaticTemplate";
 import TextField from "../../../common/TextField";
-import TextEngineTemplate, { isTextEngineTemplate, prepareTextEngineTemplate, TextEngineType } from "../../../model/TextEngineTemplate";
 import SelectField from "../../../common/SelectField";
 import { List } from "immutable";
 import { Form } from "react-bootstrap";
 import React from "react";
+import TextEngineTemplate, { isTextEngineTemplate, prepareTextEngineTemplate, TextEngineType } from "../../../model/TextEngineTemplate";
+import { TemplateType } from "../../../model/TemplateType";
 
 interface StringTemplateEditorProps {
   label?: string;

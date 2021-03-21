@@ -1,16 +1,22 @@
-import Id, { decodeId } from "./Id";
-import MetaValue, { decodeMetaValue } from "./MetaValue";
+import Id, { IdUtils } from "./Id";
+import MetaValue, { metaValueMeta } from "./MetaValue";
 import { Map } from "immutable";
-import { decodeMap } from "../utils/Decoders";
-
-export const decodeRuleInvocation = (json: any): RuleInvocation => {
-  return {
-    ruleId: decodeId(json.ruleId),
-    arguments: decodeMap(json.arguments, decodeMetaValue),
-  };
-};
+import { WrapWithTemplate } from "./WrapWithTemplate";
+import { buildModelUtilsWithTemplate } from "../utils/ModelUtils";
+import { mapMeta } from "../utils/Reflection";
+import { TemplateType } from "./TemplateType";
 
 export default interface RuleInvocation {
   ruleId: Id;
-  arguments: Map<String, MetaValue>;
+  arguments: Map<string, MetaValue>;
 }
+
+export interface RuleInvocationTemplate extends WrapWithTemplate<RuleInvocation> {}
+
+export const RuleInvocationUtils = buildModelUtilsWithTemplate<RuleInvocation, RuleInvocationTemplate>(
+  TemplateType.RuleInvocationTemplate,
+  {
+    ruleId: IdUtils.metaData,
+    arguments: mapMeta(metaValueMeta),
+  }
+);

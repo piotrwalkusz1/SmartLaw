@@ -1,14 +1,14 @@
 import axios from "axios";
-import Id, { decodeId, prepareEmptyId } from "../model/Id";
 import Rule, { decodeRule } from "../model/Rule";
 import { List, Map } from "immutable";
 import { decodeList } from "../utils/Decoders";
-import RuleInterface, { decodeRuleInterface } from "../model/RuleInterface";
 import MetaValue, { MetaValueType } from "../model/MetaValue";
 import MetaPrimitiveValue from "../model/MetaPrimitiveValue";
 import MetaArgument from "../model/MetaArgument";
 import { META_TYPES } from "./MetaTypes";
 import MetaRuleValue from "../model/MetaRuleValue";
+import Id, { IdUtils } from "../model/Id";
+import RuleInterface, { RuleInterfaceUtils } from "../model/RuleInterface";
 
 export const searchRules = (request: {
   searchPhrase?: string;
@@ -27,13 +27,13 @@ export const searchRulesInterfaces = (request: {
   projectId: string;
 }): Promise<List<RuleInterface>> => {
   return axios.post("/rules/interfaces/search", request).then((response) => {
-    return decodeList(response.data, decodeRuleInterface);
+    return decodeList(response.data, RuleInterfaceUtils.decode);
   });
 };
 
 export const getRulesArgumentsTypes = (request: { projectId: string }): Promise<List<Id>> => {
   return axios.post("/rules/arguments/types", request).then((response) => {
-    return decodeList(response.data, decodeId);
+    return decodeList(response.data, IdUtils.decode);
   });
 };
 
@@ -47,7 +47,7 @@ export const prepareEmptyRuleInvocationArgument = (argument: MetaArgument): Meta
     return {
       type: MetaValueType.Rule,
       ruleInvocation: {
-        ruleId: prepareEmptyId(),
+        ruleId: IdUtils.create(),
         arguments: Map(),
       },
     } as MetaRuleValue;

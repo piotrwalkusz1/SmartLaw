@@ -1,5 +1,4 @@
-import { decodeEnum } from "../utils/Decoders";
-import { ExpressionType } from "./Expression";
+import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "../utils/Reflection";
 
 export enum StatementType {
   Assignment = "Assignment",
@@ -8,13 +7,15 @@ export enum StatementType {
   Operation = "Operation",
 }
 
-export const decodeStatement = (json: any): Statement => {
-  const statementType = decodeEnum(json.statementType, StatementType);
-
-  switch (statementType) {
-  }
-};
-
 export default interface Statement {
   statementType: StatementType;
 }
+
+export const statementMeta: BaseMetaData<Statement, StatementType> = buildBaseMetaData<Statement, StatementType>(
+  "statementType",
+  StatementType,
+  null,
+  {
+    statementType: excludeFromTemplate(enumMeta(StatementType)),
+  }
+);
