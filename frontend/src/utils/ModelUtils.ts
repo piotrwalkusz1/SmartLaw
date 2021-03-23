@@ -11,12 +11,11 @@ import {
 import { TemplateType } from "../model/TemplateType";
 
 export interface ModelUtils<T extends Template<R>, R> {
-  metaData: MetaData<R>;
+  metaData: MetaData<T>;
   templateType: TemplateType;
   decodeTemplate: (json: any) => Template<T>;
   createTemplate: () => Template<T>;
   isTemplate: (template: Template<R>) => template is T;
-  renderTemplateEditor?: RenderTemplateEditor<T, R>;
 }
 
 export const buildModelUtils = <T>(fields: MetaDataFields<T>) => {
@@ -32,10 +31,13 @@ export const buildModelUtils = <T>(fields: MetaDataFields<T>) => {
 export const buildModelUtilsWithTemplate = <T, R extends Template<T>>(
   templateType: TemplateType,
   fields: MetaDataFields<T>,
-  renderTemplateEditor?: RenderTemplateEditor<R, T>
+  renderTemplateEditor?: RenderTemplateEditor<Template<T>, T>
 ) => {
   const metaData = buildComplexDataMeta<T>(fields);
   const templateMetaData = buildTemplateMetaData(templateType, metaData.fields);
+  metaData.templateMetaData = templateMetaData;
+  metaData.templateType = templateType;
+  metaData.renderTemplateEditor = renderTemplateEditor;
   const modelUtils = {
     metaData: metaData,
     decode: metaData.decodeOrException,
@@ -47,7 +49,6 @@ export const buildModelUtilsWithTemplate = <T, R extends Template<T>>(
     isTemplate: <T>(template: Template<T>): template is R => {
       return template.templateType === templateType;
     },
-    renderTemplateEditor: renderTemplateEditor,
   };
   MODELS_UTILS.push(modelUtils);
 
@@ -62,6 +63,8 @@ export const buildDerivativeModelUtilsWithTemplate = <T extends B, B, E, R exten
 ) => {
   const metaData = buildDerivativeMetaData<T, B, E>(baseMetaData, discriminatorValue, fields);
   const templateMetaData = buildTemplateMetaData(templateType, metaData.fields);
+  metaData.templateMetaData = templateMetaData;
+  metaData.templateType = templateType;
   const modelUtils = {
     metaData: metaData,
     decode: metaData.decodeOrException,
@@ -79,11 +82,11 @@ export const buildDerivativeModelUtilsWithTemplate = <T extends B, B, E, R exten
   return modelUtils;
 };
 
-export const getDerivativeModelsUtils = <T extends Template<R>, R>(modelUtils: ModelUtils<T, R>): Array<ModelUtils<any, any>> => {
-  const baseMetaData = modelUtils.metaData as BaseMetaData<R, any>;
+export const getDerivativeMetaData = <T>(metaData: MetaData<T>): Array<MetaData<T>> => {
+  const baseMetaData = metaData as BaseMetaData<T, any>;
   if (baseMetaData.derivatives) {
-    return MODELS_UTILS.filter((modelUtils) => baseMetaData.derivatives.includes(modelUtils.metaData as any));
+    return baseMetaData.derivatives;
   } else {
-    return [modelUtils];
+    return [metaData];
   }
 };

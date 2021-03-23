@@ -3,8 +3,16 @@ import { List, Map } from "immutable";
 import Template from "../model/Template";
 import { TemplateType } from "../model/TemplateType";
 import { ReactElement } from "react";
+import ListTemplateEditor from "../component/element/template/ListTemplateEditor";
+import StringTemplateEditor from "../component/element/template/StringTemplateEditor";
+import { decodeListTemplate, prepareEmptyListTemplate } from "../model/ListTemplate";
+import TemplateEditor from "../component/template/TemplateEditor";
 
-export type RenderTemplateEditor<T extends Template<R>, R> = (template: T, onTemplateChange: (template: T) => void) => ReactElement;
+export type RenderTemplateEditor<T extends Template<R>, R> = (
+  template: T,
+  onTemplateChange: (template: T) => void,
+  fieldName?: string
+) => ReactElement;
 
 export type MetaDataFields<Type> = {
   [Property in keyof Type]: MetaData<Type[Property]>;
@@ -23,6 +31,9 @@ const mergeBaseAndDerivativeFields = <T, B>(
 
 export interface MetaData<T> {
   excludeFromTemplate?: boolean;
+  templateType?: TemplateType;
+  renderTemplateEditor?: RenderTemplateEditor<Template<T>, T>;
+  templateMetaData?: MetaData<Template<T>>;
 
   decodeOrException(json: any): T;
 
@@ -55,6 +66,9 @@ export const stringMeta: MetaData<string> = {
   create(): string {
     return "";
   },
+  renderTemplateEditor: (template, onChange, fieldName) => {
+    return StringTemplateEditor({ template, onChange, label: fieldName });
+  },
 };
 
 export const numberMeta: MetaData<number> = {
@@ -66,13 +80,13 @@ export const numberMeta: MetaData<number> = {
   },
 };
 
-export const enumMeta = <T>(enumObject: { [key: string]: T }): MetaData<T> => {
+export const enumMeta = <T>(enumObject: { [key: string]: T }, defaultValue?: T): MetaData<T> => {
   return {
     decodeOrException(json: any): T {
       return decodeEnum(json, enumObject);
     },
     create(): T {
-      return enumObject[0];
+      return defaultValue || enumObject[0];
     },
   };
 };
@@ -83,8 +97,12 @@ export const nullableMeta = <T>(metaData: MetaData<T>): MetaData<T | null> => {
       return decodeNullable(json, metaData.decodeOrException);
     },
     create(): T | null {
-      return null;
+      return metaData.create();
     },
+    renderTemplateEditor: (template, onTemplateChange, fieldName) => {
+      return TemplateEditor({ template, onTemplateChange, metaData, fieldName });
+    },
+    templateMetaData: getTemplateMetaDataByMetaData(metaData),
   };
 };
 
@@ -95,6 +113,18 @@ export const listMeta = <T>(metaData: MetaData<T>): MetaData<List<T>> => {
     },
     create(): List<T> {
       return List();
+    },
+    templateType: TemplateType.ListTemplate,
+    renderTemplateEditor: (template, onChange, fieldName) => {
+      return ListTemplateEditor<T>({ template, onChange, metaData, header: fieldName });
+    },
+    templateMetaData: {
+      decodeOrException(json: any): Template<List<T>> {
+        return decodeListTemplate(json, metaData.decodeOrException);
+      },
+      create(): Template<List<T>> {
+        return prepareEmptyListTemplate();
+      },
     },
   };
 };
@@ -216,4 +246,24 @@ export const buildDerivativeMetaData = <T extends B, B, E>(
   addDerivativeToBaseMetaData(baseMetaData, derivative);
 
   return derivative;
+};
+
+export const getTemplateMetaDataByMetaData = <T>(metaData: MetaData<T>): MetaData<Template<T>> | undefined => {
+  if (metaData.templateMetaData) {
+    return metaData.templateMetaData;
+  }
+  const baseMetaData = metaData as BaseMetaData<T, any>;
+  if (baseMetaData.derivatives && baseMetaData.derivatives.length > 0) {
+    return baseMetaData.derivatives[0].templateMetaData;
+  }
+  return undefined;
+};
+
+export const getCreateTemplateByMetaData = <T>(metaData: MetaData<T>): (() => Template<T>) | undefined => {
+  return getTemplateMetaDataByMetaData(metaData)?.create;
+};
+
+export const createTemplateByMetaData = <T>(metaData: MetaData<T>): Template<T> | undefined => {
+  const create = getCreateTemplateByMetaData(metaData);
+  return create && create();
 };

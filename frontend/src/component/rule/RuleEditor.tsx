@@ -9,6 +9,9 @@ import IdField from "../IdField";
 import ImplementedRuleInterfacesSelector from "./ImplementedRuleInterfacesSelector";
 import { List } from "immutable";
 import Id from "../../model/Id";
+import TemplateEditor from "../template/TemplateEditor";
+import { listMeta } from "../../utils/Reflection";
+import { elementMeta } from "../../model/Element";
 
 interface RuleEditorProps {
   projectId: string;

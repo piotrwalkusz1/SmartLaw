@@ -1,5 +1,12 @@
 import { decodeEnum } from "../utils/Decoders";
-import { buildComplexDataMeta, enumMeta, MetaData, MetaDataFields, TemplateMetaData } from "../utils/Reflection";
+import {
+  buildComplexDataMeta,
+  enumMeta,
+  getCreateTemplateByMetaData,
+  MetaData,
+  MetaDataFields,
+  TemplateMetaData,
+} from "../utils/Reflection";
 import { decodeStaticTemplate, prepareEmptyStaticTemplate, prepareStaticTemplate } from "./StaticTemplate";
 import { TemplateType } from "./TemplateType";
 import { decodeGroovyTemplate, prepareEmptyGroovyTemplate } from "./GroovyTemplate";
@@ -61,7 +68,12 @@ const nestedTemplateMeta = <T>(metaData: MetaData<T>): MetaData<Template<T>> => 
       return decodeTemplate(json, metaData.decodeOrException);
     },
     create(): Template<T> {
-      return prepareStaticTemplate(metaData.create());
+      const create = getCreateTemplateByMetaData(metaData);
+      if (create) {
+        return create();
+      } else {
+        return prepareStaticTemplate(metaData.create());
+      }
     },
   };
 };
@@ -74,7 +86,7 @@ export const buildTemplateMetaData = <T>(templateType: TemplateType, baseFields:
         return [key, nestedTemplateMeta(value)];
       })
   );
-  fields.templateType = enumMeta(TemplateType);
+  fields.templateType = enumMeta(TemplateType, templateType);
   const templateFields = fields as MetaDataFields<Template<T>>;
 
   return { ...buildComplexDataMeta(templateFields), templateType };

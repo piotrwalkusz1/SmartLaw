@@ -1,4 +1,4 @@
-import { BaseMetaData, buildBaseMetaData, enumMeta } from "../utils/Reflection";
+import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "../utils/Reflection";
 import FunctionArgument, { functionArgumentMeta, FunctionArgumentType } from "./FunctionArgument";
 
 export default interface VariableRef extends FunctionArgument {}
@@ -8,6 +8,6 @@ export const variableRefMeta: BaseMetaData<VariableRef, FunctionArgumentType> = 
   FunctionArgumentType,
   functionArgumentMeta,
   {
-    type: enumMeta(FunctionArgumentType),
+    type: excludeFromTemplate(enumMeta(FunctionArgumentType)),
   }
 );

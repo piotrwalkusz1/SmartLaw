@@ -2,10 +2,11 @@ import IdTemplateEditor from "./IdTemplateEditor";
 import StringTemplateEditor from "./StringTemplateEditor";
 import ListTemplateEditor from "./ListTemplateEditor";
 import { List } from "immutable";
-import { Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { EnumDefinitionElementTemplate } from "../../../model/EnumDefinitionElement";
 import { EnumVariantUtils } from "../../../model/EnumVariant";
 import { TemplateType } from "../../../model/TemplateType";
+import React from "react";
 
 interface EnumDefinitionTemplateEditorProps {
   template: EnumDefinitionElementTemplate;
@@ -24,12 +25,13 @@ const EnumDefinitionTemplateEditor = ({ template, onChange }: EnumDefinitionTemp
       />
       <div>
         <Form.Label>Variants</Form.Label>
-        <ListTemplateEditor
-          template={template.variants}
-          onChange={(variants) => onChange({ ...template, variants })}
-          allowedTemplateTypes={List([TemplateType.EnumVariantTemplate])}
-          emptyItem={EnumVariantUtils.createTemplate}
-        />
+        // TODO
+        {/*<ListTemplateEditor*/}
+        {/*  template={template.variants}*/}
+        {/*  onChange={(variants) => onChange({ ...template, variants })}*/}
+        {/*  allowedTemplateTypes={List([TemplateType.EnumVariantTemplate])}*/}
+        {/*  emptyItem={EnumVariantUtils.createTemplate}*/}
+        {/*/>*/}
       </div>
     </div>
   );

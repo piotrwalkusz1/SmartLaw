@@ -30,4 +30,5 @@ export enum TemplateType {
   RuleInvocationTemplate = "RuleInvocationTemplate",
   NumberRangeValidator = "NumberRangeValidator",
   RegexValidatorTemplate = "RegexValidatorTemplate",
+  OperationTemplate = "OperationTemplate",
 }

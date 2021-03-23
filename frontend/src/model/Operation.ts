@@ -1,5 +1,4 @@
 import { WrapWithTemplate } from "./WrapWithTemplate";
-import FunctionRef, { FunctionRefUtils } from "./FunctionRef";
 import { List } from "immutable";
 import FunctionArgument, { functionArgumentMeta } from "./FunctionArgument";
 import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
@@ -8,20 +7,21 @@ import { TemplateType } from "./TemplateType";
 import Expression, { expressionMeta } from "./Expression";
 import { StatementType } from "./Statement";
 import { EnumValueTemplate } from "./EnumValue";
+import Id, { IdUtils } from "./Id";
 
-export default interface FunctionCall extends Expression {
-  function: FunctionRef;
+export default interface Operation extends Expression {
+  operationId: Id;
   arguments: List<FunctionArgument>;
 }
 
-export interface FunctionCallTemplate extends WrapWithTemplate<FunctionCall> {}
+export interface OperationTemplate extends WrapWithTemplate<Operation> {}
 
-export const FunctionCallUtils = buildDerivativeModelUtilsWithTemplate<FunctionCall, Expression, StatementType, EnumValueTemplate>(
+export const OperationUtils = buildDerivativeModelUtilsWithTemplate<Operation, Expression, StatementType, EnumValueTemplate>(
   expressionMeta,
-  StatementType.FunctionCall,
-  TemplateType.FunctionCallTemplate,
+  StatementType.Operation,
+  TemplateType.OperationTemplate,
   {
-    function: FunctionRefUtils.metaData,
+    operationId: IdUtils.metaData,
     arguments: listMeta(functionArgumentMeta),
   }
 );

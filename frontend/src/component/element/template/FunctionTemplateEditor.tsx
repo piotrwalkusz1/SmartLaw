@@ -23,18 +23,19 @@ const FunctionTemplateEditor = ({ template, onChange }: FunctionTemplateEditorPr
         template={template.description}
         onChange={(description) => onChange({ ...template, description })}
       />
-      <ListTemplateEditor
-        template={template.arguments}
-        onChange={(functionArguments) => onChange({ ...template, arguments: functionArguments })}
-        allowedTemplateTypes={List([TemplateType.FunctionArgumentDefinitionTemplate])}
-        emptyItem={FunctionArgumentDefinitionUtils.createTemplate}
-      />
-      <ListTemplateEditor
-        template={template.body}
-        onChange={(body) => onChange({ ...template, body })}
-        allowedTemplateTypes={List([TemplateType.FunctionArgumentDefinitionTemplate])}
-        emptyItem={FunctionArgumentDefinitionUtils.createTemplate}
-      />
+      // TODO
+      {/*<ListTemplateEditor*/}
+      {/*  template={template.arguments}*/}
+      {/*  onChange={(functionArguments) => onChange({ ...template, arguments: functionArguments })}*/}
+      {/*  allowedTemplateTypes={List([TemplateType.FunctionArgumentDefinitionTemplate])}*/}
+      {/*  emptyItem={FunctionArgumentDefinitionUtils.createTemplate}*/}
+      {/*/>*/}
+      {/*<ListTemplateEditor*/}
+      {/*  template={template.body}*/}
+      {/*  onChange={(body) => onChange({ ...template, body })}*/}
+      {/*  allowedTemplateTypes={List([TemplateType.FunctionArgumentDefinitionTemplate])}*/}
+      {/*  emptyItem={FunctionArgumentDefinitionUtils.createTemplate}*/}
+      {/*/>*/}
     </div>
   );
 };

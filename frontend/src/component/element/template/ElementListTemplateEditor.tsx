@@ -2,11 +2,9 @@ import Template from "../../../model/Template";
 import { Accordion, Card } from "react-bootstrap";
 import React from "react";
 import { List } from "immutable";
-import Element from "../../../model/Element";
-import ListTemplateEditor from "./ListTemplateEditor";
-import { isListTemplate } from "../../../model/ListTemplate";
-import { StateElementUtils } from "../../../model/StateElement";
-import { TemplateType } from "../../../model/TemplateType";
+import Element, { elementMeta } from "../../../model/Element";
+import TemplateEditor from "../../template/TemplateEditor";
+import { listMeta } from "../../../utils/Reflection";
 
 interface ElementListTemplateEditorProps {
   template: Template<List<Element>>;
@@ -22,12 +20,13 @@ const ElementListTemplateEditor = ({ template, onTemplateChange }: ElementListTe
         </Accordion.Toggle>
         <Accordion.Collapse eventKey="0">
           <Card.Body>
-            <ListTemplateEditor
-              template={template}
-              onChange={onTemplateChange}
-              allowedTemplateTypes={List([TemplateType.StateTemplate, TemplateType.EnumDefinitionTemplate])}
-              emptyItem={StateElementUtils.createTemplate}
-            />
+            <TemplateEditor template={template} onTemplateChange={onTemplateChange} metaData={listMeta(elementMeta)} />
+            {/*<ListTemplateEditor*/}
+            {/*  template={template}*/}
+            {/*  onChange={onTemplateChange}*/}
+            {/*  allowedTemplateTypes={List([TemplateType.StateTemplate, TemplateType.EnumDefinitionTemplate])}*/}
+            {/*  emptyItem={StateElementUtils.createTemplate}*/}
+            {/*/>*/}
           </Card.Body>
         </Accordion.Collapse>
       </Card>
