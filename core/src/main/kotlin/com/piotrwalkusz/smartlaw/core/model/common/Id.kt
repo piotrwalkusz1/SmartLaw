@@ -5,5 +5,5 @@ import com.piotrwalkusz.smartlaw.annotationprocessor.GenerateTemplate
 @GenerateTemplate
 data class Id(
         val id: String,
-        val namespace: String? = null
+        val namespace: String = ""
 )

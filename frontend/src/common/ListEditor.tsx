@@ -23,7 +23,7 @@ const Styles = {
 interface ListEditorProps<T> {
   items: List<T>;
   onItemsChange: (items: List<T>) => void;
-  header: (item: T, index: number) => string;
+  header: (item: T, index: number) => string | ReactElement;
   content: (item: T, onItemChange: (item: T) => void, index: number) => ReactElement;
   emptyItem?: () => T;
   onItemAdd?: () => void;
@@ -59,7 +59,8 @@ const ListEditor = <T,>({ items, onItemsChange, header, content, emptyItem, onIt
             <Card>
               <Accordion.Toggle as={Card.Header} eventKey="0">
                 <div style={{ display: "flex" }}>
-                  <div style={{ flexGrow: 1 }}>{header(item, index)}</div>
+                  {header(item, index)}
+                  <div style={{ flexGrow: 1 }} />
                   <div>{renderRemoveIcon(index)}</div>
                 </div>
               </Accordion.Toggle>

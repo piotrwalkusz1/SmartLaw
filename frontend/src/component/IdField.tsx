@@ -19,11 +19,11 @@ const IdField = ({ label, value, onValueChange }: IdFieldProps) => {
         <Col>
           <TextField
             placeholder="Namespace"
-            value={value.namespace || ""}
+            value={value.namespace}
             onChange={(namespace) =>
               onValueChange({
                 ...value,
-                namespace: namespace.length === 0 ? null : namespace,
+                namespace,
               })
             }
           />

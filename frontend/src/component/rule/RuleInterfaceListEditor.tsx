@@ -3,6 +3,7 @@ import React from "react";
 import RuleInterface from "../../model/RuleInterface";
 import { List } from "immutable";
 import RuleInterfaceEditor from "./RuleInterfaceEditor";
+import { IdUtils } from "../../model/Id";
 
 interface RuleInterfaceListEditorProps {
   rulesInterfaces: List<RuleInterface>;
@@ -12,7 +13,7 @@ interface RuleInterfaceListEditorProps {
 const RuleInterfaceListEditor = ({ rulesInterfaces, onRulesInterfacesChange }: RuleInterfaceListEditorProps) => {
   const prepareEmptyRuleInterface = (): RuleInterface => {
     return {
-      id: { id: "", namespace: null },
+      id: IdUtils.create(),
       name: "",
       description: null,
     };

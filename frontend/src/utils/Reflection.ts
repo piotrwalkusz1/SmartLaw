@@ -1,12 +1,13 @@
 import { decodeEnum, decodeList, decodeMap, decodeNullable, decodeNumber, decodeString } from "./Decoders";
 import { List, Map } from "immutable";
-import Template from "../model/Template";
+import Template, { decodeTemplate } from "../model/Template";
 import { TemplateType } from "../model/TemplateType";
 import { ReactElement } from "react";
 import ListTemplateEditor from "../component/element/template/ListTemplateEditor";
 import StringTemplateEditor from "../component/element/template/StringTemplateEditor";
 import { decodeListTemplate, prepareEmptyListTemplate } from "../model/ListTemplate";
-import TemplateEditor from "../component/template/TemplateEditor";
+import NullableTemplate from "../component/template/NullableTemplate";
+import { decodeStaticTemplate, isStaticTemplate, prepareStaticTemplate } from "../model/StaticTemplate";
 
 export type RenderTemplateEditor<T extends Template<R>, R> = (
   template: T,
@@ -69,6 +70,14 @@ export const stringMeta: MetaData<string> = {
   renderTemplateEditor: (template, onChange, fieldName) => {
     return StringTemplateEditor({ template, onChange, label: fieldName });
   },
+  templateMetaData: {
+    decodeOrException(json: any): Template<string> {
+      return decodeTemplate(json, decodeString);
+    },
+    create(): Template<string> {
+      return prepareStaticTemplate("");
+    },
+  },
 };
 
 export const numberMeta: MetaData<number> = {
@@ -77,6 +86,14 @@ export const numberMeta: MetaData<number> = {
   },
   create(): number {
     return 0;
+  },
+  templateMetaData: {
+    decodeOrException(json: any): Template<number> {
+      return decodeTemplate(json, decodeNumber);
+    },
+    create(): Template<number> {
+      return prepareStaticTemplate(0);
+    },
   },
 };
 
@@ -92,17 +109,29 @@ export const enumMeta = <T>(enumObject: { [key: string]: T }, defaultValue?: T):
 };
 
 export const nullableMeta = <T>(metaData: MetaData<T>): MetaData<T | null> => {
+  const templateMetaData = getTemplateMetaDataByMetaData(metaData);
+  const decodeOrException = (json: any): T | null => decodeNullable(json, metaData.decodeOrException);
+
   return {
-    decodeOrException(json: any): T | null {
-      return decodeNullable(json, metaData.decodeOrException);
-    },
+    decodeOrException: decodeOrException,
     create(): T | null {
-      return metaData.create();
+      return null;
     },
     renderTemplateEditor: (template, onTemplateChange, fieldName) => {
-      return TemplateEditor({ template, onTemplateChange, metaData, fieldName });
+      return NullableTemplate({ template, onTemplateChange, fieldName, metaData });
     },
-    templateMetaData: getTemplateMetaDataByMetaData(metaData),
+    templateMetaData: templateMetaData && {
+      decodeOrException(json: any): Template<T | null> {
+        if (isStaticTemplate(json as Template<T>)) {
+          return decodeStaticTemplate(json, decodeOrException);
+        } else {
+          return templateMetaData.decodeOrException(json);
+        }
+      },
+      create(): Template<T | null> {
+        return prepareStaticTemplate(null);
+      },
+    },
   };
 };
 

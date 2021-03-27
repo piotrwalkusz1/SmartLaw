@@ -2,7 +2,6 @@ package com.piotrwalkusz.smartlaw.compiler.meta
 
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.core.model.common.Id
-import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 

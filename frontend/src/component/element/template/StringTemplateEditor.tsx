@@ -13,11 +13,16 @@ interface StringTemplateEditorProps {
   placeholder?: string;
   template: Template<string>;
   onChange: (template: Template<string>) => void;
+  allowNull?: boolean;
 }
 
-const STRING_TEMPLATE_TYPES: List<string> = List([TemplateType.Static, ...Object.values(TextEngineType)]);
+const NULL_VALUE = "Null";
 
-const StringTemplateEditor = ({ template, onChange, label, placeholder }: StringTemplateEditorProps) => {
+const StringTemplateEditor = ({ template, onChange, label, placeholder, allowNull }: StringTemplateEditorProps) => {
+  const templateTypes: List<string> = List(
+    ([TemplateType.Static, ...Object.values(TextEngineType)] as Array<string>).concat(allowNull ? [NULL_VALUE] : [])
+  );
+
   const changeStaticTemplate = (staticTemplate: StaticTemplate<string>, newValue: string): StaticTemplate<string> => {
     return { ...staticTemplate, value: newValue };
   };
@@ -26,15 +31,33 @@ const StringTemplateEditor = ({ template, onChange, label, placeholder }: String
     return { ...textEngineTemplate, template: newTemplate };
   };
 
+  const getSelectedTemplateType = (): string => {
+    if (isTextEngineTemplate(template)) {
+      return template.type;
+    } else if (isStaticTemplate(template)) {
+      if (template.value === null) {
+        return NULL_VALUE;
+      } else {
+        return TemplateType.Static;
+      }
+    } else {
+      return NULL_VALUE;
+    }
+  };
+
   const renderTextField = () => {
     if (isStaticTemplate(template)) {
-      return (
-        <TextField
-          placeholder={placeholder}
-          value={template.value || ""}
-          onChange={(value) => onChange(changeStaticTemplate(template, value))}
-        />
-      );
+      if (template.value === null) {
+        return <TextField placeholder={placeholder} value="" disabled={true} />;
+      } else {
+        return (
+          <TextField
+            placeholder={placeholder}
+            value={template.value || ""}
+            onChange={(value) => onChange(changeStaticTemplate(template, value))}
+          />
+        );
+      }
     } else if (isTextEngineTemplate(template)) {
       return (
         <TextField
@@ -52,10 +75,14 @@ const StringTemplateEditor = ({ template, onChange, label, placeholder }: String
     if (stringTemplateType === TemplateType.Static) {
       if (isTextEngineTemplate(template)) {
         onChange(prepareStaticTemplate(template.template));
+      } else {
+        onChange(prepareStaticTemplate(""));
       }
+    } else if (stringTemplateType === NULL_VALUE) {
+      onChange(prepareStaticTemplate(null));
     } else {
       if (isStaticTemplate(template)) {
-        onChange(prepareTextEngineTemplate(stringTemplateType as TextEngineType, template.value));
+        onChange(prepareTextEngineTemplate(stringTemplateType as TextEngineType, template.value || ""));
       }
     }
   };
@@ -65,12 +92,7 @@ const StringTemplateEditor = ({ template, onChange, label, placeholder }: String
       {label && <Form.Label>{label}</Form.Label>}
       <div style={{ display: "flex" }}>
         <div style={{ flexGrow: 1 }}>{renderTextField()}</div>
-        <SelectField
-          value={isTextEngineTemplate(template) ? template.type : TemplateType.Static}
-          onChange={changeTemplateType}
-          options={STRING_TEMPLATE_TYPES}
-          display={(type) => type}
-        />
+        <SelectField value={getSelectedTemplateType()} onChange={changeTemplateType} options={templateTypes} display={(type) => type} />
       </div>
     </div>
   );

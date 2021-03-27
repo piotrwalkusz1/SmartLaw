@@ -1,17 +1,16 @@
 import React from "react";
-import Template, { prepareEmptyTemplate } from "../../model/Template";
-import { getDerivativeMetaData } from "../../utils/ModelUtils";
-import SelectField from "../../common/SelectField";
-import { List } from "immutable";
+import Template from "../../model/Template";
+import { getDerivativeMetaDataAndTemplateTypes } from "../../utils/ModelUtils";
 import { ComplexMetaData, MetaData } from "../../utils/Reflection";
-import { TemplateType } from "../../model/TemplateType";
 import ExpandableArea from "../../common/ExpandableArea";
+import TemplateTypeSelector from "./TemplateTypeSelector";
 
 interface TemplateEditorProps<T> {
   template: Template<T>;
   onTemplateChange: (template: Template<T>) => void;
   metaData: MetaData<T>;
   fieldName?: string;
+  hideTemplateTypeSelector?: boolean;
 }
 
 const transformFieldName = (fieldName: string): string => {
@@ -27,29 +26,23 @@ const transformFieldName = (fieldName: string): string => {
   );
 };
 
-const TemplateEditor = <T,>({ template, onTemplateChange, metaData, fieldName }: TemplateEditorProps<T>) => {
-  const derivativeMetaDataList = getDerivativeMetaData(metaData);
-  let derivativeMetaData: MetaData<T> | undefined = undefined;
-  if (derivativeMetaDataList.length > 1) {
-    derivativeMetaData = derivativeMetaDataList.find((derivativeMetaData) => derivativeMetaData.templateType === template.templateType);
-  } else if (derivativeMetaDataList.length === 1) {
-    derivativeMetaData = derivativeMetaDataList[0];
-  }
+const TemplateEditor = <T,>({ template, onTemplateChange, metaData, fieldName, hideTemplateTypeSelector }: TemplateEditorProps<T>) => {
+  const { derivativeMetaData, templateTypes } = getDerivativeMetaDataAndTemplateTypes(template.templateType, metaData);
 
-  const renderTemplateTypeSelect = () => {
-    if (derivativeMetaDataList.length > 1) {
-      return (
-        <SelectField
-          label="Template type"
-          value={template.templateType}
-          onChange={(type) => onTemplateChange(prepareEmptyTemplate(type))}
-          options={List(derivativeMetaDataList.map((derivativeMetaData) => derivativeMetaData.templateType as TemplateType))}
-          display={(type) => type}
-        />
-      );
-    } else {
+  const renderTemplateTypeSelect = (label?: string) => {
+    if (hideTemplateTypeSelector) {
       return <></>;
     }
+
+    return (
+      <TemplateTypeSelector
+        templateType={template.templateType}
+        templateTypes={templateTypes}
+        onTemplateChange={onTemplateChange}
+        label={label}
+        inline={label !== undefined}
+      />
+    );
   };
 
   if (derivativeMetaData) {
@@ -64,9 +57,9 @@ const TemplateEditor = <T,>({ template, onTemplateChange, metaData, fieldName }:
       const complexMetaData = derivativeMetaData as ComplexMetaData<T>;
       if (complexMetaData.fields) {
         return (
-          <ExpandableArea header={fieldName}>
+          <ExpandableArea header={fieldName && renderTemplateTypeSelect(fieldName)}>
             <div>
-              {renderTemplateTypeSelect()}
+              {!fieldName && renderTemplateTypeSelect()}
               {Object.entries<MetaData<any>>(complexMetaData.fields)
                 .filter(([, fieldMetaData]) => !fieldMetaData.excludeFromTemplate)
                 .map(([fieldName, fieldMetaData]) => {

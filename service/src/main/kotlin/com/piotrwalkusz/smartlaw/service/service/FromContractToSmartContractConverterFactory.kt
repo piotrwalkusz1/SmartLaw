@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class FromContractToSmartContractConverterFactory(
-        private val ruleElementsTemplateProcessor: RuleElementsTemplateProcessor,
-        private val validatorService: ValidatorService
+        private val fromContractToElementsConverterFactory: FromContractToElementsConverterFactory
 ) {
 
     fun create(ruleProvider: RuleProvider): FromContractToSmartContractConverter {
-        return FromContractToSmartContractConverter(ruleProvider, ruleElementsTemplateProcessor, validatorService)
+        val fromContractToElementsConverter = fromContractToElementsConverterFactory.create(ruleProvider)
+
+        return FromContractToSmartContractConverter(fromContractToElementsConverter)
     }
 }

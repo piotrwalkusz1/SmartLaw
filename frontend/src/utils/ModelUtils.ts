@@ -9,6 +9,7 @@ import {
   RenderTemplateEditor,
 } from "./Reflection";
 import { TemplateType } from "../model/TemplateType";
+import { List } from "immutable";
 
 export interface ModelUtils<T extends Template<R>, R> {
   metaData: MetaData<T>;
@@ -89,4 +90,34 @@ export const getDerivativeMetaData = <T>(metaData: MetaData<T>): Array<MetaData<
   } else {
     return [metaData];
   }
+};
+
+export const getTemplateTypesFromMetaData = <T>(metaData: MetaData<T>): List<TemplateType> => {
+  const derivativeMetaDataList = getDerivativeMetaData(metaData);
+  const templateTypes = derivativeMetaDataList
+    .filter((metaData) => metaData.templateType)
+    .map((metaData) => metaData.templateType as TemplateType);
+
+  return List(templateTypes);
+};
+
+export const getDerivativeMetaDataAndTemplateTypes = <T>(
+  templateType: TemplateType,
+  metaData: MetaData<T>
+): { derivativeMetaData: MetaData<T> | undefined; templateTypes: List<TemplateType> } => {
+  const derivativeMetaDataList = getDerivativeMetaData(metaData);
+  let derivativeMetaData: MetaData<T> | undefined = undefined;
+  if (derivativeMetaDataList.length > 1) {
+    derivativeMetaData = derivativeMetaDataList.find((derivativeMetaData) => derivativeMetaData.templateType === templateType);
+  } else if (derivativeMetaDataList.length === 1) {
+    derivativeMetaData = derivativeMetaDataList[0];
+  }
+  const templateTypes = derivativeMetaDataList
+    .filter((metaData) => metaData.templateType)
+    .map((metaData) => metaData.templateType as TemplateType);
+
+  return {
+    derivativeMetaData: derivativeMetaData,
+    templateTypes: List(templateTypes),
+  };
 };

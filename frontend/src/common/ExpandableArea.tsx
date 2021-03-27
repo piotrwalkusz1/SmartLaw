@@ -1,8 +1,8 @@
 import { Accordion, Card } from "react-bootstrap";
-import React from "react";
+import { ReactElement } from "react";
 
 interface ExpandableAreaProps {
-  header?: string;
+  header?: string | ReactElement;
   children: JSX.Element;
   errorBorder?: boolean;
 }

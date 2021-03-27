@@ -4,7 +4,7 @@ import Rule from "../../model/Rule";
 import { List, Map } from "immutable";
 import { prepareStaticTemplate } from "../../model/StaticTemplate";
 import ListEditor from "../../common/ListEditor";
-import Id from "../../model/Id";
+import Id, { IdUtils } from "../../model/Id";
 import { prepareEmptyListTemplate } from "../../model/ListTemplate";
 
 interface RuleListEditorProps {
@@ -17,7 +17,7 @@ interface RuleListEditorProps {
 const RuleListEditor = ({ projectId, rules, onRulesChange, ruleArgumentTypes }: RuleListEditorProps) => {
   const prepareEmptyRule = (): Rule => {
     return {
-      id: { id: "", namespace: null },
+      id: IdUtils.create(),
       name: "",
       description: null,
       arguments: List(),
