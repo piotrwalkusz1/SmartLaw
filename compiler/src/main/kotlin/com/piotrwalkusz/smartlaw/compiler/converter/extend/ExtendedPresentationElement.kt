@@ -1,7 +1,8 @@
-package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model
+package com.piotrwalkusz.smartlaw.compiler.converter.extend
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocumentObject
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")

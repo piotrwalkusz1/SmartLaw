@@ -6,13 +6,15 @@ import MetaValue from "./MetaValue";
 import { List, Map } from "immutable";
 import { decodeValidationResult, ValidationResult } from "./ValidationResult";
 import { decodeList, decodeMap, decodeNullable } from "../utils/Decoders";
+import ElementValidationError, { ElementValidationErrorUtils } from "./ElementValidationError";
 
 export const decodeExtendedRuleInvocationPresentationElement = (json: any): ExtendedRuleInvocationPresentationElement => {
   return new ExtendedRuleInvocationPresentationElement(
     decodeRuleInvocationPresentationElement(json.presentationElement),
     decodeNaturalLanguageProvision(json.naturalLanguageDocumentObject),
     decodeNullable(json.rule, decodeRule),
-    decodeMap(json.validationResults, (validationResult) => decodeList(validationResult, decodeValidationResult))
+    decodeMap(json.validationResults, (validationResult) => decodeList(validationResult, decodeValidationResult)),
+    decodeList(json.elementValidationErrors, ElementValidationErrorUtils.decode)
   );
 };
 
@@ -21,17 +23,20 @@ export class ExtendedRuleInvocationPresentationElement implements ExtendedPresen
   naturalLanguageDocumentObject: NaturalLanguageProvision;
   rule: Rule | null;
   validationResults: Map<string, List<ValidationResult>>;
+  elementValidationErrors: List<ElementValidationError>;
 
   constructor(
     presentationElement: RuleInvocationPresentationElement,
     naturalLanguageDocumentObject: NaturalLanguageProvision,
     rule: Rule | null,
-    validationResults: Map<string, List<ValidationResult>>
+    validationResults: Map<string, List<ValidationResult>>,
+    elementValidationErrors: List<ElementValidationError>
   ) {
     this.presentationElement = presentationElement;
     this.naturalLanguageDocumentObject = naturalLanguageDocumentObject;
     this.rule = rule;
     this.validationResults = validationResults;
+    this.elementValidationErrors = elementValidationErrors;
   }
 
   withRuleInvocationArguments(ruleInvocationArguments: Map<string, MetaValue>): ExtendedRuleInvocationPresentationElement {
@@ -43,7 +48,8 @@ export class ExtendedRuleInvocationPresentationElement implements ExtendedPresen
       presentationElement,
       this.naturalLanguageDocumentObject,
       this.rule,
-      this.validationResults
+      this.validationResults,
+      this.elementValidationErrors
     );
   }
 }

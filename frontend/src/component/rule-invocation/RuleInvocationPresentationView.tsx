@@ -7,6 +7,7 @@ import RuleInvocation from "../../model/RuleInvocation";
 import Rule from "../../model/Rule";
 import RuleInvocationArgumentListEditor from "./RuleInvocationArgumentListEditor";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
+import ElementValidationError from "../../model/ElementValidationError";
 
 interface RuleInvocationPresentationViewProps {
   ruleInvocation: RuleInvocation;
@@ -14,6 +15,7 @@ interface RuleInvocationPresentationViewProps {
   rule: Rule | null;
   ruleContent: string;
   validationResults: Map<string, List<ValidationResult>>;
+  elementValidationErrors?: List<ElementValidationError>;
   onRemove?: () => void;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }
@@ -24,6 +26,7 @@ const RuleInvocationPresentationView = ({
   rule,
   ruleContent,
   validationResults,
+  elementValidationErrors,
   onRemove,
   dragHandleProps,
 }: RuleInvocationPresentationViewProps) => {
@@ -49,7 +52,25 @@ const RuleInvocationPresentationView = ({
     }
   };
 
+  const renderElementValidationErrors = () => {
+    if (elementValidationErrors) {
+      return (
+        <div style={{ color: "red" }}>
+          {elementValidationErrors.map((error, index) => {
+            return <div key={index}>{error.message}</div>;
+          })}
+        </div>
+      );
+    } else {
+      return <></>;
+    }
+  };
+
   const isAnyValidationError = (): boolean => {
+    if (elementValidationErrors && !elementValidationErrors.isEmpty()) {
+      return true;
+    }
+
     return !!List(validationResults.values())
       .flatMap((validationResults) => validationResults)
       .find((validationResult) => validationResult.error !== null);
@@ -65,6 +86,7 @@ const RuleInvocationPresentationView = ({
           <Accordion.Collapse eventKey="0">
             <Card.Body>
               {renderRemoveButton()}
+              {renderElementValidationErrors()}
               <RuleInvocationArgumentListEditor
                 ruleArguments={rule ? rule.arguments : List()}
                 ruleInvocationArguments={ruleInvocation.arguments}

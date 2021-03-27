@@ -1,31 +1,29 @@
 package com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.solidity
 
 import com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.common.SmartContractBuilder
-import com.piotrwalkusz.smartlaw.compiler.element.BasicTypes
-import com.piotrwalkusz.smartlaw.core.model.element.Element
-import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
-import com.piotrwalkusz.smartlaw.core.model.element.common.type.Type
-import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
-import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
-import com.piotrwalkusz.smartlaw.core.model.element.state.State
+import com.piotrwalkusz.smartlaw.compiler.element.BasicType
+import com.piotrwalkusz.smartlaw.compiler.validator.model.*
+import net.pearx.kasechange.toCamelCase
+import net.pearx.kasechange.toPascalCase
 
 class SoliditySmartContractBuilder : SmartContractBuilder() {
 
     companion object {
         val BASIC_TYPES_MAP = mapOf(
-                BasicTypes.UINT.id to "uint",
-                BasicTypes.ADDRESS.id to "address",
-                BasicTypes.STRING.id to "string"
+                BasicType.UINT.id to "uint",
+                BasicType.ADDRESS.id to "address",
+                BasicType.STRING.id to "string"
         )
+        val INTEND = "  "
 
         const val PUBLIC = "public"
         const val PAYABLE = "payable"
     }
 
     override var name: String? = null
-    override var elements: List<Element> = listOf()
-
+    override var elements: List<ValidatedElement> = listOf()
     private var sourceCode = StringBuilder()
+    private var currentIntend: Int = 0
 
     override fun build(): String {
         val contractName = name ?: throw IllegalStateException("Cannot build smart contract without name")
@@ -33,11 +31,14 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         sourceCode.clear()
         beginContract(contractName)
         elements
-                .filterIsInstance<State>()
-                .forEach { appendVariable(convertType(it.type, elements), it.name, setOf(PUBLIC)) }
+                .filterIsInstance<ValidatedState>()
+                .forEach { appendVariable(getTypeName(it.type), getVariableName(it.name), setOf(PUBLIC), getValueLiteral(it.defaultValue)) }
         elements
-                .filterIsInstance<EnumDefinition>()
-                .forEach { appendEnum(it.name, it.variants.map { variant -> variant.name }) }
+                .filterIsInstance<ValidatedEnumDefinition>()
+                .forEach { appendEnum(getEnumName(it.name), it.variants.map { variant -> getEnumVariantName(variant) }) }
+        elements
+                .filterIsInstance<ValidatedFunction>()
+                .forEach { appendFunction(it.name) }
         endContract()
 
         return sourceCode.toString()
@@ -48,13 +49,13 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 .append("contract ")
                 .append(contractName)
                 .append(" {")
-                .appendLine()
+        beginIntend()
     }
 
     private fun endContract() {
-        sourceCode
-                .append("}")
-                .appendLine()
+        endIntend()
+        sourceCode.append("}")
+        newLine()
     }
 
     private fun appendEnum(name: String, variants: List<String>) {
@@ -68,53 +69,124 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 .append("enum ")
                 .append(name)
                 .append(" {")
-                .appendLine()
+        beginIntend()
     }
 
     private fun endEnum() {
-        sourceCode
-                .append("}")
-                .appendLine()
+        endIntend()
+        sourceCode.append("}")
+        newLine()
     }
 
     private fun appendEnumVariants(variants: List<String>) {
-        sourceCode
-                .append(variants.joinToString(", "))
-                .appendLine()
+        sourceCode.append(variants.joinToString(", "))
+        newLine()
     }
 
-    private fun appendVariable(type: String, name: String, modifiers: Set<String>) {
+    private fun appendFunction(name: String) {
+        beginFunction(name)
+        endFunction()
+    }
+
+    private fun beginFunction(name: String) {
+        sourceCode
+                .append("function ")
+                .append(getFunctionName(name))
+                .append("() {")
+        beginIntend()
+    }
+
+    private fun endFunction() {
+        endIntend()
+        sourceCode
+                .append("}")
+        newLine()
+    }
+
+    private fun appendVariable(type: String, name: String, modifiers: Set<String>, defaultValue: String? = null) {
         sourceCode
                 .append(type)
                 .append(" ")
                 .append(modifiers.joinToString(" "))
                 .append(" ")
                 .append(name)
+
+        if (defaultValue != null) {
+            sourceCode
+                    .append(" = ")
+                    .append(defaultValue)
+        }
+
+        sourceCode
                 .append(";")
-                .appendLine()
+        newLine()
     }
 
-    private fun convertType(type: Type, elements: List<Element>): String {
-        if (type !is DefinitionRef) {
-            throw IllegalArgumentException("Expected instance of DefinitionRef class. ${type.javaClass} class was.")
+    private fun beginIntend() {
+        currentIntend++
+        newLine()
+    }
+
+    private fun endIntend() {
+        currentIntend--
+        sourceCode.delete(sourceCode.length - INTEND.length, sourceCode.length)
+    }
+
+    private fun newLine() {
+        sourceCode
+                .appendLine()
+                .append(INTEND.repeat(currentIntend))
+    }
+
+    private fun getTypeName(type: ValidatedType): String {
+        return when (type) {
+            is ValidatedBasicType -> {
+                BASIC_TYPES_MAP.get(type.basicType.id)
+                        ?: throw IllegalArgumentException("Basic type ${type.basicType.id} is not supported")
+            }
+            is ValidatedDefinitionRef -> {
+                type.definition.name.toPascalCase()
+            }
+            is ValidatedEnumDefinitionRef -> {
+                getEnumName(type.enumDefinition.name)
+            }
+            else -> {
+                throw IllegalArgumentException("${type.javaClass} is not supported")
+            }
+        }
+    }
+
+    private fun getEnumName(name: String): String {
+        return name.toPascalCase()
+    }
+
+    private fun getVariableName(variableName: String): String {
+        return variableName.toCamelCase()
+    }
+
+    private fun getEnumVariantName(enumVariant: String): String {
+        return enumVariant.toPascalCase()
+    }
+
+    private fun getFunctionName(name: String): String {
+        return name.toCamelCase()
+    }
+
+    private fun getValueLiteral(value: ValidatedMetaValue?): String? {
+        if (value == null) {
+            return null
         }
 
-        val basicType = BASIC_TYPES_MAP[type.definition]
-        if (basicType != null) {
-            return basicType
+        return when (value) {
+            is ValidatedBasicTypeMetaValue -> {
+                value.metaValue.value
+            }
+            is ValidatedEnumMetaValue -> {
+                getEnumVariantName(value.metaValue.value)
+            }
+            else -> {
+                throw IllegalArgumentException("${value.javaClass} is not supported")
+            }
         }
-
-        val element = elements
-                .find { it.id == type.definition }
-                ?: throw IllegalArgumentException("Element with id ${type.definition} not found")
-
-        if (element is Definition) {
-            return element.name
-        }
-        if (element is EnumDefinition) {
-            return element.name
-        }
-
-        throw IllegalArgumentException("Element with id ${type.definition} expected to be Definition or EnumDefinition")
     }
 }

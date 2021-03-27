@@ -277,7 +277,8 @@ const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
             }),
             new NaturalLanguageProvision(""),
             rule,
-            Map()
+            Map(),
+            List()
           )
         );
         refreshElements(addElementToSection(elements, result.destination.droppableId, result.destination.index, newElement));

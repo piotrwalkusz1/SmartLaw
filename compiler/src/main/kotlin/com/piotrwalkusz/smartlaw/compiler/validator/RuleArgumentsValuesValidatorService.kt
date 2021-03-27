@@ -10,7 +10,7 @@ import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 import com.piotrwalkusz.smartlaw.core.model.rule.RuleInvocation
 import com.piotrwalkusz.smartlaw.core.model.validator.Validator
 
-class ValidatorService(
+class RuleArgumentsValuesValidatorService(
         private val validatorExecutors: List<ValidatorExecutor<*>> = ValidatorExecutor.DEFAULT_VALIDATOR_EXECUTORS
 ) {
 

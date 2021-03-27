@@ -3,6 +3,8 @@ plugins {
     kotlin("jvm")
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> { kotlinOptions.jvmTarget = "1.8" }
+
 dependencies {
     implementation(project(":core", "default"))
     implementation("org.freemarker:freemarker:2.3.14")
@@ -14,4 +16,6 @@ dependencies {
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.3")
     implementation("pl.allegro.finance:tradukisto:1.8.0")
     implementation("org.codehaus.groovy:groovy-all:3.0.7")
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.11")
+    implementation("net.pearx.kasechange:kasechange:1.3.0")
 }

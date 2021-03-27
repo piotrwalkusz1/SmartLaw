@@ -3,7 +3,6 @@ package com.piotrwalkusz.smartlaw.compiler.converter.elements
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.rule.RuleUtils
 import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleElementsTemplateProcessor
-import com.piotrwalkusz.smartlaw.compiler.validator.ValidatorService
 import com.piotrwalkusz.smartlaw.core.model.document.Contract
 import com.piotrwalkusz.smartlaw.core.model.element.Element
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement

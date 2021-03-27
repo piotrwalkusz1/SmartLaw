@@ -23,6 +23,7 @@ const RuleInvocationView = ({ element, onArgumentsChange, onRemove, dragHandlePr
       rule={element.extendedPresentationElement.rule}
       onRemove={onRemove}
       dragHandleProps={dragHandleProps}
+      elementValidationErrors={element.extendedPresentationElement.elementValidationErrors}
     />
   );
 };

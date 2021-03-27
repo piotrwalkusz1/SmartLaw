@@ -1,5 +1,6 @@
-package com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model
+package com.piotrwalkusz.smartlaw.compiler.converter.extend
 
+import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageSection
 import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
 
 data class ExtendedSectionPresentationElement(

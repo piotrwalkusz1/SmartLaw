@@ -1,26 +1,15 @@
 package com.piotrwalkusz.smartlaw.service.controller
 
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.FromDocumentToNaturalLanguageConverter
+import com.piotrwalkusz.smartlaw.compiler.converter.extend.PresentationElementExtender
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.exporter.DocxExporter
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.ExtendedPresentationElement
-import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.model.NaturalLanguageDocument
-import com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.FromContractToSmartContractConverter
 import com.piotrwalkusz.smartlaw.core.example.CarSalesContractExample
-import com.piotrwalkusz.smartlaw.core.model.document.Library
-import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.service.controller.dto.*
 import com.piotrwalkusz.smartlaw.service.model.Project
 import com.piotrwalkusz.smartlaw.service.service.*
 import org.springframework.web.bind.annotation.*
-import org.springframework.core.io.InputStreamResource
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 
-import org.springframework.http.ResponseEntity
-
-import java.io.FileInputStream
 import javax.servlet.http.HttpServletResponse
 
 
@@ -29,6 +18,7 @@ import javax.servlet.http.HttpServletResponse
 class ProjectController(
         private val fromDocumentToNaturalLanguageConverterFactory: FromDocumentToNaturalLanguageConverterFactory,
         private val fromContractToSmartContractConverterFactory: FromContractToSmartContractConverterFactory,
+        private val presentationElementExtenderFactory: PresentationElementExtenderFactory,
         private val ruleService: RuleService,
         private val projectService: ProjectService,
         private val documentService: DocumentService
@@ -57,7 +47,7 @@ class ProjectController(
     @PostMapping("/{projectId}/documents/convert/natural-language")
     fun convertDocumentToNaturalLanguage(@PathVariable projectId: String, @RequestBody request: ConvertDocumentToNaturalLanguageDto, response: HttpServletResponse) {
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
-        val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(ruleProvider, FromDocumentToNaturalLanguageConverter.Config(addStyleToRuleContent = false))
+        val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(ruleProvider, PresentationElementExtender.Config(addStyleToRuleContent = false))
         val naturalLanguageDocument = naturalLanguageConverter.convert(request.document)
 
         response.contentType = "application/octet-stream";
@@ -82,8 +72,10 @@ class ProjectController(
     fun extendPresentationElements(@PathVariable projectId: String, @RequestBody extendPresentationElementsDto: ExtendPresentationElementsDto): ExtendPresentationElementsResultDto {
         Output.get().clearMessages()
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
-        val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(ruleProvider, FromDocumentToNaturalLanguageConverter.Config(addStyleToRuleContent = true))
-        val extendedPresentationElements = naturalLanguageConverter.extendPresentationElements(
+        val presentationElementExtender = presentationElementExtenderFactory.create(ruleProvider, PresentationElementExtender.Config(
+                addStyleToRuleContent = true,
+                validateElements = true))
+        val extendedPresentationElements = presentationElementExtender.extendPresentationElements(
                 extendPresentationElementsDto.allPresentationElements,
                 extendPresentationElementsDto.presentationElementsToExtend
         )
