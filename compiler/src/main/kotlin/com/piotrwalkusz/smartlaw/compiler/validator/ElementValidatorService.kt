@@ -3,12 +3,19 @@ package com.piotrwalkusz.smartlaw.compiler.validator
 import com.github.michaelbull.result.*
 import com.piotrwalkusz.smartlaw.compiler.element.BasicType
 import com.piotrwalkusz.smartlaw.compiler.validator.model.*
+import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.element.Element
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.Type
 import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
 import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.function.Function
+import com.piotrwalkusz.smartlaw.core.model.element.function.argument.StateVariableRef
+import com.piotrwalkusz.smartlaw.core.model.element.function.argument.VariableRef
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Assignment
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.EnumValue
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Expression
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Statement
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
@@ -30,7 +37,7 @@ class ElementValidatorService {
                 validateEnumDefinition(element)
             }
             is Function -> {
-                validateFunction(element)
+                validateFunction(element, otherElements)
             }
             else -> {
                 Err(listOf(ElementValidationError("Validation of element ${element::class} is not supported")))
@@ -60,24 +67,78 @@ class ElementValidatorService {
         ))
     }
 
-    private fun validateFunction(function: Function): Result<ValidatedFunction, List<ElementValidationError>> {
-        return Ok(ValidatedFunction(
-                name = function.name
-        ))
+    private fun validateFunction(function: Function, otherElements: List<Element>): Result<ValidatedFunction, List<ElementValidationError>> = binding {
+        val allElements = listOf(function) + otherElements
+        val body = function.body.map { validateStatement(it, allElements).bind() }
+
+        ValidatedFunction(
+                name = function.name,
+                body = body
+        )
     }
 
-    private fun validateValue(type: ValidatedType, metaValue: MetaValue): Result<ValidatedMetaValue, List<ElementValidationError>> {
+    private fun validateExpression(expression: Expression, elements: List<Element>): Result<ValidatedExpression, List<ElementValidationError>> = binding {
+        val validatedStatement = validateStatement(expression, elements).bind()
+        if (validatedStatement is ValidatedExpression) {
+            validatedStatement
+        } else {
+            error("This statement is not expression").bind()
+        }
+    }
+
+    private fun validateStatement(statement: Statement, elements: List<Element>): Result<ValidatedStatement, List<ElementValidationError>> = binding {
+        when (statement) {
+            is Assignment -> {
+                val variable = validateVariableRef(statement.variable, elements).bind()
+                val value = validateExpression(statement.value, elements).bind()
+                ValidatedAssignment(
+                        variable = variable,
+                        value = value
+                )
+            }
+            is EnumValue -> {
+                val enumDefinition = findElement<EnumDefinition>(statement.enumDefinition, elements).bind()
+
+                ValidatedEnumValue(
+                        value = statement.value,
+                        enumDefinition = enumDefinition
+
+                )
+            }
+            else -> {
+                error("${statement.javaClass} is not supported").bind()
+            }
+        }
+    }
+
+    private fun validateVariableRef(variableRef: VariableRef, elements: List<Element>): Result<ValidatedVariableRef, List<ElementValidationError>> = binding {
+        when (variableRef) {
+            is StateVariableRef -> {
+                val state = findElement<State>(variableRef.state, elements).bind()
+
+                ValidatedSimpleVariableRef(
+                        name = state.name,
+                        type = validateType(state.type, elements).bind()
+                )
+            }
+            else -> {
+                error("${variableRef.javaClass} is not supported").bind()
+            }
+        }
+    }
+
+    private fun validateValue(type: ValidatedType, metaValue: MetaValue): Result<ValidatedValue, List<ElementValidationError>> {
         return when (type) {
             is ValidatedBasicType -> {
                 if (metaValue is MetaPrimitiveValue) {
-                    Ok(ValidatedBasicTypeMetaValue(metaValue, type))
+                    Ok(ValidatedBasicTypeLiteralValue(metaValue, type))
                 } else {
                     Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of basic type")))
                 }
             }
             is ValidatedEnumDefinitionRef -> {
                 if (metaValue is MetaPrimitiveValue) {
-                    Ok(ValidatedEnumMetaValue(metaValue, type))
+                    Ok(ValidatedEnumValue(metaValue.value, type.enumDefinition))
                 } else {
                     Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of enum type")))
                 }
@@ -109,7 +170,7 @@ class ElementValidatorService {
             return Ok(ValidatedEnumDefinitionRef(element))
         }
 
-        return Err(listOf(ElementValidationError("Element with id ${type.definition} expected to be Definition or EnumDefinition")))
+        return error("Element with id ${type.definition} expected to be Definition or EnumDefinition")
     }
 
     private fun isBasisType(type: Type): Boolean {
@@ -118,5 +179,18 @@ class ElementValidatorService {
         }
 
         return BasicType.values().find { it.id == type.definition } != null
+    }
+
+    private inline fun <reified T : Element> findElement(id: Id, elements: List<Element>): Result<T, List<ElementValidationError>> {
+        val element = elements
+                .filterIsInstance<T>()
+                .find { it.id == id }
+                ?: return Err(listOf(ElementValidationError("Element with id $id and type ${T::class.java} not found")))
+
+        return Ok(element)
+    }
+
+    private fun error(message: String): Result<Nothing, List<ElementValidationError>> {
+        return Err(listOf(ElementValidationError(message)))
     }
 }

@@ -3,6 +3,7 @@ package com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.solidity
 import com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.common.SmartContractBuilder
 import com.piotrwalkusz.smartlaw.compiler.element.BasicType
 import com.piotrwalkusz.smartlaw.compiler.validator.model.*
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Statement
 import net.pearx.kasechange.toCamelCase
 import net.pearx.kasechange.toPascalCase
 
@@ -38,7 +39,7 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 .forEach { appendEnum(getEnumName(it.name), it.variants.map { variant -> getEnumVariantName(variant) }) }
         elements
                 .filterIsInstance<ValidatedFunction>()
-                .forEach { appendFunction(it.name) }
+                .forEach { appendFunction(it.name, it.body) }
         endContract()
 
         return sourceCode.toString()
@@ -83,8 +84,9 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         newLine()
     }
 
-    private fun appendFunction(name: String) {
+    private fun appendFunction(name: String, body: List<ValidatedStatement>) {
         beginFunction(name)
+        appendFunctionBody(body)
         endFunction()
     }
 
@@ -101,6 +103,33 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         sourceCode
                 .append("}")
         newLine()
+    }
+
+    private fun appendFunctionBody(body: List<ValidatedStatement>) {
+        body.forEach {
+            appendStatement(it)
+            sourceCode.append(";")
+            newLine()
+        }
+    }
+
+    private fun appendStatement(statement: ValidatedStatement) {
+        when (statement) {
+            is ValidatedAssignment -> {
+                appendStatement(statement.variable)
+                sourceCode.append(" = ")
+                appendStatement(statement.value)
+            }
+            is ValidatedSimpleVariableRef -> {
+                sourceCode.append(getVariableName(statement.name))
+            }
+            is ValidatedEnumValue -> {
+                sourceCode.append(getEnumVariantName(statement.value))
+            }
+            else -> {
+                throw IllegalArgumentException("${statement.javaClass} is not supported")
+            }
+        }
     }
 
     private fun appendVariable(type: String, name: String, modifiers: Set<String>, defaultValue: String? = null) {
@@ -172,17 +201,17 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         return name.toCamelCase()
     }
 
-    private fun getValueLiteral(value: ValidatedMetaValue?): String? {
+    private fun getValueLiteral(value: ValidatedValue?): String? {
         if (value == null) {
             return null
         }
 
         return when (value) {
-            is ValidatedBasicTypeMetaValue -> {
+            is ValidatedBasicTypeLiteralValue -> {
                 value.metaValue.value
             }
-            is ValidatedEnumMetaValue -> {
-                getEnumVariantName(value.metaValue.value)
+            is ValidatedEnumValue -> {
+                getEnumVariantName(value.value)
             }
             else -> {
                 throw IllegalArgumentException("${value.javaClass} is not supported")
