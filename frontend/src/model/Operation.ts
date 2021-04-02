@@ -1,6 +1,5 @@
 import { WrapWithTemplate } from "./WrapWithTemplate";
 import { List } from "immutable";
-import FunctionArgument, { functionArgumentMeta } from "./FunctionArgument";
 import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
 import { listMeta } from "../utils/Reflection";
 import { TemplateType } from "./TemplateType";
@@ -11,7 +10,7 @@ import Id, { IdUtils } from "./Id";
 
 export default interface Operation extends Expression {
   operationId: Id;
-  arguments: List<FunctionArgument>;
+  arguments: List<Expression>;
 }
 
 export interface OperationTemplate extends WrapWithTemplate<Operation> {}
@@ -22,6 +21,6 @@ export const OperationUtils = buildDerivativeModelUtilsWithTemplate<Operation, E
   TemplateType.OperationTemplate,
   {
     operationId: IdUtils.metaData,
-    arguments: listMeta(functionArgumentMeta),
+    arguments: listMeta(expressionMeta),
   }
 );

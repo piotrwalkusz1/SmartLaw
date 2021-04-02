@@ -57,7 +57,7 @@ abstract class RuleTemplateProcessor<T, C : ProcessRuleTemplateConfig>(
         val number = value.toIntOrNull() ?: return ""
         val converter = ValueConverters.POLISH_INTEGER
 
-        return converter.asWords(number) + " PLN"
+        return converter.asWords(number)
     }
 
     private fun getTemplateParametersFromRuleArguments(ruleArguments: List<RuleArgumentWithValue>, config: C): Map<String, Any?> {

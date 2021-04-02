@@ -22,7 +22,6 @@ import "./model/ExtendedPresentationElement";
 import "./model/ExtendedRuleInvocationPresentationElement";
 import "./model/ExtendedSectionPresentationElement";
 import "./model/ExtendPresentationElementsResultDto";
-import "./model/FunctionArgument";
 import "./model/FunctionArgumentDefinition";
 import "./model/FunctionCall";
 import "./model/FunctionElement";
@@ -67,6 +66,9 @@ import "./model/Validator";
 import "./model/VariableRef";
 import "./model/WrapWithTemplate";
 import "./model/Operation";
+import "./model/ActionRef";
+import "./model/ActionValidationElement";
+import "./model/ConstantValue";
 
 ReactDOM.render(
   <React.StrictMode>

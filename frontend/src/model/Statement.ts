@@ -5,6 +5,8 @@ export enum StatementType {
   EnumValue = "EnumValue",
   FunctionCall = "FunctionCall",
   Operation = "Operation",
+  StateVariableRef = "StateVariableRef",
+  ConstantValue = "ConstantValue",
 }
 
 export default interface Statement {

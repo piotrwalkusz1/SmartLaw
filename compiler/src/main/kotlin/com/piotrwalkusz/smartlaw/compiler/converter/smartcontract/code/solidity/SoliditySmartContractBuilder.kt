@@ -3,9 +3,9 @@ package com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.solidity
 import com.piotrwalkusz.smartlaw.compiler.converter.smartcontract.code.common.SmartContractBuilder
 import com.piotrwalkusz.smartlaw.compiler.element.BasicType
 import com.piotrwalkusz.smartlaw.compiler.validator.model.*
-import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Statement
 import net.pearx.kasechange.toCamelCase
 import net.pearx.kasechange.toPascalCase
+import org.apache.commons.lang3.StringUtils
 
 class SoliditySmartContractBuilder : SmartContractBuilder() {
 
@@ -15,9 +15,10 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 BasicType.ADDRESS.id to "address",
                 BasicType.STRING.id to "string"
         )
-        val INTEND = "  "
+        const val INTEND = "  "
 
         const val PUBLIC = "public"
+        const val PRIVATE = "private"
         const val PAYABLE = "payable"
     }
 
@@ -29,17 +30,23 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
     override fun build(): String {
         val contractName = name ?: throw IllegalStateException("Cannot build smart contract without name")
 
-        sourceCode.clear()
+        sourceCode
+                .clear()
+                .appendLine("// SPDX-License-Identifier: GPL-3.0")
+                .appendLine("pragma solidity ^0.8.1;")
         beginContract(contractName)
         elements
                 .filterIsInstance<ValidatedState>()
-                .forEach { appendVariable(getTypeName(it.type), getVariableName(it.name), setOf(PUBLIC), getValueLiteral(it.defaultValue)) }
+                .forEach { appendVariable(it) }
         elements
                 .filterIsInstance<ValidatedEnumDefinition>()
                 .forEach { appendEnum(getEnumName(it.name), it.variants.map { variant -> getEnumVariantName(variant) }) }
         elements
                 .filterIsInstance<ValidatedFunction>()
-                .forEach { appendFunction(it.name, it.body) }
+                .forEach { appendFunction(it.name, it.body, setOf(PRIVATE)) }
+        elements
+                .filterIsInstance<ValidatedActionDefinition>()
+                .forEach { appendAction(it) }
         endContract()
 
         return sourceCode.toString()
@@ -84,17 +91,42 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         newLine()
     }
 
-    private fun appendFunction(name: String, body: List<ValidatedStatement>) {
-        beginFunction(name)
+    private fun appendAction(actionDefinition: ValidatedActionDefinition) {
+        val callFunction = ValidatedFunctionCall(
+                function = actionDefinition.function,
+                functionRef = actionDefinition.functionRef,
+                arguments = listOf()
+        )
+        val validators = elements
+                .filterIsInstance<ValidatedActionValidation>()
+                .filter { it.action == actionDefinition.action }
+        val body = listOf(callFunction)
+        val modifiers = setOf(PUBLIC, PAYABLE)
+
+        beginFunction(getActionName(actionDefinition.name), modifiers)
+        validators.forEach {
+            sourceCode.append("require(")
+            appendStatement(it.condition)
+            sourceCode.append(");")
+            newLine()
+        }
         appendFunctionBody(body)
         endFunction()
     }
 
-    private fun beginFunction(name: String) {
+    private fun appendFunction(name: String, body: List<ValidatedStatement>, modifiers: Set<String> = setOf()) {
+        beginFunction(getFunctionName(name), modifiers)
+        appendFunctionBody(body)
+        endFunction()
+    }
+
+    private fun beginFunction(name: String, modifiers: Set<String> = setOf()) {
         sourceCode
                 .append("function ")
-                .append(getFunctionName(name))
-                .append("() {")
+                .append(name)
+                .append("() ")
+                .append(modifiers.joinToString(separator = "") { "$it " })
+                .append("{")
         beginIntend()
     }
 
@@ -123,8 +155,41 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
             is ValidatedSimpleVariableRef -> {
                 sourceCode.append(getVariableName(statement.name))
             }
-            is ValidatedEnumValue -> {
-                sourceCode.append(getEnumVariantName(statement.value))
+            is ValidatedValue -> {
+                sourceCode.append(getValueLiteral(statement))
+            }
+            is ValidatedBalanceOperation -> {
+                sourceCode.append("address(this).balance")
+            }
+            is ValidatedTransferOperation -> {
+                appendStatement(statement.destination)
+                sourceCode.append(".transfer(")
+                appendStatement(statement.count)
+                sourceCode.append(")")
+            }
+            is ValidatedTransferValueOperation -> {
+                sourceCode.append("msg.value")
+            }
+            is ValidatedEqualsOperation -> {
+                appendStatement(statement.firstOperand)
+                sourceCode.append(" == ")
+                appendStatement(statement.secondOperand)
+            }
+            is ValidatedMultiplyOperation -> {
+                appendStatement(statement.firstOperand)
+                sourceCode.append(" * ")
+                appendStatement(statement.secondOperand)
+            }
+            is ValidatedSenderOperation -> {
+                sourceCode.append("msg.sender")
+            }
+            is ValidatedFunctionCall -> {
+                sourceCode
+                        .append(getFunctionName(statement.function.name))
+                        .append("()")
+            }
+            is ValidatedConstantValue -> {
+                sourceCode.append(statement.value.value)
             }
             else -> {
                 throw IllegalArgumentException("${statement.javaClass} is not supported")
@@ -132,12 +197,25 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         }
     }
 
+    private fun appendVariable(state: ValidatedState) {
+        val type = getTypeName(state.type)
+        val name = getVariableName(state.name)
+        val defaultValue = state.defaultValue?.let { defaultValue -> getValueLiteral(defaultValue) }
+        val modifiers = mutableSetOf(PUBLIC)
+        if (state.type is ValidatedBasicType && state.type.basicType == BasicType.ADDRESS) {
+            modifiers.add(PAYABLE)
+        }
+
+        appendVariable(type, name, modifiers, defaultValue)
+    }
+
     private fun appendVariable(type: String, name: String, modifiers: Set<String>, defaultValue: String? = null) {
         sourceCode
                 .append(type)
                 .append(" ")
-                .append(modifiers.joinToString(" "))
-                .append(" ")
+        appendModifier(PAYABLE, modifiers)
+        appendModifier(PUBLIC, modifiers)
+        sourceCode
                 .append(name)
 
         if (defaultValue != null) {
@@ -170,11 +248,11 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
     private fun getTypeName(type: ValidatedType): String {
         return when (type) {
             is ValidatedBasicType -> {
-                BASIC_TYPES_MAP.get(type.basicType.id)
+                BASIC_TYPES_MAP[type.basicType.id]
                         ?: throw IllegalArgumentException("Basic type ${type.basicType.id} is not supported")
             }
             is ValidatedDefinitionRef -> {
-                type.definition.name.toPascalCase()
+                getDefinitionName(type.definition.name)
             }
             is ValidatedEnumDefinitionRef -> {
                 getEnumName(type.enumDefinition.name)
@@ -185,37 +263,53 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         }
     }
 
+    private fun getDefinitionName(name: String): String {
+        return StringUtils.stripAccents(name).toPascalCase()
+    }
+
     private fun getEnumName(name: String): String {
-        return name.toPascalCase()
+        return StringUtils.stripAccents(name).toPascalCase()
     }
 
     private fun getVariableName(variableName: String): String {
-        return variableName.toCamelCase()
+        return StringUtils.stripAccents(variableName).toCamelCase()
     }
 
     private fun getEnumVariantName(enumVariant: String): String {
-        return enumVariant.toPascalCase()
+        return StringUtils.stripAccents(enumVariant).toPascalCase()
     }
 
     private fun getFunctionName(name: String): String {
-        return name.toCamelCase()
+        return "_" + StringUtils.stripAccents(name).toCamelCase()
     }
 
-    private fun getValueLiteral(value: ValidatedValue?): String? {
-        if (value == null) {
-            return null
-        }
+    private fun getActionName(name: String): String {
+        return StringUtils.stripAccents(name).toCamelCase()
+    }
 
+    private fun getValueLiteral(value: ValidatedValue): String {
         return when (value) {
             is ValidatedBasicTypeLiteralValue -> {
-                value.metaValue.value
+                if (value.basicValue.basicType == BasicType.ADDRESS) {
+                    "payable(" + value.metaValue.value + ")"
+                } else {
+                    value.metaValue.value
+                }
             }
             is ValidatedEnumValue -> {
-                getEnumVariantName(value.value)
+                getEnumName(value.enumDefinition.name) + "." + getEnumVariantName(value.value)
             }
             else -> {
                 throw IllegalArgumentException("${value.javaClass} is not supported")
             }
+        }
+    }
+
+    private fun appendModifier(modifier: String, modifiers: Set<String>) {
+        if (modifiers.contains(modifier)) {
+            sourceCode
+                    .append(modifier)
+                    .append(" ")
         }
     }
 }

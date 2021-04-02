@@ -1,6 +1,7 @@
 package com.piotrwalkusz.smartlaw.compiler.template.processor.rule
 
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
+import com.piotrwalkusz.smartlaw.compiler.converter.elements.FromContractToElementsConverter
 import com.piotrwalkusz.smartlaw.compiler.provider.RuleProvider
 import com.piotrwalkusz.smartlaw.compiler.rule.RuleUtils
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
@@ -8,6 +9,9 @@ import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.model.ProcessR
 import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.model.ProcessRuleElementsTemplateConfig
 import com.piotrwalkusz.smartlaw.compiler.template.processor.textengine.FreeMarkerTextEngine
 import com.piotrwalkusz.smartlaw.core.model.common.Id
+import com.piotrwalkusz.smartlaw.core.model.element.Element
+import com.piotrwalkusz.smartlaw.core.model.element.state.State
+import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaRuleValue
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
@@ -29,8 +33,11 @@ class RuleContentTemplateProcessor(
             addStyleToContent: Boolean = false
     ): ProcessRuleContentTemplateConfig {
         val linksByElementsIds = getLinksByElementsIds(presentationElements, ruleProvider)
+        val fromContractToElementsConverter = FromContractToElementsConverter(ruleProvider, ruleElementsTemplateProcessor)
+        val elements = fromContractToElementsConverter.getElements(presentationElements)
 
         return ProcessRuleContentTemplateConfig(
+                elements = elements,
                 linksByElementsIds = linksByElementsIds,
                 ruleProvider = ruleProvider,
                 addStyleToContent = addStyleToContent
@@ -46,7 +53,10 @@ class RuleContentTemplateProcessor(
     }
 
     override fun getAdditionalContextParameters(config: ProcessRuleContentTemplateConfig): Map<String, Any?> {
-        return mapOf("getLinkToElement" to TemplateMethodModel { args -> getLinkToElement(args[0] as String, config.linksByElementsIds) })
+        return mapOf(
+                "getLinkToElement" to TemplateMethodModel { args -> getLinkToElement(args[0] as String, config.linksByElementsIds) },
+                "getDefaultValueOfElement" to TemplateMethodModel { args -> getDefaultValueOfElement(Id(args[0] as String, args[1] as String), config.elements) }
+        )
     }
 
     override fun getAdditionalParametersFromMetaRuleValue(argumentValue: MetaRuleValue, config: ProcessRuleContentTemplateConfig): Map<String, Any?> {
@@ -127,5 +137,20 @@ class RuleContentTemplateProcessor(
 
     private fun convertStringToId(idAsString: String): Id {
         return Id(idAsString.substringAfterLast("."), idAsString.substringBeforeLast("."))
+    }
+
+    private fun getDefaultValueOfElement(elementId: Id, elements: List<Element>): String? {
+        val element = elements.find { it.id == elementId }
+        if (element !is State) {
+            Output.get().addError("Element with id \"$elementId\" is not State")
+            return null
+        }
+        val defaultValue = element.defaultValue
+        if (defaultValue !is MetaPrimitiveValue) {
+            Output.get().addError("Default value of element with id \"$elementId\" is not MetaPrimitiveValue")
+            return null
+        }
+
+        return defaultValue.value
     }
 }

@@ -1,21 +1,23 @@
 package com.piotrwalkusz.smartlaw.compiler.validator
 
 import com.github.michaelbull.result.*
+import com.piotrwalkusz.smartlaw.compiler.element.BasicOperation
 import com.piotrwalkusz.smartlaw.compiler.element.BasicType
 import com.piotrwalkusz.smartlaw.compiler.validator.model.*
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.element.Element
+import com.piotrwalkusz.smartlaw.core.model.element.action.ActionArgument
+import com.piotrwalkusz.smartlaw.core.model.element.action.ActionDefinition
+import com.piotrwalkusz.smartlaw.core.model.element.actionvalidation.ActionValidation
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.Type
 import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
 import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.function.Function
+import com.piotrwalkusz.smartlaw.core.model.element.function.argument.FunctionArgument
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.StateVariableRef
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.VariableRef
-import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Assignment
-import com.piotrwalkusz.smartlaw.core.model.element.function.statement.EnumValue
-import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Expression
-import com.piotrwalkusz.smartlaw.core.model.element.function.statement.Statement
+import com.piotrwalkusz.smartlaw.core.model.element.function.statement.*
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
@@ -39,10 +41,52 @@ class ElementValidatorService {
             is Function -> {
                 validateFunction(element, otherElements)
             }
+            is ActionDefinition -> {
+                validateActionDefinition(element, otherElements)
+            }
+            is ActionValidation -> {
+                validateActionValidation(element, otherElements)
+            }
             else -> {
                 Err(listOf(ElementValidationError("Validation of element ${element::class} is not supported")))
             }
         }
+    }
+
+    private fun validateActionDefinition(actionDefinition: ActionDefinition, otherElements: List<Element>): Result<ValidatedActionDefinition, List<ElementValidationError>> {
+        val allElements = listOf(actionDefinition) + otherElements
+
+        return binding {
+            val arguments = actionDefinition.arguments.map { validateActionArgument(it, allElements).bind() }
+            val function = findElement<Function>(actionDefinition.function.id, allElements).bind()
+
+            ValidatedActionDefinition(
+                    action = actionDefinition,
+                    name = actionDefinition.name,
+                    arguments = arguments,
+                    function = function,
+                    functionRef = actionDefinition.function
+            )
+        }
+    }
+
+    private fun validateActionValidation(actionValidation: ActionValidation, otherElements: List<Element>): Result<ValidatedActionValidation, List<ElementValidationError>> {
+        val allElements = listOf(actionValidation) + otherElements
+
+        return binding {
+            ValidatedActionValidation(
+                    name = actionValidation.name,
+                    action = findElement<ActionDefinition>(actionValidation.action.actionId, allElements).bind(),
+                    condition = validateExpression(actionValidation.condition, allElements).bind()
+            )
+        }
+    }
+
+    private fun validateActionArgument(actionArgument: ActionArgument, elements: List<Element>): Result<ValidatedActionArgument, List<ElementValidationError>> = binding {
+        ValidatedActionArgument(
+                name = actionArgument.name,
+                type = validateType(actionArgument.type, elements).bind()
+        )
     }
 
     private fun validateState(state: State, otherElements: List<Element>): Result<ValidatedState, List<ElementValidationError>> {
@@ -77,15 +121,6 @@ class ElementValidatorService {
         )
     }
 
-    private fun validateExpression(expression: Expression, elements: List<Element>): Result<ValidatedExpression, List<ElementValidationError>> = binding {
-        val validatedStatement = validateStatement(expression, elements).bind()
-        if (validatedStatement is ValidatedExpression) {
-            validatedStatement
-        } else {
-            error("This statement is not expression").bind()
-        }
-    }
-
     private fun validateStatement(statement: Statement, elements: List<Element>): Result<ValidatedStatement, List<ElementValidationError>> = binding {
         when (statement) {
             is Assignment -> {
@@ -96,18 +131,96 @@ class ElementValidatorService {
                         value = value
                 )
             }
-            is EnumValue -> {
-                val enumDefinition = findElement<EnumDefinition>(statement.enumDefinition, elements).bind()
-
-                ValidatedEnumValue(
-                        value = statement.value,
-                        enumDefinition = enumDefinition
-
-                )
+            is Expression -> {
+                validateExpression(statement, elements).bind()
             }
             else -> {
                 error("${statement.javaClass} is not supported").bind()
             }
+        }
+    }
+
+    private fun validateExpression(expression: Expression, elements: List<Element>): Result<ValidatedExpression, List<ElementValidationError>> = binding {
+        when (expression) {
+            is EnumValue -> {
+                val enumDefinition = findElement<EnumDefinition>(expression.enumDefinition, elements).bind()
+
+                ValidatedEnumValue(
+                        value = expression.value,
+                        enumDefinition = enumDefinition
+
+                )
+            }
+            is Operation -> {
+                when (findBasicOperation(expression.operationId).bind()) {
+                    BasicOperation.TRANSFER -> {
+                        validateArgumentsCount(expression.arguments, 2).bind()
+                        val destination = validateArgument<Expression>(expression.arguments, 0).bind()
+                        val count = validateArgument<Expression>(expression.arguments, 1).bind()
+                        ValidatedTransferOperation(
+                                destination = validateExpression(destination, elements).bind(),
+                                count = validateExpression(count, elements).bind()
+                        )
+                    }
+                    BasicOperation.BALANCE -> {
+                        validateArgumentsCount(expression.arguments, 0).bind()
+                        ValidatedBalanceOperation()
+                    }
+                    BasicOperation.EQUALS -> {
+                        validateArgumentsCount(expression.arguments, 2).bind()
+                        val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
+                        val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
+                        ValidatedEqualsOperation(
+                                firstOperand = validateExpression(firstOperand, elements).bind(),
+                                secondOperand = validateExpression(secondOperand, elements).bind()
+                        )
+                    }
+                    BasicOperation.SENDER -> {
+                        validateArgumentsCount(expression.arguments, 0).bind()
+                        ValidatedSenderOperation()
+                    }
+                    BasicOperation.MULTIPLY -> {
+                        validateArgumentsCount(expression.arguments, 2).bind()
+                        val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
+                        val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
+                        ValidatedMultiplyOperation(
+                                firstOperand = validateExpression(firstOperand, elements).bind(),
+                                secondOperand = validateExpression(secondOperand, elements).bind()
+                        )
+                    }
+                    BasicOperation.TRANSFER_VALUE -> {
+                        validateArgumentsCount(expression.arguments, 0).bind()
+                        ValidatedTransferValueOperation()
+                    }
+                }
+            }
+            is VariableRef -> {
+                validateVariableRef(expression, elements).bind()
+            }
+            is FunctionCall -> {
+                ValidatedFunctionCall(
+                        function = findElement<Function>(expression.function.id, elements).bind(),
+                        functionRef = expression.function,
+                        arguments = expression.arguments.map { validateFunctionArgument(it, elements).bind() }
+                )
+            }
+            is ConstantValue -> {
+                ValidatedConstantValue(
+                        value = validateMetaValue<MetaPrimitiveValue>(expression.value).bind(),
+                        type = validateType(expression.type, elements).bind()
+                )
+            }
+            else -> {
+                error("${expression.javaClass} is not supported").bind()
+            }
+        }
+    }
+
+    private inline fun <reified T : MetaValue> validateMetaValue(metaValue: MetaValue): Result<T, List<ElementValidationError>> {
+        if (metaValue is T) {
+            return Ok(metaValue)
+        } else {
+            return error("Expected ${T::class.java} but was ${metaValue::class.java}")
         }
     }
 
@@ -173,12 +286,13 @@ class ElementValidatorService {
         return error("Element with id ${type.definition} expected to be Definition or EnumDefinition")
     }
 
-    private fun isBasisType(type: Type): Boolean {
-        if (type !is DefinitionRef) {
-            return false
+    private fun findBasicOperation(id: Id): Result<BasicOperation, List<ElementValidationError>> {
+        val basicOperation = BasicOperation.values().find { it.id == id }
+        if (basicOperation == null) {
+            return error("Operation with $id not found")
+        } else {
+            return Ok(basicOperation)
         }
-
-        return BasicType.values().find { it.id == type.definition } != null
     }
 
     private inline fun <reified T : Element> findElement(id: Id, elements: List<Element>): Result<T, List<ElementValidationError>> {
@@ -188,6 +302,31 @@ class ElementValidatorService {
                 ?: return Err(listOf(ElementValidationError("Element with id $id and type ${T::class.java} not found")))
 
         return Ok(element)
+    }
+
+    private fun validateArgumentsCount(arguments: List<FunctionArgument>, expectedCount: Int): Result<Any?, List<ElementValidationError>> {
+        if (arguments.size == expectedCount) {
+            return Ok(null)
+        } else {
+            return error("Expected $expectedCount arguments but was ${arguments.size}")
+        }
+    }
+
+    private fun validateFunctionArgument(argument: FunctionArgument, elements: List<Element>): Result<ValidatedFunctionArgument, List<ElementValidationError>> {
+        if (argument is Expression) {
+            return validateExpression(argument, elements)
+        } else {
+            return error("Expected ${Expression::class.java} but was ${argument::class.java}")
+        }
+    }
+
+    private inline fun <reified T : FunctionArgument> validateArgument(arguments: List<FunctionArgument>, index: Int): Result<T, List<ElementValidationError>> {
+        val argument = arguments[index]
+        if (argument is T) {
+            return Ok(argument)
+        } else {
+            return error("Argument $index was expected to be ${T::class.java}")
+        }
     }
 
     private fun error(message: String): Result<Nothing, List<ElementValidationError>> {

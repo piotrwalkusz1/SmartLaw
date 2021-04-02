@@ -1,10 +1,12 @@
 package com.piotrwalkusz.smartlaw.service.config
 
+import com.piotrwalkusz.smartlaw.compiler.converter.elements.FromContractToElementsConverter
 import com.piotrwalkusz.smartlaw.compiler.template.processor.TemplateProcessorService
 import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleContentTemplateProcessor
 import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleElementsTemplateProcessor
 import com.piotrwalkusz.smartlaw.compiler.validator.ElementValidatorService
 import com.piotrwalkusz.smartlaw.compiler.validator.RuleArgumentsValuesValidatorService
+import com.piotrwalkusz.smartlaw.service.service.FromContractToElementsConverterFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

@@ -8,6 +8,7 @@ export enum ElementType {
   EnumDefinition = "EnumDefinition",
   ActionDefinition = "ActionDefinition",
   Function = "Function",
+  ActionValidation = "ActionValidation",
 }
 
 export default interface Element {

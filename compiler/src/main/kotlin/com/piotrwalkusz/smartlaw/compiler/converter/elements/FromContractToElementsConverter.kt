@@ -18,7 +18,7 @@ class FromContractToElementsConverter(
         return getElements(contract.presentationElements)
     }
 
-    private fun getElements(presentationElements: List<PresentationElement>): List<Element> {
+    fun getElements(presentationElements: List<PresentationElement>): List<Element> {
         return presentationElements.flatMap { getElements(it) }
     }
 

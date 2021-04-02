@@ -2,8 +2,8 @@ import { WrapWithTemplate } from "./WrapWithTemplate";
 import Id, { IdUtils } from "./Id";
 import VariableRef, { variableRefMeta } from "./VariableRef";
 import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
-import { FunctionArgumentType } from "./FunctionArgument";
 import { TemplateType } from "./TemplateType";
+import { StatementType } from "./Statement";
 
 export default interface StateVariableRef extends VariableRef {
   state: Id;
@@ -14,8 +14,8 @@ export interface StateVariableRefTemplate extends WrapWithTemplate<StateVariable
 export const StateVariableRefUtils = buildDerivativeModelUtilsWithTemplate<
   StateVariableRef,
   VariableRef,
-  FunctionArgumentType,
+  StatementType,
   StateVariableRefTemplate
->(variableRefMeta, FunctionArgumentType.StateVariableRef, TemplateType.StateVariableRefTemplate, {
+>(variableRefMeta, StatementType.StateVariableRef, TemplateType.StateVariableRefTemplate, {
   state: IdUtils.metaData,
 });

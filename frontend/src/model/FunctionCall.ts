@@ -1,7 +1,6 @@
 import { WrapWithTemplate } from "./WrapWithTemplate";
 import FunctionRef, { FunctionRefUtils } from "./FunctionRef";
 import { List } from "immutable";
-import FunctionArgument, { functionArgumentMeta } from "./FunctionArgument";
 import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
 import { listMeta } from "../utils/Reflection";
 import { TemplateType } from "./TemplateType";
@@ -11,7 +10,7 @@ import { EnumValueTemplate } from "./EnumValue";
 
 export default interface FunctionCall extends Expression {
   function: FunctionRef;
-  arguments: List<FunctionArgument>;
+  arguments: List<Expression>;
 }
 
 export interface FunctionCallTemplate extends WrapWithTemplate<FunctionCall> {}
@@ -22,6 +21,6 @@ export const FunctionCallUtils = buildDerivativeModelUtilsWithTemplate<FunctionC
   TemplateType.FunctionCallTemplate,
   {
     function: FunctionRefUtils.metaData,
-    arguments: listMeta(functionArgumentMeta),
+    arguments: listMeta(expressionMeta),
   }
 );
