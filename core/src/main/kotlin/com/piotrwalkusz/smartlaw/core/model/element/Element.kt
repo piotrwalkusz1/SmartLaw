@@ -9,10 +9,12 @@ import com.piotrwalkusz.smartlaw.core.model.element.actionvalidation.ActionValid
 import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
 import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.function.Function
+import com.piotrwalkusz.smartlaw.core.model.element.generic.GenericElement
 import com.piotrwalkusz.smartlaw.core.model.element.implementation.Implementation
 import com.piotrwalkusz.smartlaw.core.model.element.interfaces.Interface
 import com.piotrwalkusz.smartlaw.core.model.element.proposition.Proposition
-import com.piotrwalkusz.smartlaw.core.model.element.reference.Reference
+import com.piotrwalkusz.smartlaw.core.model.element.requirement.Requirement
+import com.piotrwalkusz.smartlaw.core.model.element.requirement.RequirementImplementation
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "elementType")
@@ -26,7 +28,9 @@ import com.piotrwalkusz.smartlaw.core.model.element.state.State
         JsonSubTypes.Type(name = "State", value = State::class),
         JsonSubTypes.Type(name = "Definition", value = Definition::class),
         JsonSubTypes.Type(name = "EnumDefinition", value = EnumDefinition::class),
-        JsonSubTypes.Type(name = "Reference", value = Reference::class)
+        JsonSubTypes.Type(name = "Requirement", value = Requirement::class),
+        JsonSubTypes.Type(name = "RequirementImplementation", value = RequirementImplementation::class),
+        JsonSubTypes.Type(name = "GenericElement", value = GenericElement::class)
 )
 interface Element {
     val id: Id
