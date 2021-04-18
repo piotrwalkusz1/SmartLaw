@@ -3,13 +3,12 @@ package com.piotrwalkusz.smartlaw.service.controller
 import com.piotrwalkusz.smartlaw.compiler.common.output.Output
 import com.piotrwalkusz.smartlaw.compiler.converter.extend.PresentationElementExtender
 import com.piotrwalkusz.smartlaw.compiler.converter.naturallanguage.exporter.DocxExporter
-import com.piotrwalkusz.smartlaw.core.example.CarSalesContractExample
 import com.piotrwalkusz.smartlaw.service.controller.dto.*
+import com.piotrwalkusz.smartlaw.service.example.CarSalesContractExample
 import com.piotrwalkusz.smartlaw.service.model.Project
 import com.piotrwalkusz.smartlaw.service.service.*
-import org.springframework.web.bind.annotation.*
 import org.springframework.http.MediaType
-
+import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletResponse
 
 
@@ -47,7 +46,9 @@ class ProjectController(
     @PostMapping("/{projectId}/documents/convert/natural-language")
     fun convertDocumentToNaturalLanguage(@PathVariable projectId: String, @RequestBody request: ConvertDocumentToNaturalLanguageDto, response: HttpServletResponse) {
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
-        val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(ruleProvider, PresentationElementExtender.Config(addStyleToRuleContent = false))
+        val externalElements = projectService.getExternalElementsInProject(projectId)
+        val naturalLanguageConverter = fromDocumentToNaturalLanguageConverterFactory.create(
+                ruleProvider, PresentationElementExtender.Config(addStyleToRuleContent = false, externalElements = externalElements))
         val naturalLanguageDocument = naturalLanguageConverter.convert(request.document)
 
         response.contentType = "application/octet-stream";
@@ -59,8 +60,9 @@ class ProjectController(
     @PostMapping("/{projectId}/documents/convert/smart-contract")
     fun convertContractToSmartContract(@PathVariable projectId: String, @RequestBody request: ConvertContractToSmartContractDto, response: HttpServletResponse) {
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
+        val externalElements = projectService.getExternalElementsInProject(projectId)
         val smartContractConverter = fromContractToSmartContractConverterFactory.create(ruleProvider)
-        val smartContract = smartContractConverter.convert(request.contract)
+        val smartContract = smartContractConverter.convert(request.contract, externalElements)
 
         response.contentType = MediaType.TEXT_PLAIN_VALUE
         response.characterEncoding = "UTF-8"
@@ -72,9 +74,11 @@ class ProjectController(
     fun extendPresentationElements(@PathVariable projectId: String, @RequestBody extendPresentationElementsDto: ExtendPresentationElementsDto): ExtendPresentationElementsResultDto {
         Output.get().clearMessages()
         val ruleProvider = ruleService.getRuleProviderForProject(projectId)
+        val externalElements = projectService.getExternalElementsInProject(projectId)
         val presentationElementExtender = presentationElementExtenderFactory.create(ruleProvider, PresentationElementExtender.Config(
                 addStyleToRuleContent = true,
-                validateElements = true))
+                validateElements = true,
+                externalElements = externalElements))
         val extendedPresentationElements = presentationElementExtender.extendPresentationElements(
                 extendPresentationElementsDto.allPresentationElements,
                 extendPresentationElementsDto.presentationElementsToExtend

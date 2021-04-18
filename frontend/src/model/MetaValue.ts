@@ -3,6 +3,7 @@ import { BaseMetaData, buildBaseMetaData, enumMeta, excludeFromTemplate } from "
 export enum MetaValueType {
   Primitive = "Primitive",
   Rule = "Rule",
+  Map = "Map",
 }
 
 export default interface MetaValue {

@@ -69,6 +69,8 @@ import "./model/Operation";
 import "./model/ActionRef";
 import "./model/ActionValidationElement";
 import "./model/ConstantValue";
+import "./model/MetaMapValue";
+import "./model/MapTemplate";
 
 ReactDOM.render(
   <React.StrictMode>

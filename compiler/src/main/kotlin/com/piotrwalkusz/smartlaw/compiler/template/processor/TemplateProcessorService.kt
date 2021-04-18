@@ -11,7 +11,8 @@ class TemplateProcessorService {
                 TextEngineTemplateProcessor(),
                 GroovyTemplateProcessor(),
                 ComplexTemplateProcessor(this),
-                ListTemplateProcessor(this)
+                ListTemplateProcessor(this),
+                MapTemplateProcessor(this)
         )
     }
 

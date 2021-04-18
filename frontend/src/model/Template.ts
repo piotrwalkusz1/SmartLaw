@@ -13,6 +13,7 @@ import { decodeGroovyTemplate, prepareEmptyGroovyTemplate } from "./GroovyTempla
 import { decodeTextEngineTemplate, prepareEmptyTextEngineTemplate } from "./TextEngineTemplate";
 import { decodeListTemplate, prepareEmptyListTemplate } from "./ListTemplate";
 import { ModelUtils } from "../utils/ModelUtils";
+import { decodeMapTemplate } from "./MapTemplate";
 
 export const MODELS_UTILS: Array<ModelUtils<any, any>> = [];
 
@@ -24,6 +25,8 @@ export const decodeTemplate = <T, R extends T>(json: any, decodeTemplateResult: 
       return decodeStaticTemplate(json, decodeTemplateResult);
     case TemplateType.ListTemplate:
       return decodeListTemplate(json, decodeTemplateResult);
+    case TemplateType.MapTemplate:
+      return decodeMapTemplate(json, decodeTemplateResult);
     case TemplateType.TextEngine:
       return decodeTextEngineTemplate(json);
     case TemplateType.Groovy:

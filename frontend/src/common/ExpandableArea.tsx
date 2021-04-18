@@ -12,7 +12,7 @@ const ExpandableArea = ({ header, children, errorBorder }: ExpandableAreaProps) 
     if (header) {
       return (
         <Accordion>
-          <Card>
+          <Card style={{ overflow: "visible" }}>
             <Accordion.Toggle as={Card.Header} eventKey="0">
               {header}
             </Accordion.Toggle>

@@ -1,4 +1,4 @@
-package com.piotrwalkusz.smartlaw.core.example
+package com.piotrwalkusz.smartlaw.service.example
 
 import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.LegalAct

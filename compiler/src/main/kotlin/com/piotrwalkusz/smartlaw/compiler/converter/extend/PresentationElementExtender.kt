@@ -9,6 +9,7 @@ import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleContentTem
 import com.piotrwalkusz.smartlaw.compiler.template.processor.rule.RuleElementsTemplateProcessor
 import com.piotrwalkusz.smartlaw.compiler.validator.ElementValidatorService
 import com.piotrwalkusz.smartlaw.compiler.validator.RuleArgumentsValuesValidatorService
+import com.piotrwalkusz.smartlaw.core.model.element.Element
 import com.piotrwalkusz.smartlaw.core.model.presentation.PresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.RuleInvocationPresentationElement
 import com.piotrwalkusz.smartlaw.core.model.presentation.SectionPresentationElement
@@ -25,7 +26,8 @@ class PresentationElementExtender(
 
     data class Config(
             val addStyleToRuleContent: Boolean,
-            val validateElements: Boolean = false
+            val validateElements: Boolean = false,
+            val externalElements: List<Element>
     )
 
     fun extendPresentationElements(allPresentationElements: List<PresentationElement>): List<ExtendedPresentationElement<*, *>> {
@@ -39,8 +41,7 @@ class PresentationElementExtender(
 
         if (config.validateElements) {
             context.elementsToValidate.forEach { (element, extendedPresentationElement) ->
-                val otherElements = context.elements.filter { it !== element }
-                val errors = elementValidatorService.validateElement(element, otherElements).getErrorOr(emptyList())
+                val errors = elementValidatorService.validateElement(element, context.elements).getErrorOr(emptyList())
                 extendedPresentationElement.elementValidationErrors.addAll(errors)
                 errors.forEach { Output.get().addError(it.message) }
             }
@@ -109,6 +110,9 @@ class PresentationElementExtender(
                 addStyleToContent = config.addStyleToRuleContent
         )
 
-        return ExtendPresentationElementContext(processRuleContentTemplateConfig)
+        val context = ExtendPresentationElementContext(processRuleContentTemplateConfig)
+        context.elements.addAll(config.externalElements)
+
+        return context
     }
 }

@@ -34,7 +34,7 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 .clear()
                 .appendLine("// SPDX-License-Identifier: GPL-3.0")
                 .appendLine("pragma solidity ^0.8.1;")
-        beginContract(contractName)
+        beginContract(getContractName(contractName))
         elements
                 .filterIsInstance<ValidatedState>()
                 .forEach { appendVariable(it) }
@@ -271,6 +271,14 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         return StringUtils.stripAccents(name).toPascalCase()
     }
 
+    private fun getStructName(name: String): String {
+        return StringUtils.stripAccents(name).toPascalCase()
+    }
+
+    private fun getPropertyName(name: String): String {
+        return StringUtils.stripAccents(name).toCamelCase()
+    }
+
     private fun getVariableName(variableName: String): String {
         return StringUtils.stripAccents(variableName).toCamelCase()
     }
@@ -287,17 +295,26 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
         return StringUtils.stripAccents(name).toCamelCase()
     }
 
+    private fun getContractName(name: String): String {
+        return StringUtils.stripAccents(name).toPascalCase()
+    }
+
     private fun getValueLiteral(value: ValidatedValue): String {
         return when (value) {
             is ValidatedBasicTypeLiteralValue -> {
                 if (value.basicValue.basicType == BasicType.ADDRESS) {
                     "payable(" + value.metaValue.value + ")"
+                } else if (value.basicValue.basicType == BasicType.STRING) {
+                    "\"" + value.metaValue.value + "\""
                 } else {
                     value.metaValue.value
                 }
             }
             is ValidatedEnumValue -> {
                 getEnumName(value.enumDefinition.name) + "." + getEnumVariantName(value.value)
+            }
+            is ValidatedDefinitionValue -> {
+                getStructName(value.definition.name) + "({" + value.values.map { getPropertyName(it.key) + " : " + getValueLiteral(it.value) }.joinToString(", ") + "})"
             }
             else -> {
                 throw IllegalArgumentException("${value.javaClass} is not supported")

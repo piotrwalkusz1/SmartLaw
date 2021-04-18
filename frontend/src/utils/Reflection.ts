@@ -8,6 +8,8 @@ import StringTemplateEditor from "../component/element/template/StringTemplateEd
 import { decodeListTemplate, prepareEmptyListTemplate } from "../model/ListTemplate";
 import NullableTemplate from "../component/template/NullableTemplate";
 import { decodeStaticTemplate, isStaticTemplate, prepareStaticTemplate } from "../model/StaticTemplate";
+import MapTemplateEditor from "../component/element/template/MapTemplateEditor";
+import { decodeMapTemplate, prepareEmptyMapTemplate } from "../model/MapTemplate";
 
 export type RenderTemplateEditor<T extends Template<R>, R> = (
   template: T,
@@ -59,6 +61,10 @@ export interface DerivativeMetaData<T extends B, B, E> extends ComplexMetaData<T
   baseMetaData: BaseMetaData<B, E>;
   discriminatorValue: E;
 }
+
+export const withDefaultValue = <T>(metaData: MetaData<T>, defaultValue: T): MetaData<T> => {
+  return { ...metaData, create: () => defaultValue };
+};
 
 export const stringMeta: MetaData<string> = {
   decodeOrException(json: any): string {
@@ -165,6 +171,18 @@ export const mapMeta = <T>(metaData: MetaData<T>): MetaData<Map<string, T>> => {
     },
     create(): Map<string, T> {
       return Map();
+    },
+    templateType: TemplateType.MapTemplate,
+    renderTemplateEditor: (template, onChange, fieldName) => {
+      return MapTemplateEditor<T>({ template, onChange, metaData, header: fieldName });
+    },
+    templateMetaData: {
+      decodeOrException(json: any): Template<Map<string, T>> {
+        return decodeMapTemplate(json, metaData.decodeOrException);
+      },
+      create(): Template<Map<string, T>> {
+        return prepareEmptyMapTemplate();
+      },
     },
   };
 };

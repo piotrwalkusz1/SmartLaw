@@ -15,9 +15,11 @@ class GenericValidatorExecutor(
         get() = GenericValidator::class.java
 
     override fun validate(validator: GenericValidator, value: MetaValue): ValidationResult {
-        val parameters = mapOf("value" to convertMetaValueToExpressionEvaluatorParameter(value));
+        val parameters = mapOf("value" to convertMetaValueToExpressionEvaluatorParameter(value))
+        val expressionEvaluator = getExpressionEvaluator(validator.expressionEvaluatorType)
+                ?: return ValidationResult.error("No expression evaluator with type ${validator.expressionEvaluatorType}")
 
-        return ValidationResult(getExpressionEvaluator(validator.expressionEvaluatorType).evaluate(validator.expression, parameters))
+        return ValidationResult(expressionEvaluator.evaluate(validator.expression, parameters))
     }
 
     private fun convertMetaValueToExpressionEvaluatorParameter(value: MetaValue): Any? {
@@ -27,8 +29,7 @@ class GenericValidatorExecutor(
         }
     }
 
-    private fun getExpressionEvaluator(expressionEvaluatorType: String): ExpressionEvaluator {
+    private fun getExpressionEvaluator(expressionEvaluatorType: String): ExpressionEvaluator? {
         return expressionEvaluators.find { it.expressionEvaluatorType == expressionEvaluatorType }
-                ?: throw IllegalArgumentException("Cannot find expression evaluator with type $expressionEvaluatorType")
     }
 }

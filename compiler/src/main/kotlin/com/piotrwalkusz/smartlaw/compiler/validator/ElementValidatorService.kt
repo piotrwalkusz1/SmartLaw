@@ -19,33 +19,36 @@ import com.piotrwalkusz.smartlaw.core.model.element.function.argument.StateVaria
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.VariableRef
 import com.piotrwalkusz.smartlaw.core.model.element.function.statement.*
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
+import com.piotrwalkusz.smartlaw.core.model.meta.MetaMapValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaValue
 
 class ElementValidatorService {
 
-    fun validateElements(elements: List<Element>): List<ValidatedElement> {
+    fun validateElements(elements: List<Element>, externalElements: List<Element>): List<ValidatedElement> {
+        val allElements = elements + externalElements
+
         return elements
-                .map { element -> validateElement(element, elements.filter { element !== it }) }
+                .map { element -> validateElement(element, allElements) }
                 .mapNotNull { it.get() }
     }
 
-    fun validateElement(element: Element, otherElements: List<Element>): Result<ValidatedElement, List<ElementValidationError>> {
+    fun validateElement(element: Element, allElements: List<Element>): Result<ValidatedElement, List<ElementValidationError>> {
         return when (element) {
             is State -> {
-                validateState(element, otherElements)
+                validateState(element, allElements)
             }
             is EnumDefinition -> {
                 validateEnumDefinition(element)
             }
             is Function -> {
-                validateFunction(element, otherElements)
+                validateFunction(element, allElements)
             }
             is ActionDefinition -> {
-                validateActionDefinition(element, otherElements)
+                validateActionDefinition(element, allElements)
             }
             is ActionValidation -> {
-                validateActionValidation(element, otherElements)
+                validateActionValidation(element, allElements)
             }
             else -> {
                 Err(listOf(ElementValidationError("Validation of element ${element::class} is not supported")))
@@ -53,9 +56,7 @@ class ElementValidatorService {
         }
     }
 
-    private fun validateActionDefinition(actionDefinition: ActionDefinition, otherElements: List<Element>): Result<ValidatedActionDefinition, List<ElementValidationError>> {
-        val allElements = listOf(actionDefinition) + otherElements
-
+    private fun validateActionDefinition(actionDefinition: ActionDefinition, allElements: List<Element>): Result<ValidatedActionDefinition, List<ElementValidationError>> {
         return binding {
             val arguments = actionDefinition.arguments.map { validateActionArgument(it, allElements).bind() }
             val function = findElement<Function>(actionDefinition.function.id, allElements).bind()
@@ -70,9 +71,7 @@ class ElementValidatorService {
         }
     }
 
-    private fun validateActionValidation(actionValidation: ActionValidation, otherElements: List<Element>): Result<ValidatedActionValidation, List<ElementValidationError>> {
-        val allElements = listOf(actionValidation) + otherElements
-
+    private fun validateActionValidation(actionValidation: ActionValidation, allElements: List<Element>): Result<ValidatedActionValidation, List<ElementValidationError>> {
         return binding {
             ValidatedActionValidation(
                     name = actionValidation.name,
@@ -89,12 +88,10 @@ class ElementValidatorService {
         )
     }
 
-    private fun validateState(state: State, otherElements: List<Element>): Result<ValidatedState, List<ElementValidationError>> {
-        val allElements = listOf(state) + otherElements
-
+    private fun validateState(state: State, allElements: List<Element>): Result<ValidatedState, List<ElementValidationError>> {
         return binding {
             val type = validateType(state.type, allElements).bind()
-            val defaultValue = state.defaultValue?.let { validateValue(type, it) }?.bind()
+            val defaultValue = state.defaultValue?.let { validateValue(type, it, allElements) }?.bind()
 
             ValidatedState(
                     name = state.name,
@@ -111,8 +108,7 @@ class ElementValidatorService {
         ))
     }
 
-    private fun validateFunction(function: Function, otherElements: List<Element>): Result<ValidatedFunction, List<ElementValidationError>> = binding {
-        val allElements = listOf(function) + otherElements
+    private fun validateFunction(function: Function, allElements: List<Element>): Result<ValidatedFunction, List<ElementValidationError>> = binding {
         val body = function.body.map { validateStatement(it, allElements).bind() }
 
         ValidatedFunction(
@@ -240,25 +236,56 @@ class ElementValidatorService {
         }
     }
 
-    private fun validateValue(type: ValidatedType, metaValue: MetaValue): Result<ValidatedValue, List<ElementValidationError>> {
-        return when (type) {
+    private fun validateValue(type: ValidatedType, metaValue: MetaValue, allElements: List<Element>): Result<ValidatedValue, List<ElementValidationError>> = binding {
+        when (type) {
             is ValidatedBasicType -> {
                 if (metaValue is MetaPrimitiveValue) {
-                    Ok(ValidatedBasicTypeLiteralValue(metaValue, type))
+                    validateBasicTypeValue(type, metaValue).bind()
                 } else {
-                    Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of basic type")))
+                    Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of basic type"))).bind()
                 }
             }
             is ValidatedEnumDefinitionRef -> {
                 if (metaValue is MetaPrimitiveValue) {
-                    Ok(ValidatedEnumValue(metaValue.value, type.enumDefinition))
+                    Ok(ValidatedEnumValue(metaValue.value, type.enumDefinition)).bind()
                 } else {
-                    Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of enum type")))
+                    Err(listOf(ElementValidationError("Expected MetaPrimitiveValue as value of enum type"))).bind()
+                }
+            }
+            is ValidatedDefinitionRef -> {
+                if (metaValue is MetaMapValue) {
+                    val baseDefinitions = mutableListOf<Definition>()
+                    for (baseDefinitionRef in type.definition.baseDefinitions) {
+                        val baseDefinition = findElement<Definition>(baseDefinitionRef.definition, allElements).bind()
+                        baseDefinitions.add(baseDefinition)
+                    }
+                    // TODO: check base definitions of base definitions
+                    val properties = type.definition.properties + baseDefinitions.flatMap { it.properties }
+                    if (metaValue.values.keys != properties.map { it.name }.toSet()) {
+                        Err(listOf(ElementValidationError("Expected keys ${properties.map { it.name }.toSet()} but was ${metaValue.values.keys}"))).bind()
+                    } else {
+                        val values = metaValue.values.mapValues { validateValue(validateType(properties.find { prop -> prop.name == it.key }!!.type, allElements).bind(), it.value, allElements).bind() }
+                        ValidatedDefinitionValue(values, type.definition)
+                    }
+                } else {
+                    Err(listOf(ElementValidationError("Expected MetaMapValue as value of definition type"))).bind()
                 }
             }
             else -> {
-                Err(listOf(ElementValidationError("Only basic types can have literal values")))
+                Err(listOf(ElementValidationError("Type ${type::class} is not supported with metaValue"))).bind()
             }
+        }
+    }
+
+    private fun validateBasicTypeValue(validatedBasicType: ValidatedBasicType, metaValue: MetaPrimitiveValue): Result<ValidatedValue, List<ElementValidationError>> {
+        return if (validatedBasicType.basicType == BasicType.UINT) {
+            return if (metaValue.value.toIntOrNull() == null) {
+                error("Value ${metaValue.value} cannot be converted to UINT")
+            } else {
+                Ok(ValidatedBasicTypeLiteralValue(metaValue, validatedBasicType))
+            }
+        } else {
+            Ok(ValidatedBasicTypeLiteralValue(metaValue, validatedBasicType))
         }
     }
 

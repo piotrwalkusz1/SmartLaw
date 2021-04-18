@@ -1,7 +1,7 @@
 import Validator, { validatorMeta, ValidatorType } from "./Validator";
 import { WrapWithTemplate } from "./WrapWithTemplate";
 import { buildDerivativeModelUtilsWithTemplate } from "../utils/ModelUtils";
-import { stringMeta } from "../utils/Reflection";
+import { stringMeta, withDefaultValue } from "../utils/Reflection";
 import { TemplateType } from "./TemplateType";
 
 export default interface GenericValidator extends Validator {
@@ -17,6 +17,6 @@ export const GenericValidatorUtils = buildDerivativeModelUtilsWithTemplate<
   ValidatorType,
   GenericValidatorTemplate
 >(validatorMeta, ValidatorType.Generic, TemplateType.GenericValidatorTemplate, {
-  expressionEvaluatorType: stringMeta,
+  expressionEvaluatorType: withDefaultValue(stringMeta, "FreeMarker"),
   expression: stringMeta,
 });
