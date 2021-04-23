@@ -36,6 +36,9 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 .appendLine("pragma solidity ^0.8.1;")
         beginContract(getContractName(contractName))
         elements
+                .filterIsInstance<ValidatedDefinition>()
+                .forEach { appendStruct(it) }
+        elements
                 .filterIsInstance<ValidatedState>()
                 .forEach { appendVariable(it) }
         elements
@@ -180,6 +183,11 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 sourceCode.append(" * ")
                 appendStatement(statement.secondOperand)
             }
+            is ValidatedDivideOperation -> {
+                appendStatement(statement.firstOperand)
+                sourceCode.append(" / ")
+                appendStatement(statement.secondOperand)
+            }
             is ValidatedSenderOperation -> {
                 sourceCode.append("msg.sender")
             }
@@ -195,6 +203,26 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 throw IllegalArgumentException("${statement.javaClass} is not supported")
             }
         }
+    }
+
+    private fun appendStruct(definition: ValidatedDefinition) {
+        sourceCode
+                .append("struct ")
+                .append(getStructName(definition.name))
+                .append(" {")
+        beginIntend()
+        definition.properties.forEach {
+            sourceCode
+                    .append(getTypeName(it.type))
+                    .append(" ")
+                    .append(getPropertyName(it.name))
+                    .append(";")
+            newLine()
+        }
+        endIntend()
+        sourceCode
+                .append("}")
+        newLine()
     }
 
     private fun appendVariable(state: ValidatedState) {

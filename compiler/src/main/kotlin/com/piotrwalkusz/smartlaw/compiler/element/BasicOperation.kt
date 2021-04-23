@@ -8,6 +8,7 @@ enum class BasicOperation(val id: Id) {
     BALANCE(Id("BALANCE")),
     EQUALS(Id("EQUALS")),
     MULTIPLY(Id("MULTIPLY")),
+    DIVIDE(Id("DIVIDE")),
     SENDER(Id("SENDER")),
     TRANSFER_VALUE(Id("TRANSFER_VALUE"))
 }

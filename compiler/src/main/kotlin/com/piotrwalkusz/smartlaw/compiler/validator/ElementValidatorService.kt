@@ -12,6 +12,7 @@ import com.piotrwalkusz.smartlaw.core.model.element.actionvalidation.ActionValid
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.Type
 import com.piotrwalkusz.smartlaw.core.model.element.definition.Definition
+import com.piotrwalkusz.smartlaw.core.model.element.definition.DefinitionProperty
 import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
 import com.piotrwalkusz.smartlaw.core.model.element.function.Function
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.FunctionArgument
@@ -28,7 +29,7 @@ class ElementValidatorService {
     fun validateElements(elements: List<Element>, externalElements: List<Element>): List<ValidatedElement> {
         val allElements = elements + externalElements
 
-        return elements
+        return allElements
                 .map { element -> validateElement(element, allElements) }
                 .mapNotNull { it.get() }
     }
@@ -49,6 +50,9 @@ class ElementValidatorService {
             }
             is ActionValidation -> {
                 validateActionValidation(element, allElements)
+            }
+            is Definition -> {
+                validateDefinition(element, allElements)
             }
             else -> {
                 Err(listOf(ElementValidationError("Validation of element ${element::class} is not supported")))
@@ -77,6 +81,25 @@ class ElementValidatorService {
                     name = actionValidation.name,
                     action = findElement<ActionDefinition>(actionValidation.action.actionId, allElements).bind(),
                     condition = validateExpression(actionValidation.condition, allElements).bind()
+            )
+        }
+    }
+
+    private fun validateDefinition(definition: Definition, allElements: List<Element>): Result<ValidatedDefinition, List<ElementValidationError>> {
+        return binding {
+            ValidatedDefinition(
+                    name = definition.name,
+                    definition = definition,
+                    properties = definition.properties.map { validateDefinitionProperty(it, allElements).bind() }
+            )
+        }
+    }
+
+    private fun validateDefinitionProperty(property: DefinitionProperty, allElements: List<Element>): Result<ValidatedDefinitionProperty, List<ElementValidationError>> {
+        return binding {
+            ValidatedDefinitionProperty(
+                    name = property.name,
+                    type = validateType(property.type, allElements).bind()
             )
         }
     }
@@ -180,6 +203,15 @@ class ElementValidatorService {
                         val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
                         val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
                         ValidatedMultiplyOperation(
+                                firstOperand = validateExpression(firstOperand, elements).bind(),
+                                secondOperand = validateExpression(secondOperand, elements).bind()
+                        )
+                    }
+                    BasicOperation.DIVIDE -> {
+                        validateArgumentsCount(expression.arguments, 2).bind()
+                        val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
+                        val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
+                        ValidatedDivideOperation(
                                 firstOperand = validateExpression(firstOperand, elements).bind(),
                                 secondOperand = validateExpression(secondOperand, elements).bind()
                         )
