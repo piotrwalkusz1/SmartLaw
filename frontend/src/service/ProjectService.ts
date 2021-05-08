@@ -27,6 +27,14 @@ export const convertToSmartContract = (projectId: string, contract: Contract): v
     });
 };
 
+export const convertToLogicRules = (projectId: string, contract: Contract): void => {
+  axios
+    .post("/projects/" + projectId + "/documents/convert/logic-rules", { contract: contract }, { responseType: "blob" })
+    .then((response) => {
+      FileDownload(response.data, "Contract-rules.txt");
+    });
+};
+
 export const extendPresentationElements = (
   projectId: string,
   allPresentationElements: List<PresentationElement>,

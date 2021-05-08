@@ -6,7 +6,6 @@ import { listMeta } from "../utils/Reflection";
 import { TemplateType } from "./TemplateType";
 import Expression, { expressionMeta } from "./Expression";
 import { StatementType } from "./Statement";
-import { EnumValueTemplate } from "./EnumValue";
 
 export default interface FunctionCall extends Expression {
   function: FunctionRef;
@@ -15,7 +14,7 @@ export default interface FunctionCall extends Expression {
 
 export interface FunctionCallTemplate extends WrapWithTemplate<FunctionCall> {}
 
-export const FunctionCallUtils = buildDerivativeModelUtilsWithTemplate<FunctionCall, Expression, StatementType, EnumValueTemplate>(
+export const FunctionCallUtils = buildDerivativeModelUtilsWithTemplate<FunctionCall, Expression, StatementType, FunctionCallTemplate>(
   expressionMeta,
   StatementType.FunctionCall,
   TemplateType.FunctionCallTemplate,

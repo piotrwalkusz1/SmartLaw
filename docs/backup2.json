@@ -1,0 +1,1623 @@
+{
+    "_id" : ObjectId("606852d63ecd1e4c38727d57"),
+    "id" : "8",
+    "document" : {
+        "documentType" : "Library",
+        "id" : {
+            "id" : "UMOWA_SPRZEDAZY_SAMOCHODU_LIBRARY",
+            "namespace" : "pl.piotrwalkusz"
+        },
+        "name" : "Umowa sprzedaży samochodu - biblioteka",
+        "description" : null,
+        "rules" : [ 
+            {
+                "id" : {
+                    "id" : "PREAMBUŁA",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Preambuła",
+                "description" : "Zdefiniowanie stron transakcji",
+                "arguments" : [ 
+                    {
+                        "name" : "Miejscowość",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Dzień",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "LocalDate",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - imię i nazwisko",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - numer dowodu osobistego",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - dowód osobisty wydany przez",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - miejsce zamieszkania",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - ulica",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Sprzedający - PESEL",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : [ 
+                            {
+                                "type" : "Regex",
+                                "regex" : "[0-9]{11}"
+                            }, 
+                            {
+                                "type" : "Generic",
+                                "expressionEvaluatorType" : "FreeMarker",
+                                "expression" : "<#if (value[0]?number+3*value[1]?number+7*value[2]?number+9*value[3]?number+value[4]?number+3*value[5]?number+7*value[6]?number+9*value[7]?number+value[8]?number+3*value[9]?number)%10!=(10-value[10]?number)%10>Incorrect PESEL</#if>"
+                            }
+                        ]
+                    }, 
+                    {
+                        "name" : "Kupujący - imię i nazwisko",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Kupujący - numer dowodu osobistego",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Kupujący - dowód osobisty wydany przez",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Kupujący - miejsce zamieszkania",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Kupujący - ulica",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Kupujący - PESEL",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : [ 
+                            {
+                                "type" : "Regex",
+                                "regex" : "[0-9]{11}"
+                            }, 
+                            {
+                                "type" : "Generic",
+                                "expressionEvaluatorType" : "FreeMarker",
+                                "expression" : "<#if (value[0]?number+3*value[1]?number+7*value[2]?number+9*value[3]?number+value[4]?number+3*value[5]?number+7*value[6]?number+9*value[7]?number+value[8]?number+3*value[9]?number)%10!=(10-value[10]?number)%10>Incorrect PESEL</#if>"
+                            }
+                        ]
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Umowa zawarta w ${args[\"Miejscowość\"]} dnia ${args[\"Dzień\"]} pomiędzy ${args[\"Sprzedający - imię i nazwisko\"]}, legitymującym się dowodem osobistym o numerze ${args[\"Sprzedający - numer dowodu osobistego\"]} wydanym przez ${args[\"Sprzedający - dowód osobisty wydany przez\"]}, zamieszkałym w ${args[\"Sprzedający - miejsce zamieszkania\"]}, przy ul. ${args[\"Sprzedający - ulica\"]}, PESEL ${args[\"Sprzedający - PESEL\"]}, zwany dalej Sprzedającym a ${args[\"Kupujący - imię i nazwisko\"]}, legitymującym się dowodem osobistym o numerze ${args[\"Kupujący - numer dowodu osobistego\"]} wydanym przez ${args[\"Kupujący - dowód osobisty wydany przez\"]}, zamieszkałym w ${args[\"Kupujący - miejsce zamieszkania\"]}, przy ul. ${args[\"Kupujący - ulica\"]}, PESEL ${args[\"Kupujący - PESEL\"]} zwanym dalej Kupującym."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : [ 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "Sprzedający"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Sprzedający"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "OsobaFizyczna"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.kodekscywilny.definicje"
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaMapValueTemplate",
+                                "values" : {
+                                    "templateType" : "MapTemplate",
+                                    "items" : {
+                                        "PESEL" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Sprzedający - PESEL\"]}"
+                                            }
+                                        },
+                                        "Adres" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Sprzedający - miejsce zamieszkania\"]}, ${args[\"Sprzedający - miejsce zamieszkania\"]}"
+                                            }
+                                        },
+                                        "Dokument tożsamości" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Sprzedający - numer dowodu osobistego\"]}"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "Kupujący"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Kupujący"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "OsobaFizyczna"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.kodekscywilny.definicje"
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaMapValueTemplate",
+                                "values" : {
+                                    "templateType" : "MapTemplate",
+                                    "items" : {
+                                        "PESEL" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Kupujący - PESEL\"]}"
+                                            }
+                                        },
+                                        "Adres" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Kupujący - miejsce zamieszkania\"]}, ${args[\"Kupujący - miejsce zamieszkania\"]}"
+                                            }
+                                        },
+                                        "Dokument tożsamości" : {
+                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                            "value" : {
+                                                "templateType" : "TextEngine",
+                                                "type" : "FreeMarker",
+                                                "template" : "${args[\"Kupujący - numer dowodu osobistego\"]}"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "DEFINICJA_PRZEDMIOTU_SPRZEDAŻY",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Definicja przedmiotu umowy kupna sprzedaży",
+                "description" : "",
+                "arguments" : [ 
+                    {
+                        "name" : "Przedmiot umowy kupna sprzedaży",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "PRZEDMIOT_SPRZEDAŻY",
+                            "namespace" : "pl.prawopolskie.sprzedaż.interfejs"
+                        },
+                        "validators" : []
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Przedmiotem umowy jest sprzedaż ${args[\"Przedmiot umowy kupna sprzedaży\"].getContent()}"
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "SAMOCHÓD",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Samochód",
+                "description" : null,
+                "arguments" : [ 
+                    {
+                        "name" : "Marka",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Rok produkcji",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "Integer",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Nr silnika",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Nr nadwozia",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Nr rejestracyjny",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }, 
+                    {
+                        "name" : "Przebieg",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "Integer",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "samochód marki ${args[\"Marka\"]}, rok produkcji ${args[\"Rok produkcji\"]?c}, nr silnika ${args[\"Nr silnika\"]}, nr nadwozia ${args[\"Nr nadwozia\"]}, nr rejestracyjny ${args[\"Nr rejestracyjny\"]}, przebieg ${args[\"Przebieg\"]} km."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : [ 
+                    {
+                        "id" : "PRZEDMIOT_SPRZEDAŻY",
+                        "namespace" : "pl.prawopolskie.sprzedaż.interfejs"
+                    }
+                ]
+            }, 
+            {
+                "id" : {
+                    "id" : "WARTOŚĆ_PRZEDMIOTU",
+                    "namespace" : "pl.polskieprawo.sprzedaż"
+                },
+                "name" : "Wartość przedmiotu umowy kupna sprzedaży",
+                "description" : null,
+                "arguments" : [ 
+                    {
+                        "name" : "Wartość",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "Integer",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Strony ustaliły wartość przedmiotu umowy na kwotę ${args[\"Wartość\"]} zł, słownie ${context.getNumberInWords(args[\"Wartość\"]?c)} PLN."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : [ 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "Wartość"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wartość przedmiotu umowy kupna sprzedaży"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "UINT"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaPrimitiveValueTemplate",
+                                "value" : {
+                                    "templateType" : "TextEngine",
+                                    "type" : "FreeMarker",
+                                    "template" : "${args[\"Wartość\"]?c}"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "PŁATNOŚĆ_W_KRYPTOWALUCIE_ETH",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Płatność w kryptowalucie ETH",
+                "description" : null,
+                "arguments" : [ 
+                    {
+                        "name" : "Kurs",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "Integer",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Płatność zostanie dokonana przy użyciu kryptowaluty ETH, przyjmując kurs ${args[\"Kurs\"]} PLN/ETH. Łącznie do zapłaty ${context.getDefaultValueOfElement(\"Wartość\", \"pl.prawopolskie.sprzedaż\")?number / args[\"Kurs\"]?c?number} ETH."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : [ 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "Kurs"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Kurs"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "UINT"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaPrimitiveValueTemplate",
+                                "value" : {
+                                    "templateType" : "TextEngine",
+                                    "type" : "FreeMarker",
+                                    "template" : "${args[\"Kurs\"]?c}"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "OBOWIĄZEK_WPŁATY_DEPOZYTU",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Kupujący zobowiązuje się do wpłaty depozytu",
+                "description" : null,
+                "arguments" : [],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Kupujący zobowiązuje się do wpłaty depozytu o wartości wskazanej w ${context.getLinkToElement(\"pl.prawopolskie.sprzedaż.Kurs\")} niniejszej umowy."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : [ 
+                        {
+                            "templateType" : "FunctionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WpłaćDepozyt"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wpłać depozyt"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "parameters" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "body" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "result" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionDefinitionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WpłaćDepozyt"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wpłać depozyt"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "function" : {
+                                "templateType" : "FunctionRefTemplate",
+                                "id" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "WpłaćDepozyt"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionValidationTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "KwotaDepozytu"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.walidacja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : ""
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "action" : {
+                                "templateType" : "ActionRefTemplate",
+                                "actionId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "WpłaćDepozyt"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                    }
+                                }
+                            },
+                            "condition" : {
+                                "templateType" : "OperationTemplate",
+                                "operationId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "EQUALS"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "arguments" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : [ 
+                                        {
+                                            "templateType" : "OperationTemplate",
+                                            "operationId" : {
+                                                "templateType" : "IdTemplate",
+                                                "id" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "MULTIPLY"
+                                                },
+                                                "namespace" : {
+                                                    "templateType" : "Static",
+                                                    "value" : ""
+                                                }
+                                            },
+                                            "arguments" : {
+                                                "templateType" : "ListTemplate",
+                                                "items" : [ 
+                                                    {
+                                                        "templateType" : "OperationTemplate",
+                                                        "operationId" : {
+                                                            "templateType" : "IdTemplate",
+                                                            "id" : {
+                                                                "templateType" : "Static",
+                                                                "value" : "DIVIDE"
+                                                            },
+                                                            "namespace" : {
+                                                                "templateType" : "Static",
+                                                                "value" : ""
+                                                            }
+                                                        },
+                                                        "arguments" : {
+                                                            "templateType" : "ListTemplate",
+                                                            "items" : [ 
+                                                                {
+                                                                    "templateType" : "StateVariableRefTemplate",
+                                                                    "state" : {
+                                                                        "templateType" : "IdTemplate",
+                                                                        "id" : {
+                                                                            "templateType" : "Static",
+                                                                            "value" : "Wartość"
+                                                                        },
+                                                                        "namespace" : {
+                                                                            "templateType" : "Static",
+                                                                            "value" : "pl.prawopolskie.sprzedaż"
+                                                                        }
+                                                                    }
+                                                                }, 
+                                                                {
+                                                                    "templateType" : "StateVariableRefTemplate",
+                                                                    "state" : {
+                                                                        "templateType" : "IdTemplate",
+                                                                        "id" : {
+                                                                            "templateType" : "Static",
+                                                                            "value" : "Kurs"
+                                                                        },
+                                                                        "namespace" : {
+                                                                            "templateType" : "Static",
+                                                                            "value" : "pl.prawopolskie.sprzedaż"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }, 
+                                                    {
+                                                        "templateType" : "ConstantValueTemplate",
+                                                        "value" : {
+                                                            "templateType" : "MetaPrimitiveValueTemplate",
+                                                            "value" : {
+                                                                "templateType" : "Static",
+                                                                "value" : "1000000000000000000"
+                                                            }
+                                                        },
+                                                        "type" : {
+                                                            "templateType" : "DefinitionRefTemplate",
+                                                            "definition" : {
+                                                                "templateType" : "IdTemplate",
+                                                                "id" : {
+                                                                    "templateType" : "Static",
+                                                                    "value" : "UINT"
+                                                                },
+                                                                "namespace" : {
+                                                                    "templateType" : "Static",
+                                                                    "value" : ""
+                                                                }
+                                                            },
+                                                            "parameters" : {
+                                                                "templateType" : "ListTemplate",
+                                                                "items" : []
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }, 
+                                        {
+                                            "templateType" : "OperationTemplate",
+                                            "operationId" : {
+                                                "templateType" : "IdTemplate",
+                                                "id" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "TRANSFER_VALUE"
+                                                },
+                                                "namespace" : {
+                                                    "templateType" : "Static",
+                                                    "value" : ""
+                                                }
+                                            },
+                                            "arguments" : {
+                                                "templateType" : "ListTemplate",
+                                                "items" : []
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "ZOBOWIĄZANIE_DO_PRZEKAZANIA_WŁASNOŚCI",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Przekazanie własności",
+                "description" : null,
+                "arguments" : [],
+                "content" : {
+                    "templateType" : "Static",
+                    "value" : "Sprzedający zobowiązuje się do przekazania własności przedmiotu niniejszej umowy kupna sprzedaży na rzecz kupującego, po wpłacie przez kupującego depozytu."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "WYPŁACENIE_DEPOZYTU",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Wypłacenie depozytu",
+                "description" : null,
+                "arguments" : [ 
+                    {
+                        "name" : "Adres",
+                        "displayName" : null,
+                        "description" : null,
+                        "type" : {
+                            "id" : "String",
+                            "namespace" : ""
+                        },
+                        "validators" : []
+                    }
+                ],
+                "content" : {
+                    "templateType" : "TextEngine",
+                    "type" : "FreeMarker",
+                    "template" : "Sprzedający może wypłacić na adres ${args[\"Adres\"]} depozyt wpłacony przez kupującego po zatwierdzeniu przez Rejestr Własności Pojazdów przekazania własności pojazdu na rzecz kupującego."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : [ 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WłasnośćPrzekazana"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wartość przekazana"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "UINT"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaPrimitiveValueTemplate",
+                                "value" : {
+                                    "templateType" : "Static",
+                                    "value" : "1"
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "FunctionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WypłaćDepozyt"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wypłać depozyt"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "parameters" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "body" : {
+                                "templateType" : "ListTemplate",
+                                "items" : [ 
+                                    {
+                                        "templateType" : "OperationTemplate",
+                                        "operationId" : {
+                                            "templateType" : "IdTemplate",
+                                            "id" : {
+                                                "templateType" : "Static",
+                                                "value" : "TRANSFER"
+                                            },
+                                            "namespace" : {
+                                                "templateType" : "Static",
+                                                "value" : ""
+                                            }
+                                        },
+                                        "arguments" : {
+                                            "templateType" : "ListTemplate",
+                                            "items" : [ 
+                                                {
+                                                    "templateType" : "StateVariableRefTemplate",
+                                                    "state" : {
+                                                        "templateType" : "IdTemplate",
+                                                        "id" : {
+                                                            "templateType" : "Static",
+                                                            "value" : "AdresDoWypłatyDepozytu"
+                                                        },
+                                                        "namespace" : {
+                                                            "templateType" : "Static",
+                                                            "value" : "pl.prawopolskie.sprzedaż"
+                                                        }
+                                                    }
+                                                }, 
+                                                {
+                                                    "templateType" : "OperationTemplate",
+                                                    "operationId" : {
+                                                        "templateType" : "IdTemplate",
+                                                        "id" : {
+                                                            "templateType" : "Static",
+                                                            "value" : "BALANCE"
+                                                        },
+                                                        "namespace" : {
+                                                            "templateType" : "Static",
+                                                            "value" : ""
+                                                        }
+                                                    },
+                                                    "arguments" : {
+                                                        "templateType" : "ListTemplate",
+                                                        "items" : []
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            "result" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            }
+                        }, 
+                        {
+                            "templateType" : "StateTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "AdresDoWypłatyDepozytu"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Adres do wypłaty depozytu"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "type" : {
+                                "templateType" : "DefinitionRefTemplate",
+                                "definition" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "ADDRESS"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            },
+                            "defaultValue" : {
+                                "templateType" : "MetaPrimitiveValueTemplate",
+                                "value" : {
+                                    "templateType" : "TextEngine",
+                                    "type" : "FreeMarker",
+                                    "template" : "${args[\"Adres\"]}"
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionDefinitionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WypłaćDepozyt"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Wypłać depozyt"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "function" : {
+                                "templateType" : "FunctionRefTemplate",
+                                "id" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "WypłaćDepozyt"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionValidationTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "WłasnośćPrzekazana"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.walidacja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Własność przekazana"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "action" : {
+                                "templateType" : "ActionRefTemplate",
+                                "actionId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "WypłaćDepozyt"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                    }
+                                }
+                            },
+                            "condition" : {
+                                "templateType" : "OperationTemplate",
+                                "operationId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "EQUALS"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "arguments" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : [ 
+                                        {
+                                            "templateType" : "StateVariableRefTemplate",
+                                            "state" : {
+                                                "templateType" : "IdTemplate",
+                                                "id" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "WłasnośćPrzekazana"
+                                                },
+                                                "namespace" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "pl.prawopolskie.sprzedaż"
+                                                }
+                                            }
+                                        }, 
+                                        {
+                                            "templateType" : "ConstantValueTemplate",
+                                            "value" : {
+                                                "templateType" : "MetaPrimitiveValueTemplate",
+                                                "value" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "1"
+                                                }
+                                            },
+                                            "type" : {
+                                                "templateType" : "DefinitionRefTemplate",
+                                                "definition" : {
+                                                    "templateType" : "IdTemplate",
+                                                    "id" : {
+                                                        "templateType" : "Static",
+                                                        "value" : "UINT"
+                                                    },
+                                                    "namespace" : {
+                                                        "templateType" : "Static",
+                                                        "value" : ""
+                                                    }
+                                                },
+                                                "parameters" : {
+                                                    "templateType" : "ListTemplate",
+                                                    "items" : []
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "FunctionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "PrzekażWłasność"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Przekaż własność"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "parameters" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "body" : {
+                                "templateType" : "ListTemplate",
+                                "items" : [ 
+                                    {
+                                        "templateType" : "AssignmentTemplate",
+                                        "variable" : {
+                                            "templateType" : "StateVariableRefTemplate",
+                                            "state" : {
+                                                "templateType" : "IdTemplate",
+                                                "id" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "WłasnośćPrzekazana"
+                                                },
+                                                "namespace" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "pl.prawopolskie.sprzedaż"
+                                                }
+                                            }
+                                        },
+                                        "value" : {
+                                            "templateType" : "ConstantValueTemplate",
+                                            "value" : {
+                                                "templateType" : "MetaPrimitiveValueTemplate",
+                                                "value" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "1"
+                                                }
+                                            },
+                                            "type" : {
+                                                "templateType" : "DefinitionRefTemplate",
+                                                "definition" : {
+                                                    "templateType" : "IdTemplate",
+                                                    "id" : {
+                                                        "templateType" : "Static",
+                                                        "value" : "UINT"
+                                                    },
+                                                    "namespace" : {
+                                                        "templateType" : "Static",
+                                                        "value" : ""
+                                                    }
+                                                },
+                                                "parameters" : {
+                                                    "templateType" : "ListTemplate",
+                                                    "items" : []
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "result" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionDefinitionTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "PrzekażWłasność"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Przekaż własność"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "arguments" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "function" : {
+                                "templateType" : "FunctionRefTemplate",
+                                "id" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "PrzekażWłasność"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.funkcja"
+                                    }
+                                },
+                                "parameters" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : []
+                                }
+                            }
+                        }, 
+                        {
+                            "templateType" : "ActionValidationTemplate",
+                            "id" : {
+                                "templateType" : "IdTemplate",
+                                "id" : {
+                                    "templateType" : "Static",
+                                    "value" : "TylkoRejestrWłasnościPojazdów"
+                                },
+                                "namespace" : {
+                                    "templateType" : "Static",
+                                    "value" : "pl.prawopolskie.sprzedaż.walidacja"
+                                }
+                            },
+                            "annotations" : {
+                                "templateType" : "ListTemplate",
+                                "items" : []
+                            },
+                            "name" : {
+                                "templateType" : "Static",
+                                "value" : "Tylko Rejestr Własności pojazdów"
+                            },
+                            "description" : {
+                                "templateType" : "Static",
+                                "value" : null
+                            },
+                            "action" : {
+                                "templateType" : "ActionRefTemplate",
+                                "actionId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "PrzekażWłasność"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : "pl.prawopolskie.sprzedaż.akcja"
+                                    }
+                                }
+                            },
+                            "condition" : {
+                                "templateType" : "OperationTemplate",
+                                "operationId" : {
+                                    "templateType" : "IdTemplate",
+                                    "id" : {
+                                        "templateType" : "Static",
+                                        "value" : "EQUALS"
+                                    },
+                                    "namespace" : {
+                                        "templateType" : "Static",
+                                        "value" : ""
+                                    }
+                                },
+                                "arguments" : {
+                                    "templateType" : "ListTemplate",
+                                    "items" : [ 
+                                        {
+                                            "templateType" : "OperationTemplate",
+                                            "operationId" : {
+                                                "templateType" : "IdTemplate",
+                                                "id" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "SENDER"
+                                                },
+                                                "namespace" : {
+                                                    "templateType" : "Static",
+                                                    "value" : ""
+                                                }
+                                            },
+                                            "arguments" : {
+                                                "templateType" : "ListTemplate",
+                                                "items" : []
+                                            }
+                                        }, 
+                                        {
+                                            "templateType" : "ConstantValueTemplate",
+                                            "value" : {
+                                                "templateType" : "MetaPrimitiveValueTemplate",
+                                                "value" : {
+                                                    "templateType" : "Static",
+                                                    "value" : "0x3A505F186b0b60966f07938db97D134Bb0fBc6D9"
+                                                }
+                                            },
+                                            "type" : {
+                                                "templateType" : "DefinitionRefTemplate",
+                                                "definition" : {
+                                                    "templateType" : "IdTemplate",
+                                                    "id" : {
+                                                        "templateType" : "Static",
+                                                        "value" : "ADDRESS"
+                                                    },
+                                                    "namespace" : {
+                                                        "templateType" : "Static",
+                                                        "value" : ""
+                                                    }
+                                                },
+                                                "parameters" : {
+                                                    "templateType" : "ListTemplate",
+                                                    "items" : []
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "STAN_TECHNICZNY",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Stan techniczny",
+                "description" : null,
+                "arguments" : [],
+                "content" : {
+                    "templateType" : "Static",
+                    "value" : "Sprzedający oświadcza, że pojazd nie ma wad technicznych, które są mu znane i o których nie powiadomił Kupującego, a Kupujący potwierdza znajomość stanu technicznego pojazdu."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "OBCIĄŻENIE_KOSZTAMI",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Obciążenie kosztami",
+                "description" : null,
+                "arguments" : [],
+                "content" : {
+                    "templateType" : "Static",
+                    "value" : "Strony ustaliły, że wszelkiego rodzaju koszty transakcji wynikające z realizacji ustaleń niniejszej umowy oraz koszty opłaty skarbowej obciążają kupującego"
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }, 
+            {
+                "id" : {
+                    "id" : "KOPIE_UMOWY",
+                    "namespace" : "pl.prawopolskie.sprzedaż"
+                },
+                "name" : "Kopie umowy",
+                "description" : null,
+                "arguments" : [],
+                "content" : {
+                    "templateType" : "Static",
+                    "value" : "Niniejszą umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron."
+                },
+                "elements" : {
+                    "templateType" : "ListTemplate",
+                    "items" : []
+                },
+                "outputs" : {},
+                "interfaces" : []
+            }
+        ],
+        "rulesInterfaces" : [ 
+            {
+                "id" : {
+                    "id" : "PRZEDMIOT_SPRZEDAŻY",
+                    "namespace" : "pl.prawopolskie.sprzedaż.interfejs"
+                },
+                "name" : "Przedmiot sprzedaży",
+                "description" : ""
+            }
+        ],
+        "elements" : [],
+        "annotations" : []
+    }
+}

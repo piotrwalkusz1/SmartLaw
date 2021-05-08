@@ -19,6 +19,10 @@ import com.piotrwalkusz.smartlaw.core.model.element.function.argument.FunctionAr
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.StateVariableRef
 import com.piotrwalkusz.smartlaw.core.model.element.function.argument.VariableRef
 import com.piotrwalkusz.smartlaw.core.model.element.function.statement.*
+import com.piotrwalkusz.smartlaw.core.model.element.proposition.Proposition
+import com.piotrwalkusz.smartlaw.core.model.element.proposition.PropositionComplexVariable
+import com.piotrwalkusz.smartlaw.core.model.element.proposition.PropositionStateVariable
+import com.piotrwalkusz.smartlaw.core.model.element.proposition.PropositionVariable
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaMapValue
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
@@ -53,6 +57,9 @@ class ElementValidatorService {
             }
             is Definition -> {
                 validateDefinition(element, allElements)
+            }
+            is Proposition -> {
+                validateProposition(element, allElements)
             }
             else -> {
                 Err(listOf(ElementValidationError("Validation of element ${element::class} is not supported")))
@@ -92,6 +99,32 @@ class ElementValidatorService {
                     definition = definition,
                     properties = definition.properties.map { validateDefinitionProperty(it, allElements).bind() }
             )
+        }
+    }
+
+    private fun validateProposition(proposition: Proposition, allElements: List<Element>): Result<ValidatedProposition, List<ElementValidationError>> {
+        return binding {
+            ValidatedProposition(
+                    proposition = proposition,
+                    head = proposition.head.map { validatePropositionVariable(it, allElements).bind() as ValidatedPropositionTerm }
+            )
+        }
+    }
+
+    private fun validatePropositionVariable(propositionVariable: PropositionVariable, allElements: List<Element>): Result<ValidatedPropositionVariable, List<ElementValidationError>> {
+        return binding {
+            if (propositionVariable is PropositionComplexVariable) {
+                ValidatedPropositionComplexVariable(
+                        definition = findElement<Definition>(propositionVariable.definition.definition, allElements).bind(),
+                        variables = propositionVariable.variables.map { validatePropositionVariable(it, allElements).bind() }
+                )
+            } else if (propositionVariable is PropositionStateVariable) {
+                ValidatedPropositionStateVariable(
+                        state = findElement<State>(propositionVariable.state, allElements).bind()
+                )
+            } else {
+                error("Expected PropositionComplexVariable or PropositionStateVariable").bind()
+            }
         }
     }
 

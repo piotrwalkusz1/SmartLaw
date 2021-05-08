@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse
 class ProjectController(
         private val fromDocumentToNaturalLanguageConverterFactory: FromDocumentToNaturalLanguageConverterFactory,
         private val fromContractToSmartContractConverterFactory: FromContractToSmartContractConverterFactory,
+        private val fromContractToLogicRulesConverterFactory: FromContractToLogicRulesConverterFactory,
         private val presentationElementExtenderFactory: PresentationElementExtenderFactory,
         private val ruleService: RuleService,
         private val projectService: ProjectService,
@@ -68,6 +69,19 @@ class ProjectController(
         response.characterEncoding = "UTF-8"
         response.setHeader("Content-Disposition", "attachment; filename=" + request.contract.name + ".txt")
         response.writer.write(smartContract)
+    }
+
+    @PostMapping("/{projectId}/documents/convert/logic-rules")
+    fun convertContractToLogicRules(@PathVariable projectId: String, @RequestBody request: ConvertContractToSmartContractDto, response: HttpServletResponse) {
+        val ruleProvider = ruleService.getRuleProviderForProject(projectId)
+        val externalElements = projectService.getExternalElementsInProject(projectId)
+        val logicRulesConverter = fromContractToLogicRulesConverterFactory.create(ruleProvider)
+        val logicRules = logicRulesConverter.convert(request.contract, externalElements)
+
+        response.contentType = MediaType.TEXT_PLAIN_VALUE
+        response.characterEncoding = "UTF-8"
+        response.setHeader("Content-Disposition", "attachment; filename=" + request.contract.name + "-rules.txt")
+        response.writer.write(logicRules)
     }
 
     @PostMapping("/{projectId}/documents/extend-presentation-elements")

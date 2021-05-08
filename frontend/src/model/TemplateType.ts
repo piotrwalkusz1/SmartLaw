@@ -6,6 +6,8 @@ export enum TemplateType {
   MapTemplate = "MapTemplate",
   IdTemplate = "IdTemplate",
   StateTemplate = "StateTemplate",
+  PropositionTemplate = "PropositionTemplate",
+  PropositionStateVariableTemplate = "PropositionStateVariableTemplate",
   EnumDefinitionTemplate = "EnumDefinitionTemplate",
   DefinitionRefTemplate = "DefinitionRefTemplate",
   EnumVariantTemplate = "EnumVariantTemplate",
@@ -36,4 +38,6 @@ export enum TemplateType {
   ActionRefTemplate = "ActionRefTemplate",
   ActionValidationTemplate = "ActionValidationTemplate",
   ConstantValueTemplate = "ConstantValueTemplate",
+  PropositionComplexVariableTemplate = "PropositionComplexVariableTemplate",
+  PropositionPrimitiveVariableTemplate = "PropositionPrimitiveVariableTemplate",
 }

@@ -5,6 +5,6 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 
 @GenerateTemplate
 data class PropositionPrimitiveVariable(
-        val type: Id,
+        val valueType: Id,
         val value: String
 ) : PropositionVariable

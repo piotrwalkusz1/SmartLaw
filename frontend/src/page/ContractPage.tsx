@@ -4,7 +4,7 @@ import Contract from "../model/Contract";
 import * as DocumentService from "../service/DocumentService";
 import { saveDocument } from "../service/DocumentService";
 import PresentationElementView from "../component/presentation-element/PresentationElementView";
-import { convertToSmartContract, downloadDocument, extendPresentationElements } from "../service/ProjectService";
+import { convertToLogicRules, convertToSmartContract, downloadDocument, extendPresentationElements } from "../service/ProjectService";
 import { Button, Col, Row } from "react-bootstrap";
 import { css } from "@emotion/react";
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
@@ -344,6 +344,12 @@ const ContractPage = ({ contractDbId }: { contractDbId: string }) => {
                     onClick={() => convertToSmartContract(projectId, convertToContract(elements))}
                   >
                     Smart contract
+                  </Button>
+                  <Button
+                    style={{ marginLeft: "15px", flexGrow: 1 }}
+                    onClick={() => convertToLogicRules(projectId, convertToContract(elements))}
+                  >
+                    Logic rules
                   </Button>
                 </div>
               </div>

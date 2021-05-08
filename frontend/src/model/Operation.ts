@@ -5,7 +5,6 @@ import { listMeta } from "../utils/Reflection";
 import { TemplateType } from "./TemplateType";
 import Expression, { expressionMeta } from "./Expression";
 import { StatementType } from "./Statement";
-import { EnumValueTemplate } from "./EnumValue";
 import Id, { IdUtils } from "./Id";
 
 export default interface Operation extends Expression {
@@ -15,7 +14,7 @@ export default interface Operation extends Expression {
 
 export interface OperationTemplate extends WrapWithTemplate<Operation> {}
 
-export const OperationUtils = buildDerivativeModelUtilsWithTemplate<Operation, Expression, StatementType, EnumValueTemplate>(
+export const OperationUtils = buildDerivativeModelUtilsWithTemplate<Operation, Expression, StatementType, OperationTemplate>(
   expressionMeta,
   StatementType.Operation,
   TemplateType.OperationTemplate,

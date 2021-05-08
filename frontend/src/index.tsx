@@ -71,6 +71,13 @@ import "./model/ActionValidationElement";
 import "./model/ConstantValue";
 import "./model/MetaMapValue";
 import "./model/MapTemplate";
+import "./model/PropositionExpression";
+import "./model/PropositionVariable";
+import "./model/PropositionComplexVariable";
+import "./model/PropositionPrimitiveVariable";
+import "./model/PropositionElement";
+import "./model/PropositionTerm";
+import "./model/PropositionStateVariable";
 
 ReactDOM.render(
   <React.StrictMode>

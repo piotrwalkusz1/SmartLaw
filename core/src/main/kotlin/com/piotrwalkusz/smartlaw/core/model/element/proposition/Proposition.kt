@@ -9,6 +9,6 @@ import com.piotrwalkusz.smartlaw.core.model.element.Element
 data class Proposition(
         override val id: Id,
         override val annotations: List<Annotation>,
-        val head: List<PropositionComplexVariable>,
+        val head: List<PropositionTerm>,
         val body: List<PropositionExpression>
 ) : Element
