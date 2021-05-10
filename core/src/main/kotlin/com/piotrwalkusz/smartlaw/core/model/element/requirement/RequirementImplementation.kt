@@ -8,5 +8,5 @@ data class RequirementImplementation(
         override val id: Id,
         override val annotations: List<Annotation>,
         val requirement: Id,
-        val elementImplementingRequirement: Id
+        val elementsImplementingRequirement: Map<String, Id>
 ) : Element
