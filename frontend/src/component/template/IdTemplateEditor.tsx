@@ -1,5 +1,5 @@
-import Template from "../../../model/Template";
-import Id, { IdTemplate, IdUtils } from "../../../model/Id";
+import Template from "../../model/Template";
+import Id, { IdTemplate, IdUtils } from "../../model/Id";
 import { Col, Form, Row } from "react-bootstrap";
 import StringTemplateEditor from "./StringTemplateEditor";
 

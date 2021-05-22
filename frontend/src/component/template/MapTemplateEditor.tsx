@@ -1,15 +1,15 @@
-import Template from "../../../model/Template";
-import ListEditor from "../../../common/ListEditor";
-import { TemplateType } from "../../../model/TemplateType";
-import { createTemplateByMetaData, MetaData } from "../../../utils/Reflection";
-import ExpandableArea from "../../../common/ExpandableArea";
+import Template from "../../model/Template";
+import ListEditor from "../../common/ListEditor";
+import { TemplateType } from "../../model/TemplateType";
+import { createTemplateByMetaData, MetaData } from "../../utils/Reflection";
+import ExpandableArea from "../../common/ExpandableArea";
 import React from "react";
-import { getTemplateTypesFromMetaData } from "../../../utils/ModelUtils";
-import TemplateTypeSelector from "../../template/TemplateTypeSelector";
-import TemplateEditor from "../../template/TemplateEditor";
-import MapTemplate, { isMapTemplate } from "../../../model/MapTemplate";
+import { getTemplateTypesFromMetaData } from "../../utils/ModelUtils";
+import TemplateTypeSelector from "./TemplateTypeSelector";
+import TemplateEditor from "./TemplateEditor";
+import MapTemplate, { isMapTemplate } from "../../model/MapTemplate";
 import { List, Map } from "immutable";
-import TextField from "../../../common/TextField";
+import TextField from "../../common/TextField";
 
 interface MapTemplateEditorProps<T> {
   template: Template<Map<string, T>>;

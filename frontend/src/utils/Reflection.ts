@@ -3,12 +3,12 @@ import { List, Map } from "immutable";
 import Template, { decodeTemplate } from "../model/Template";
 import { TemplateType } from "../model/TemplateType";
 import { ReactElement } from "react";
-import ListTemplateEditor from "../component/element/template/ListTemplateEditor";
-import StringTemplateEditor from "../component/element/template/StringTemplateEditor";
+import ListTemplateEditor from "../component/template/ListTemplateEditor";
+import StringTemplateEditor from "../component/template/StringTemplateEditor";
 import { decodeListTemplate, prepareEmptyListTemplate } from "../model/ListTemplate";
 import NullableTemplate from "../component/template/NullableTemplate";
 import { decodeStaticTemplate, isStaticTemplate, prepareStaticTemplate } from "../model/StaticTemplate";
-import MapTemplateEditor from "../component/element/template/MapTemplateEditor";
+import MapTemplateEditor from "../component/template/MapTemplateEditor";
 import { decodeMapTemplate, prepareEmptyMapTemplate } from "../model/MapTemplate";
 
 export type RenderTemplateEditor<T extends Template<R>, R> = (

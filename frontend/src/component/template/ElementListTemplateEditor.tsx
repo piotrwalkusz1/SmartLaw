@@ -1,10 +1,10 @@
-import Template from "../../../model/Template";
+import Template from "../../model/Template";
 import { Accordion, Card } from "react-bootstrap";
 import React from "react";
 import { List } from "immutable";
-import Element, { elementMeta } from "../../../model/Element";
-import TemplateEditor from "../../template/TemplateEditor";
-import { listMeta } from "../../../utils/Reflection";
+import Element, { elementMeta } from "../../model/Element";
+import TemplateEditor from "./TemplateEditor";
+import { listMeta } from "../../utils/Reflection";
 
 interface ElementListTemplateEditorProps {
   template: Template<List<Element>>;

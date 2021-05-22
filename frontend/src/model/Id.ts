@@ -2,7 +2,7 @@ import { stringMeta } from "../utils/Reflection";
 import { WrapWithTemplate } from "./WrapWithTemplate";
 import { buildModelUtilsWithTemplate } from "../utils/ModelUtils";
 import { TemplateType } from "./TemplateType";
-import IdTemplateEditor from "../component/element/template/IdTemplateEditor";
+import IdTemplateEditor from "../component/template/IdTemplateEditor";
 
 export default interface Id {
   id: string;

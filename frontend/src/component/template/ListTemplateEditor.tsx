@@ -1,14 +1,14 @@
-import ListTemplate, { isListTemplate } from "../../../model/ListTemplate";
-import Template from "../../../model/Template";
-import ListEditor from "../../../common/ListEditor";
+import ListTemplate, { isListTemplate } from "../../model/ListTemplate";
+import Template from "../../model/Template";
+import ListEditor from "../../common/ListEditor";
 import { List } from "immutable";
-import { TemplateType } from "../../../model/TemplateType";
-import { getCreateTemplateByMetaData, MetaData } from "../../../utils/Reflection";
-import ExpandableArea from "../../../common/ExpandableArea";
+import { TemplateType } from "../../model/TemplateType";
+import { getCreateTemplateByMetaData, MetaData } from "../../utils/Reflection";
+import ExpandableArea from "../../common/ExpandableArea";
 import React from "react";
-import { getTemplateTypesFromMetaData } from "../../../utils/ModelUtils";
-import TemplateTypeSelector from "../../template/TemplateTypeSelector";
-import TemplateEditor from "../../template/TemplateEditor";
+import { getTemplateTypesFromMetaData } from "../../utils/ModelUtils";
+import TemplateTypeSelector from "./TemplateTypeSelector";
+import TemplateEditor from "./TemplateEditor";
 
 interface ListTemplateEditorProps<T> {
   template: Template<List<T>>;

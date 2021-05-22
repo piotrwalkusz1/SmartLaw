@@ -1,7 +1,7 @@
 import Template from "../../model/Template";
 import React from "react";
 import { Accordion, Card } from "react-bootstrap";
-import StringTemplateEditor from "../element/template/StringTemplateEditor";
+import StringTemplateEditor from "../template/StringTemplateEditor";
 
 interface RuleContentEditorProps {
   template: Template<string>;

@@ -5,7 +5,7 @@ import com.piotrwalkusz.smartlaw.core.model.document.Document
 import com.piotrwalkusz.smartlaw.core.model.document.RulesContainer
 import com.piotrwalkusz.smartlaw.core.model.rule.Rule
 
-class InMemoryRuleProvider(documentsList: List<Document>) {
+class InMemoryRuleProvider(documentsList: List<Document>) : RuleProvider {
 
     private val documents: Map<Id, Document> = documentsList.associateBy { it.id }
     private val documentIdByRuleId: Map<Id, Id>
@@ -17,7 +17,7 @@ class InMemoryRuleProvider(documentsList: List<Document>) {
                 .toMap()
     }
 
-    fun getRule(ruleId: Id): Rule? {
+    override fun getRule(ruleId: Id): Rule? {
         return documentIdByRuleId[ruleId]
                 ?.let { documentId -> documents[documentId] }
                 ?.let { document -> document as RulesContainer }
