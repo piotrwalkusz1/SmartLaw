@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
     kotlin("jvm")
     kotlin("plugin.spring") version "1.4.10"
+    id("org.jetbrains.kotlin.kapt")
 }
 
 group = "com.piotrwalkusz.smartlaw"
@@ -26,6 +27,9 @@ dependencies {
     implementation(platform("com.github.cloudyrock.mongock:mongock-bom:4.1.19"))
     implementation("com.github.cloudyrock.mongock:mongock-standalone")
     implementation("com.github.cloudyrock.mongock:mongodb-sync-v4-driver")
+    testImplementation("org.openjdk.jmh:jmh-core:1.32")
+    compileOnly("org.openjdk.jmh:jmh-generator-annprocess:1.32")
+    kaptTest("org.openjdk.jmh:jmh-generator-annprocess:1.32")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

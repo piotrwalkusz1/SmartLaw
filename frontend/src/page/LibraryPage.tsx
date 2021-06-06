@@ -31,6 +31,9 @@ const LibraryPage = ({ libraryDbId }: { libraryDbId: string }) => {
       setSavedLibrary(library);
     });
   };
+  const downloadLibrary = () => {
+    DocumentService.getDocumentAsXml(libraryDbId);
+  };
 
   return library === undefined || rulesArgumentsTypes === undefined ? (
     <div />
@@ -39,6 +42,9 @@ const LibraryPage = ({ libraryDbId }: { libraryDbId: string }) => {
       <div>
         <Button style={{ margin: "15px 0" }} disabled={library === savedLibrary} onClick={() => saveLibrary(library)}>
           Save
+        </Button>
+        <Button style={{ margin: "15px 0" }} disabled={library !== savedLibrary} onClick={() => downloadLibrary()}>
+          Download
         </Button>
       </div>
       <ExpandableArea header="Rules">

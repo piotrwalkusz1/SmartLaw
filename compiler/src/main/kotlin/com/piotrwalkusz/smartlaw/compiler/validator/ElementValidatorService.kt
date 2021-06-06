@@ -232,22 +232,13 @@ class ElementValidatorService {
                         ValidatedSenderOperation()
                     }
                     BasicOperation.MULTIPLY -> {
-                        validateArgumentsCount(expression.arguments, 2).bind()
-                        val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
-                        val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
-                        ValidatedMultiplyOperation(
-                                firstOperand = validateExpression(firstOperand, elements).bind(),
-                                secondOperand = validateExpression(secondOperand, elements).bind()
-                        )
+                        validateMathOperation(expression, elements) { firstOperand, secondOperand -> ValidatedMultiplyOperation(firstOperand, secondOperand) }.bind()
                     }
                     BasicOperation.DIVIDE -> {
-                        validateArgumentsCount(expression.arguments, 2).bind()
-                        val firstOperand = validateArgument<Expression>(expression.arguments, 0).bind()
-                        val secondOperand = validateArgument<Expression>(expression.arguments, 1).bind()
-                        ValidatedDivideOperation(
-                                firstOperand = validateExpression(firstOperand, elements).bind(),
-                                secondOperand = validateExpression(secondOperand, elements).bind()
-                        )
+                        validateMathOperation(expression, elements) { firstOperand, secondOperand -> ValidatedDivideOperation(firstOperand, secondOperand) }.bind()
+                    }
+                    BasicOperation.ADD -> {
+                        validateMathOperation(expression, elements) { firstOperand, secondOperand -> ValidatedAddOperation(firstOperand, secondOperand) }.bind()
                     }
                     BasicOperation.TRANSFER_VALUE -> {
                         validateArgumentsCount(expression.arguments, 0).bind()
@@ -275,6 +266,20 @@ class ElementValidatorService {
                 error("${expression.javaClass} is not supported").bind()
             }
         }
+    }
+
+    private fun validateMathOperation(operation: Operation,
+                                      elements: List<Element>,
+                                      validatedMathOperationSupplier: (firstOperand: ValidatedExpression, secondOperand: ValidatedExpression) -> ValidatedMathOperation
+    ): Result<ValidatedExpression, List<ElementValidationError>> = binding {
+        validateArgumentsCount(operation.arguments, 2).bind()
+        val firstOperand = validateArgument<Expression>(operation.arguments, 0).bind()
+        val secondOperand = validateArgument<Expression>(operation.arguments, 1).bind()
+
+        validatedMathOperationSupplier.invoke(
+                validateExpression(firstOperand, elements).bind(),
+                validateExpression(secondOperand, elements).bind()
+        )
     }
 
     private inline fun <reified T : MetaValue> validateMetaValue(metaValue: MetaValue): Result<T, List<ElementValidationError>> {

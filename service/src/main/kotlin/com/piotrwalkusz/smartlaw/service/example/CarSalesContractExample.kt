@@ -4,6 +4,8 @@ import com.piotrwalkusz.smartlaw.core.model.common.Id
 import com.piotrwalkusz.smartlaw.core.model.document.Contract
 import com.piotrwalkusz.smartlaw.core.model.document.Library
 import com.piotrwalkusz.smartlaw.core.model.element.common.type.DefinitionRef
+import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumDefinition
+import com.piotrwalkusz.smartlaw.core.model.element.enumdefinition.EnumVariant
 import com.piotrwalkusz.smartlaw.core.model.element.state.State
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaArgument
 import com.piotrwalkusz.smartlaw.core.model.meta.MetaPrimitiveValue
@@ -77,11 +79,19 @@ object CarSalesContractExample {
                                     MetaArgument(name = "kolor", type = Id("String"), displayName = "Kolor"),
                                     MetaArgument(name = "przebieg", type = Id("Integer"), displayName = "Przebieg", validators = listOf(NumberRangeValidator(0, 10000000)))
                             ),
-                            elements = StaticTemplate(listOf(State(
-                                    id = Id("SAMOCHOD", "pl.piotrwalkusz"),
-                                    type = DefinitionRef(Id("SAMOCHOD_TYP", "pl.piotrwalkusz")),
-                                    name = "Samochód"
-                            )))
+                            elements = StaticTemplate(listOf(
+                                    State(
+                                            id = Id("SAMOCHOD", "pl.piotrwalkusz"),
+                                            type = DefinitionRef(Id("SAMOCHOD_TYP", "pl.piotrwalkusz")),
+                                            name = "Samochód"
+                                    ),
+                                    EnumDefinition(
+                                            id = Id("SAMOCHOD_TYP", "pl.piotrwalkusz"),
+                                            annotations = listOf(),
+                                            name = "Typ samochodu",
+                                            description = "Typ samochodu",
+                                            variants = listOf(EnumVariant("Test", description = null))
+                                    )))
                     ),
                     Rule(
                             id = Id("OSWIADCZENIE_SPRZEDAJACEGO", "pl.piotrwalkusz"),
@@ -100,7 +110,7 @@ object CarSalesContractExample {
                                     MetaArgument(name = "kwota", type = Id("Integer"), displayName = "Kwota", validators = listOf(NumberRangeValidator(0, 100000000)))),
                             elements = StaticTemplate(listOf(State(
                                     id = Id("CENA_SAMOCHODU", "pl.piotrwalkusz"),
-                                    type = DefinitionRef(Id("Int", "pl.piotrwalkusz")),
+                                    type = DefinitionRef(Id("UINT")),
                                     name = "Cena samochodu"
                             )))),
                     Rule(

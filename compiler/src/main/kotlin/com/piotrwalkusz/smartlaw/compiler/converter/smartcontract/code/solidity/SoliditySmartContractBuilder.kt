@@ -178,14 +178,9 @@ class SoliditySmartContractBuilder : SmartContractBuilder() {
                 sourceCode.append(" == ")
                 appendStatement(statement.secondOperand)
             }
-            is ValidatedMultiplyOperation -> {
+            is ValidatedMathOperation -> {
                 appendStatement(statement.firstOperand)
-                sourceCode.append(" * ")
-                appendStatement(statement.secondOperand)
-            }
-            is ValidatedDivideOperation -> {
-                appendStatement(statement.firstOperand)
-                sourceCode.append(" / ")
+                sourceCode.append(" " + statement.getOperator() + " ")
                 appendStatement(statement.secondOperand)
             }
             is ValidatedSenderOperation -> {

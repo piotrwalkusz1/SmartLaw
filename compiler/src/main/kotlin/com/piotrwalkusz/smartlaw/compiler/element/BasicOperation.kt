@@ -7,6 +7,7 @@ enum class BasicOperation(val id: Id) {
     TRANSFER(Id("TRANSFER")),
     BALANCE(Id("BALANCE")),
     EQUALS(Id("EQUALS")),
+    ADD(Id("ADD")),
     MULTIPLY(Id("MULTIPLY")),
     DIVIDE(Id("DIVIDE")),
     SENDER(Id("SENDER")),

@@ -1,6 +1,11 @@
 package com.piotrwalkusz.smartlaw.compiler.validator.model
 
-data class ValidatedDivideOperation(
-        val firstOperand: ValidatedExpression,
-        val secondOperand: ValidatedExpression
-) : ValidatedOperation
+class ValidatedDivideOperation(
+        firstOperand: ValidatedExpression,
+        secondOperand: ValidatedExpression
+) : ValidatedMathOperation(firstOperand, secondOperand) {
+
+    override fun getOperator(): String {
+        return "/"
+    }
+}

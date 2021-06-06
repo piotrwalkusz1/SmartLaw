@@ -2,6 +2,7 @@ import axios from "axios";
 import Document, { decodeDocument, DocumentType } from "../model/Document";
 import Contract from "../model/Contract";
 import Library from "../model/Library";
+import FileDownload from "js-file-download";
 
 export const getDocument = (documentId: string): Promise<Document> => {
   return axios.get("/documents/" + documentId).then((response) => {
@@ -26,6 +27,12 @@ export const getLibrary = (documentId: string): Promise<Library> => {
     } else {
       throw Error("Expected document type " + DocumentType.Library + " but was " + document.documentType);
     }
+  });
+};
+
+export const getDocumentAsXml = (documentId: string): void => {
+  axios.get("/documents/" + documentId + "/xml", { responseType: "blob" }).then((response) => {
+    FileDownload(response.data, "Document.xml");
   });
 };
 
